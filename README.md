@@ -2,20 +2,33 @@
 
 **Web app made to compare prices of different products across multiple stores.**
 
-# Install
+# Prerequisites
 
-Install version 1.23.3 or newer of [go](https://go.dev/doc/install).
+This project requires [go](https://go.dev/doc/install) version 1.23.3 or newer and [NodeJS and NPM](https://nodejs.org/en) version 22.0.0 or newer.
 
-Install (nodeJS)[https://nodejs.org/en].
-
-Make sure **go** is installed correctly.
+Make sure **go** and **NodeJS**/**npm** is installed correctly.
 
 ```
 go version
+node -v
+npm -v
 ```
 
-To run backend
+# Development
 
+Start backend
+
+```bash
+cd back
+make run
 ```
-go run back/main.go
+
+Start frontend
+
+```bash
+cd front
+npm install
+npm start
 ```
+
+The app will be available under http://localhost:4200/
