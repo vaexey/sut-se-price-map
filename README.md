@@ -16,28 +16,22 @@ npm -v
 
 # Development
 
-Start backend
-Windows:
+Start backend  
+
+*Windows:*
 ```powershell
-go run back/main.go
+cd back
+go run main.go
 ```
 
-Linux:
+*Linux:*
 ```bash
 cd back
 make run
 ```
 
-Start frontend
-Windows:
-```powershell
-cd front
-npm install
-npx tsc
-npm start
-```
+Start frontend  
 
-Linux:
 ```bash
 cd front
 npm install
