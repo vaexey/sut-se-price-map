@@ -1,0 +1,33 @@
+.navbar
+{
+    display: flex;
+
+    flex-flow: row;
+    justify-content: center;
+    align-items: center;
+
+    background: var(--col-nav-bg);
+    height: var(--siz-nav-height);
+
+    & > div
+    {
+        padding: 10px;
+    }
+
+    & .logo
+    {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    & .pages
+    {
+        flex: 1;
+    }
+
+    & .profile
+    {
+
+    }
+}
