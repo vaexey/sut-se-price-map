@@ -1,8 +1,10 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-title>Price Compass</ion-title>
-            <ion-button>Products</ion-button>
+            <ion-button [routerLink]="'/'">
+                <ion-icon slot="icon-only" name="compass-outline"></ion-icon>
+            </ion-button>
+            <ion-button [routerLink]="'/search'">Products</ion-button>
             <ion-button>Stores</ion-button>
         </ion-buttons>
 

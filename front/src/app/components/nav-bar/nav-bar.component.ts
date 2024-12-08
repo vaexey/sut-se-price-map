@@ -1,15 +1,16 @@
 import { Component } from '@angular/core';
-import { IonButton, IonButtons, IonHeader, IonIcon, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { RouterLink } from '@angular/router';
+import { IonButton, IonButtons, IonHeader, IonIcon, IonToolbar } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { addCircleOutline, heartCircleOutline, personCircleOutline, shieldHalfOutline } from 'ionicons/icons';
+import { addCircleOutline, compassOutline, heartCircleOutline, personCircleOutline, shieldHalfOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-nav-bar',
   imports: [
+    RouterLink,
     IonHeader,
     IonToolbar,
     IonButtons,
-    IonTitle,
     IonButton,
     IonIcon,
   ],
@@ -20,6 +21,7 @@ export class NavBarComponent {
 
   constructor() {
     addIcons({
+      compassOutline,
       shieldHalfOutline,
       addCircleOutline,
       heartCircleOutline,
