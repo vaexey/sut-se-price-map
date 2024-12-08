@@ -1,0 +1,18 @@
+.map
+{
+    ::ng-deep path
+    {
+        transform-origin: center;
+        transform-box: fill-box;
+
+        transition: transform 200ms ease-out,
+            color 200ms ease-out;
+        color: var(--ion-color-medium);
+
+        &:hover
+        {
+            transform: scale(1.2);
+            color: var(--ion-color-secondary);
+        }
+    }
+}
