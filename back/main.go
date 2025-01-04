@@ -1,6 +1,7 @@
 package main
 
 import (
+	"back/auth"
 	"net/http"
 	"github.com/gin-gonic/gin"
 )
@@ -17,9 +18,26 @@ func hello(c *gin.Context) {
 		},
 	)
 }
+func admin(c *gin.Context) {
+	c.JSON(http.StatusOK,
+	gin.H {
+		"message" : "hello admin",
+	})
+}
+
 
 func main() {
 	router := gin.Default()
-	router.GET("/hello", hello)
+
+	var authHandler auth.Handler
+
+	router.POST("/login", authHandler.Login)
+
+	router.Use(authHandler.RequireJWT())
+
+	router.GET("/api/hello", hello)
+
+	router.GET("/api/admin", authHandler.RequireAdmin(), admin)
+
 	router.Run(ADDR)
 }
