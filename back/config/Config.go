@@ -22,7 +22,6 @@ type DatabaseConfig struct {
 	Database string
 }
 
-
 func ReadConfig(fileName string) (Config, error) {
 	data, err := os.ReadFile(fileName)
 	if err != nil {
@@ -40,7 +39,7 @@ func ReadConfig(fileName string) (Config, error) {
 				Database: "",
 			},
 		}
-		saveConfigToFile("config.json", defaultConfig)
+		saveConfigToFile(fileName, defaultConfig)
 		return defaultConfig, err
 	}
 	var config Config

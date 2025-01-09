@@ -1,11 +1,13 @@
 package main
 
 import (
+	"back/config"
+	"back/services"
 	"net/http"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 )
-
-const ADDR = "127.0.0.1:6969"
 
 func hello(c *gin.Context) {
 	message := c.Query("msg")
@@ -18,7 +20,22 @@ func hello(c *gin.Context) {
 	)
 }
 
+func readConfig(){
+	singleton := services.GetInstance()
+	config, err := config.ReadConfig("config.json")
+	if err != nil {
+		return
+	}
+	singleton.SetConfig(config)
+}
+
 func main() {
+	readConfig()
+	address := services.GetInstance().GetConfig().Address
+	port := services.GetInstance().GetConfig().Port
+	
+	ADDR := address + ":" + strconv.Itoa(port)
+	
 	router := gin.Default()
 	router.GET("/hello", hello)
 	router.Run(ADDR)
