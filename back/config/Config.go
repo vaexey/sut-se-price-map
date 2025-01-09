@@ -3,9 +3,6 @@ package config
 import (
 	"encoding/json"
 	"os"
-	"strconv"
-
-	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -13,10 +10,10 @@ type Config struct {
 	Port int
 	SecretKey string
 	Protocol string
-	Database Database `json:database`
+	Database DatabaseConfig `json:database`
 }
 
-type Database struct {
+type DatabaseConfig struct {
 	Type string
 	Host string
 	Port int
@@ -26,10 +23,25 @@ type Database struct {
 }
 
 
-func GetConfig(fileName string) (Config, error) {
+func ReadConfig(fileName string) (Config, error) {
 	data, err := os.ReadFile(fileName)
 	if err != nil {
-		return Config{}, err
+		defaultConfig := Config {
+			Address: "127.0.0.1",
+			Port: 6969,
+			SecretKey: "",
+			Protocol: "http",
+			Database: DatabaseConfig{
+				Type: "postgresql",
+				Host: "", 
+				Port: 5432,
+				Username: "",
+				Password: "",
+				Database: "",
+			},
+		}
+		saveConfigToFile("config.json", defaultConfig)
+		return defaultConfig, err
 	}
 	var config Config
 	err = json.Unmarshal(data, &config)
@@ -39,27 +51,15 @@ func GetConfig(fileName string) (Config, error) {
 	return config, nil
 }
 
-func ReadEnv() Config {
-	godotenv.Load()
-	var config Config
-	var err error
-	
-	config.Address = os.Getenv("ADDRESS")
-	config.Port, err = strconv.Atoi(os.Getenv("PORT"))
+func saveConfigToFile(filename string, config Config) error {
+	data, err := json.MarshalIndent(config, "", "  ")
 	if err != nil {
-		return Config{}
+		return err
 	}
-	config.SecretKey = os.Getenv("SECRET_KEY")
-	config.Protocol = os.Getenv("PROTOCOL")
-	config.Database.Type = os.Getenv("DATABASE_TYPE")
-	config.Database.Host = os.Getenv("DATABASE_HOST")
-	config.Database.Port, err = strconv.Atoi(os.Getenv("DATABASE_PORT"))
+	//save to file
+	err = os.WriteFile(filename, data, 0644)
 	if err != nil {
-		return Config{}
+		return err
 	}
-	config.Database.Username = os.Getenv("DATABASE_USERNAME")
-	config.Database.Password = os.Getenv("DATABASE_PASSWORD")
-	config.Database.Database = os.Getenv("DATABASE_DATABASENAME")
-
-	return config
+	return nil
 }
