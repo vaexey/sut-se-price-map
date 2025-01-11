@@ -5,15 +5,18 @@ import (
 	"os"
 )
 
-type Config struct {
-	Address string
-	Port int
-	SecretKey string
-	Protocol string
-	Database DatabaseConfig `json:database`
+type config struct {
+	Database databaseConfig `json:database`
+	Server serverConfig `json:database`
 }
 
-type DatabaseConfig struct {
+type serverConfig struct {
+	Address string
+	Port int
+	Secret string
+}
+
+type databaseConfig struct {
 	Type string
 	Host string
 	Port int
@@ -22,15 +25,17 @@ type DatabaseConfig struct {
 	Database string
 }
 
-func ReadConfig(fileName string) (Config, error) {
+func readConfig(fileName string) config {
+	var conf config
 	data, err := os.ReadFile(fileName)
 	if err != nil {
-		defaultConfig := Config {
-			Address: "127.0.0.1",
-			Port: 6969,
-			SecretKey: "",
-			Protocol: "http",
-			Database: DatabaseConfig{
+		conf = config {
+			Server : serverConfig {
+				Address: "127.0.0.1",
+				Port: 6969,
+				Secret: "",
+			},
+			Database: databaseConfig {
 				Type: "postgresql",
 				Host: "", 
 				Port: 5432,
@@ -39,26 +44,36 @@ func ReadConfig(fileName string) (Config, error) {
 				Database: "",
 			},
 		}
-		saveConfigToFile(fileName, defaultConfig)
-		return defaultConfig, err
+		saveConfig(fileName, conf)
+		return conf
 	}
-	var config Config
-	err = json.Unmarshal(data, &config)
+
+	err = json.Unmarshal(data, &conf)
+
 	if err != nil {
-		return Config{}, err
+		return config {}
 	}
-	return config, nil
+
+	return conf
 }
 
-func saveConfigToFile(filename string, config Config) error {
-	data, err := json.MarshalIndent(config, "", "  ")
+func saveConfig(filename string, conf config) error {
+	data, err := json.MarshalIndent(conf, "", "  ")
 	if err != nil {
 		return err
 	}
 	//save to file
 	err = os.WriteFile(filename, data, 0644)
+
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
+
+
+var Config config = readConfig("config.json")
+
+
+
