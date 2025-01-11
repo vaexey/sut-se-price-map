@@ -22,9 +22,9 @@ func hello(c *gin.Context) {
 func main() {
 
 	conf := config.Config
-	ADDR := conf.Server.Address + ":" + strconv.Itoa(conf.Server.Port)
+	addr := conf.Server.Address + ":" + strconv.Itoa(conf.Server.Port)
 	
 	router := gin.Default()
 	router.GET("/hello", hello)
-	router.Run(ADDR)
+	router.Run(addr)
 }
