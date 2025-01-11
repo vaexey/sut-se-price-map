@@ -2,11 +2,11 @@ package main
 
 import (
 	"back/auth"
+	"back/config"
+  "fmt"
 	"net/http"
 	"github.com/gin-gonic/gin"
 )
-
-const ADDR = "127.0.0.1:6969"
 
 func hello(c *gin.Context) {
 	message := c.Query("msg")
@@ -27,6 +27,10 @@ func admin(c *gin.Context) {
 
 
 func main() {
+
+	conf := config.Config
+  addr := fmt.Sprintf("%s:%d", conf.Server.Address, conf.Server.Port)
+  
 	router := gin.Default()
 
 	var authHandler auth.Handler
@@ -38,6 +42,6 @@ func main() {
 	router.GET("/api/hello", hello)
 
 	router.GET("/api/admin", authHandler.RequireAdmin(), admin)
-
-	router.Run(ADDR)
+  
+	router.Run(addr)
 }
