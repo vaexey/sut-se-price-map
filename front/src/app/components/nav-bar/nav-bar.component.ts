@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { IonButton, IonButtons, IonHeader, IonIcon, IonToolbar } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { addCircleOutline, compassOutline, heartCircleOutline, personCircleOutline, shieldHalfOutline } from 'ionicons/icons';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-nav-bar',
@@ -19,7 +20,9 @@ import { addCircleOutline, compassOutline, heartCircleOutline, personCircleOutli
 })
 export class NavBarComponent {
 
-  constructor() {
+  constructor(
+    private auth: AuthService
+  ) {
     addIcons({
       compassOutline,
       shieldHalfOutline,
@@ -27,6 +30,21 @@ export class NavBarComponent {
       heartCircleOutline,
       personCircleOutline,
     })
+  }
+
+  logout()
+  {
+    this.auth.logout();
+  }
+
+  user(): boolean
+  {
+    return this.auth.isLogged()
+  }
+
+  admin(): boolean
+  {
+    return this.user() && true
   }
 
 }

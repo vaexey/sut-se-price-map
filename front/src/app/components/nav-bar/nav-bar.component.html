@@ -9,19 +9,28 @@
         </ion-buttons>
 
         <ion-buttons slot="end">
+        @if(this.admin()) {
             <ion-button [routerLink]="'/admin'" aria-label="Admin">
                 <ion-icon slot="icon-only" name="shield-half-outline"></ion-icon>
             </ion-button>
+        }
             <ion-button [routerLink]="'/add'" aria-label="Add">
                 <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
             </ion-button>
+        @if(this.user()) {
             <ion-button [routerLink]="'/favorites'" aria-label="Favorites">
                 <ion-icon slot="icon-only" name="heart-circle-outline"></ion-icon>
             </ion-button>
             <ion-button [routerLink]="'/profile'" aria-label="Profile">
                 <ion-icon slot="icon-only" name="person-circle-outline"></ion-icon>
             </ion-button>
+        }
+        @if(!this.user()) {
             <ion-button [routerLink]="'/login'" aria-label="Login">Login</ion-button>
+        }
+        @if(this.user()) {
+            <ion-button [routerLink]="'/login'" (click)="logout()" aria-label="Logout">Logout</ion-button>
+        }
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
