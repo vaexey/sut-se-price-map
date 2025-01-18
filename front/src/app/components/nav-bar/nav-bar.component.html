@@ -28,6 +28,9 @@
         @if(!this.user()) {
             <ion-button [routerLink]="'/login'" aria-label="Login">Login</ion-button>
         }
+        @if(this.user()) {
+            <ion-button [routerLink]="'/login'" (click)="logout()" aria-label="Logout">Logout</ion-button>
+        }
         </ion-buttons>
     </ion-toolbar>
 </ion-header>

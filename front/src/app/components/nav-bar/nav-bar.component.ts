@@ -32,6 +32,11 @@ export class NavBarComponent {
     })
   }
 
+  logout()
+  {
+    this.auth.logout();
+  }
+
   user(): boolean
   {
     return this.auth.isLogged()

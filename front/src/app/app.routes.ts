@@ -5,11 +5,13 @@ import { SearchComponent } from './pages/search/search.component';
 import { LoginComponent } from './pages/login/login.component';
 import { ErrorNotFoundComponent } from './pages/error-not-found/error-not-found.component';
 import { OnlyLoggedService } from './services/only-logged.service';
+import { OnlyAnonymousService } from './services/only-anonymous.service';
 
 export const routes: Routes = [
     { 
         path: 'login', 
-        component: LoginComponent 
+        component: LoginComponent,
+        canActivate: [OnlyAnonymousService]
     },
     { 
         path: 'profile', 
