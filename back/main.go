@@ -35,7 +35,7 @@ func main() {
 
 	var authHandler auth.Handler
 
-	router.POST("/login", authHandler.Login)
+	router.POST("/api/login", authHandler.Login)
 
 	router.Use(authHandler.RequireJWT())
 

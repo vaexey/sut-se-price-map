@@ -1,0 +1,11 @@
+{
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.expand": false,
+    "explorer.fileNesting.patterns": {
+        "package.json": "package-lock.json, .editorconfig, .gitignore",
+        "angular.json": "proxy.conf.json, tsconfig.json, ionic.config.json",
+        "*.component.ts": "$(capture).component.html, $(capture).component.spec.ts, $(capture).component.css, $(capture).component.scss, $(capture).component.sass, $(capture).component.less",
+        "*.service.ts": "$(capture).service.spec.ts",
+        "go.mod": "go.sum, .gitignore, Makefile"
+    }
+}
