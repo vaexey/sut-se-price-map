@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
+import { AuthService } from '../../services/auth.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
   imports: [
-    FormsModule,
+    ReactiveFormsModule,
     IonicModule // TODO: split
   ],
   templateUrl: './login.component.html',
@@ -13,8 +15,37 @@ import { IonicModule } from '@ionic/angular';
 })
 export class LoginComponent  implements OnInit {
 
-  constructor() { }
+  loginForm = new FormGroup({
+    username: new FormControl(""),
+    password: new FormControl(""),
+  })
 
-  ngOnInit() {}
+  nextUrl = "/";
+
+  constructor(
+    private auth: AuthService,
+    private router: Router,
+    private route: ActivatedRoute,
+  ) { }
+
+  ngOnInit() {
+    this.nextUrl = this.route.snapshot.queryParams["next"] ?? this.nextUrl
+  }
+
+  login()
+  {
+    console.log(this.loginForm.value)
+    this.auth.login(
+      this.loginForm.value.username ?? "",
+      this.loginForm.value.password ?? ""
+    ).subscribe({
+      complete: () => {
+        this.router.navigateByUrl(this.nextUrl)
+      },
+      error: err => {
+        console.log(err)
+      }
+    })
+  }
 
 }
