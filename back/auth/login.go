@@ -6,9 +6,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type loginRequest struct {
+	Username string `json:username`
+	Password string `json:password`
+}
+
 func (h *Handler) Login(c *gin.Context) {
-	username := c.PostForm("username")
-	password := c.PostForm("password")
+	var req loginRequest
+	c.BindJSON(&req)
+	username := req.Username
+	password := req.Password
 
 	// dev
 	var role string
