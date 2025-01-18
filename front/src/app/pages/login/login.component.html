@@ -1,29 +1,53 @@
 <ion-content class="ion-padding">
-  <ion-grid style="display: flex; flex-flow: column; height: 100%;" class="ion-justify-content-center">
+  <ion-grid
+    style="display: flex; flex-flow: column; height: 100%"
+    class="ion-justify-content-center"
+  >
     <form [formGroup]="this.loginForm" (ngSubmit)="login()">
       <ion-row>
-          <ion-col size="3"></ion-col>
+        <ion-col size="3"></ion-col>
 
-          <ion-col class="ion-justify-content-center ion-align-items-center" style="display: flex; flex-flow: column;">
-            <ion-input formControlName="username" class="ion-margin" label="Login" label-placement="stacked" fill="outline" placeholder="ben1"></ion-input>
-            
-            <ion-input formControlName="password" class="ion-margin" label="Password" label-placement="stacked" fill="outline" placeholder="" type="password">
-              <ion-input-password-toggle slot="end"></ion-input-password-toggle>
-            </ion-input>
-          </ion-col>
+        <ion-col
+          class="ion-justify-content-center ion-align-items-center"
+          style="display: flex; flex-flow: column"
+        >
+          <ion-input
+            formControlName="username"
+            class="ion-margin"
+            label="Login"
+            label-placement="stacked"
+            fill="outline"
+            placeholder="ben1"
+          ></ion-input>
 
-          <ion-col size="3"></ion-col>
+          <ion-input
+            formControlName="password"
+            class="ion-margin"
+            label="Password"
+            label-placement="stacked"
+            fill="outline"
+            placeholder=""
+            type="password"
+          >
+            <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+          </ion-input>
+        </ion-col>
+
+        <ion-col size="3"></ion-col>
       </ion-row>
 
       <ion-row>
-          <ion-col size="3"></ion-col>
+        <ion-col size="3"></ion-col>
 
-          <ion-col class="ion-justify-content-center ion-align-items-center" style="display: flex; flex-flow: row;">
-            <ion-button type="submit">Log in</ion-button>
-            <ion-button>Sign up</ion-button>
-          </ion-col>
+        <ion-col
+          class="ion-justify-content-center ion-align-items-center"
+          style="display: flex; flex-flow: row"
+        >
+          <ion-button type="submit">Log in</ion-button>
+          <ion-button>Sign up</ion-button>
+        </ion-col>
 
-          <ion-col size="3"></ion-col>
+        <ion-col size="3"></ion-col>
       </ion-row>
     </form>
   </ion-grid>

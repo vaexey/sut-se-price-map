@@ -1,2 +1,6 @@
-<app-nav-bar></app-nav-bar>
-<router-outlet class="routerAnimation"></router-outlet>
+<div style="display: flex; flex-direction: column; height: 100vh">
+  <app-nav-bar style="flex: 0 0 auto"></app-nav-bar>
+  <div style="flex: 1 1 auto; overflow: hidden">
+    <router-outlet class="routerAnimation"></router-outlet>
+  </div>
+</div>

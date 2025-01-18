@@ -13,7 +13,7 @@
     }
 }
 
-app-root > :nth-child(3)
+app-root > div > div
 {
     view-transition-name: routerAnimation;
 }
