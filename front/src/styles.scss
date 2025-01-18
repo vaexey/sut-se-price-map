@@ -1,1 +1,37 @@
 /* You can add global styles to this file, and also import other style files */
+
+@keyframes rotate-out {
+    to {
+        // transform: rotate(90deg);
+        transform: translateX(-50%);
+    }
+}
+@keyframes rotate-in {
+    from {
+        // transform: rotate(-90deg);
+        transform: translateX(50%);
+    }
+}
+
+app-root > :nth-child(3)
+{
+    view-transition-name: routerAnimation;
+}
+
+::view-transition-new(root), ::view-transition-old(root) 
+{
+    animation-name: none;
+}
+
+::view-transition-new(routerAnimation), ::view-transition-old(routerAnimation) 
+{
+    animation-duration: 200ms;
+    animation-name: -ua-view-transition-fade-in, rotate-in;
+    
+    // TODO: unsafe
+    // height: calc(100vh - 56px);
+}
+
+::view-transition-old(routerAnimation) {
+    animation-name: -ua-view-transition-fade-out, rotate-out;
+}
