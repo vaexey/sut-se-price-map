@@ -1,33 +1,47 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
+	"back/auth"
+	"back/config"
+  "fmt"
 	"net/http"
+	"github.com/gin-gonic/gin"
 )
 
-const ADDR = ":6969"
-
-func hello(w http.ResponseWriter, req *http.Request) {
-	id := req.PathValue("id")
-	param := req.URL.Query().Get("param")
-
-	data := map[string]any{
-		"message":     "hello",
-		"error":       nil,
-		"id":          id,
-		"query-param": param,
-	}
-
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK) // 200
-
-	json.NewEncoder(w).Encode(data)
+func hello(c *gin.Context) {
+	message := c.Query("msg")
+	c.JSON(http.StatusOK,
+	gin.H {
+		"message": "hello",
+		"error": nil,
+		"msg": message,
+		},
+	)
+}
+func admin(c *gin.Context) {
+	c.JSON(http.StatusOK,
+	gin.H {
+		"message" : "hello admin",
+	})
 }
 
+
 func main() {
-	fmt.Printf("listening on: %s\n", ADDR)
-	http.HandleFunc("GET /hello/{id}", hello)
-	http.HandleFunc("/", hello)
-	http.ListenAndServe(ADDR, nil)
+
+	conf := config.Config
+  addr := fmt.Sprintf("%s:%d", conf.Server.Address, conf.Server.Port)
+  
+	router := gin.Default()
+
+	var authHandler auth.Handler
+
+	router.POST("/api/login", authHandler.Login)
+
+	router.Use(authHandler.RequireJWT())
+
+	router.GET("/api/hello", hello)
+
+	router.GET("/api/admin", authHandler.RequireAdmin(), admin)
+  
+	router.Run(addr)
 }

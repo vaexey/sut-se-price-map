@@ -1,0 +1,15 @@
+{
+  "Database": {
+    "Type": "postgresql",
+    "Host": "",
+    "Port": 5432,
+    "Username": "",
+    "Password": "",
+    "Database": ""
+  },
+  "Server": {
+    "Address": "127.0.0.1",
+    "Port": 6969,
+    "Secret": ""
+  }
+}
