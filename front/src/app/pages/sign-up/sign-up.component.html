@@ -3,7 +3,7 @@
     style="display: flex; flex-flow: column; height: 100%"
     class="ion-justify-content-center"
   >
-    <form [formGroup]="this.loginForm" (ngSubmit)="login()">
+    <form [formGroup]="this.signUpForm" (ngSubmit)="signUp()">
       <ion-row>
         <ion-col size="3"></ion-col>
 
@@ -31,6 +31,16 @@
           >
             <ion-input-password-toggle slot="end"></ion-input-password-toggle>
           </ion-input>
+          <ion-input
+            formControlName="password2"
+            class="ion-margin"
+            label="Repeat password"
+            label-placement="stacked"
+            fill="outline"
+            placeholder=""
+            type="password"
+          >
+          </ion-input>
         </ion-col>
 
         <ion-col size="3"></ion-col>
@@ -43,8 +53,8 @@
           class="ion-justify-content-center ion-align-items-center"
           style="display: flex; flex-flow: row"
         >
-          <ion-button type="submit">Log in</ion-button>
-          <ion-button [routerLink]="'/sign-up'">Sign up</ion-button>
+          <ion-button [routerLink]="'/login'">Log in</ion-button>
+          <ion-button type="submit">Sign up</ion-button>
         </ion-col>
 
         <ion-col size="3"></ion-col>

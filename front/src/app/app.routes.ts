@@ -6,11 +6,17 @@ import { LoginComponent } from './pages/login/login.component';
 import { ErrorNotFoundComponent } from './pages/error-not-found/error-not-found.component';
 import { OnlyLoggedService } from './services/only-logged.service';
 import { OnlyAnonymousService } from './services/only-anonymous.service';
+import { SignUpComponent } from './pages/sign-up/sign-up.component';
 
 export const routes: Routes = [
     { 
         path: 'login', 
         component: LoginComponent,
+        canActivate: [OnlyAnonymousService]
+    },
+    { 
+        path: 'sign-up', 
+        component: SignUpComponent,
         canActivate: [OnlyAnonymousService]
     },
     { 
