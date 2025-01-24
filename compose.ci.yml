@@ -1,5 +1,0 @@
-services:
-  web_test:
-    build: .
-    environment:
-      - CI_MODE=1

@@ -1,0 +1,24 @@
+services:
+  db:
+    ports:
+      - 5432:5432
+  pgadmin:
+    build:
+      context: db
+      dockerfile: pgadmin.Dockerfile
+    ports:
+      - 5050:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin@pgadmin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    volumes:
+      - pgadmin:/root/.pgadmin
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+volumes:
+  pgadmin:

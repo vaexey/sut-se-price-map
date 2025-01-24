@@ -1,0 +1,81 @@
+name: sut-se-price-map
+networks:
+  default:
+    name: sut-se-price-map_default
+services:
+  db:
+    build:
+      context: db
+      dockerfile: postgres.Dockerfile
+    environment:
+      POSTGRES_DB: docker
+      POSTGRES_PASSWORD: root
+      POSTGRES_USER: docker
+    healthcheck:
+      interval: 1s
+      retries: 10
+      test:
+        - CMD-SHELL
+        - pg_isready -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        protocol: tcp
+        published: "5432"
+        target: 5432
+    restart: always
+    volumes:
+      - source: db-data
+        target: /var/lib/postgresql/data
+        type: volume
+        volume: {}
+  pgadmin:
+    build:
+      context: db
+      dockerfile: pgadmin.Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+        required: true
+        restart: true
+    environment:
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_DEFAULT_EMAIL: pgadmin@pgadmin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        protocol: tcp
+        published: "5050"
+        target: 80
+    restart: always
+    volumes:
+      - source: pgadmin
+        target: /root/.pgadmin
+        type: volume
+        volume: {}
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+        required: true
+        restart: true
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        protocol: tcp
+        published: "8080"
+        target: 6969
+volumes:
+  db-data:
+    name: sut-se-price-map_db-data
+  pgadmin:
+    name: sut-se-price-map_pgadmin
