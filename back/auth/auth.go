@@ -17,7 +17,37 @@ func (h *Handler) RequireJWT() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		tokenHeader := c.GetHeader("Authorization")
+
+		paramsNumber := len(strings.Split(tokenHeader, " "))
+		if paramsNumber > 2 {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error": "Unauthorized",
+				"message": "Invalid parameters number in header Authorization",
+			})
+			c.Abort()
+			return
+		}
+
+		if tokenHeader == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error": "Unauthorized",
+				"message": "Authorization header does not exists",
+			})
+			c.Abort()
+			return
+		}
+
+		authorizationType := strings.Split(tokenHeader, " ")[0]
 		tokenString := strings.Split(tokenHeader, " ")[1]
+
+		if (authorizationType != "Bearer") {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error": "Unauthorized",
+				"message": "Wrong type of authorization",
+			})
+			c.Abort()
+			return
+		}
 
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
