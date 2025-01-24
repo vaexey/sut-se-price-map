@@ -10,5 +10,9 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
+            - name: Generate Docker compose files
+              run: |
+                docker compose -f compose.yaml -f .docker/compose.ci.override.yaml config --no-interpolate --no-path-resolution | tee compose.ci.yaml
+                docker compose -f compose.yaml -f .docker/compose.dev.override.yaml config --no-interpolate --no-path-resolution | tee compose.dev.yaml
             - name: Docker image build test
-              run: docker compose -f compose.ci.yml build
+              run: docker compose -f compose.ci.yaml build
