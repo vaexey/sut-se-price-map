@@ -1,7 +1,6 @@
 package model
 
 type Resource struct {
-    id DbId
-    url string
+	id  DbId
+	url string
 }
-

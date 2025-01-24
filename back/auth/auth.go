@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
@@ -11,7 +12,6 @@ import (
 const secret = "redacted"
 
 type Handler struct{}
-
 
 func (h *Handler) RequireJWT() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -27,9 +27,9 @@ func (h *Handler) RequireJWT() gin.HandlerFunc {
 		})
 
 		if err != nil || !token.Valid {
-			c.JSON(http.StatusUnauthorized, gin.H { 
-				"error" : "Unauthorized",
-				"message" : fmt.Sprintf("%s", err),
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error":   "Unauthorized",
+				"message": fmt.Sprintf("%s", err),
 			})
 			c.Abort()
 			return
@@ -39,8 +39,8 @@ func (h *Handler) RequireJWT() gin.HandlerFunc {
 			c.Set("claims", claims)
 		} else {
 			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "Unauthorized",
-				"message" : "Bad claims",
+				"error":   "Unauthorized",
+				"message": "Bad claims",
 			})
 			c.Abort()
 			return
@@ -68,4 +68,3 @@ func (h *Handler) RequireAdmin() gin.HandlerFunc {
 	}
 
 }
-
