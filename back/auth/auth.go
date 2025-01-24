@@ -18,16 +18,6 @@ func (h *Handler) RequireJWT() gin.HandlerFunc {
 
 		tokenHeader := c.GetHeader("Authorization")
 
-		paramsNumber := len(strings.Split(tokenHeader, " "))
-		if paramsNumber > 2 {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "Unauthorized",
-				"message": "Invalid parameters number in header Authorization",
-			})
-			c.Abort()
-			return
-		}
-
 		if tokenHeader == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"error": "Unauthorized",
@@ -37,10 +27,12 @@ func (h *Handler) RequireJWT() gin.HandlerFunc {
 			return
 		}
 
-		authorizationType := strings.Split(tokenHeader, " ")[0]
-		tokenString := strings.Split(tokenHeader, " ")[1]
+		authHeaderParts := strings.Split(tokenHeader, " ")
 
-		if (authorizationType != "Bearer") {
+		authorizationType := authHeaderParts[0]
+		tokenString := authHeaderParts[1]
+
+		if authorizationType != "Bearer" {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"error": "Unauthorized",
 				"message": "Wrong type of authorization",
