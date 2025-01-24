@@ -1,5 +1,6 @@
 package model
+
 type Product struct {
-    id DbId
-    name string
+	id   DbId
+	name string
 }

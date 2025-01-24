@@ -1,14 +1,16 @@
 package auth
+
 import (
-	"time"
 	"net/http"
+	"time"
+
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
 
 type loginRequest struct {
-	Username string `json:username`
-	Password string `json:password`
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 func (h *Handler) Login(c *gin.Context) {
@@ -24,16 +26,16 @@ func (h *Handler) Login(c *gin.Context) {
 	} else if username == "user" && password == "password" {
 		role = "user"
 	} else {
-		c.JSON(http.StatusUnauthorized, gin.H {
-			"error" : "Invalid credentials",
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Invalid credentials",
 		})
 		return
 	}
 	// token object
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": username,
-		"role": role,
-		"exp": time.Now().Add(time.Hour * 1).Unix(),
+		"role":     role,
+		"exp":      time.Now().Add(time.Hour * 1).Unix(),
 	})
 
 	// sign and get encoded token as str

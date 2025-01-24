@@ -1,7 +1,7 @@
 package model
 
 type Region struct {
-    id DbId
-    parent DbRef[Region]
-    name string
+	id     DbId
+	parent DbRef[Region]
+	name   string
 }

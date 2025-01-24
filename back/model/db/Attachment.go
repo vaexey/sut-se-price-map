@@ -4,8 +4,8 @@ package model
 type AttachmentType string
 
 type Attachment struct {
-    id DbId
-    attType AttachmentType
-    resource DbRef[Resource]
-    title *string
+	id       DbId
+	attType  AttachmentType
+	resource DbRef[Resource]
+	title    *string
 }
