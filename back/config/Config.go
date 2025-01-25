@@ -3,6 +3,7 @@ package config
 import (
 	"encoding/json"
 	"os"
+	"strconv"
 )
 
 type config struct {
@@ -70,6 +71,48 @@ func saveConfig(filename string, conf config) error {
 	}
 
 	return nil
+}
+
+func UpdateConfigFromEnv () { 
+	updateDatabaseConfigFormEnv()
+	updateServerConfigFromEnv()
+}
+
+func updateDatabaseConfigFormEnv() {
+	if envValue := os.Getenv("DATABASE_PORT"); envValue != "" {
+		if envPort, err := strconv.Atoi(envValue); err == nil && envPort != Config.Database.Port {
+			Config.Database.Port = envPort
+		}
+	}
+	if envValue := os.Getenv("DATABASE_TYPE"); envValue != "" && envValue != Config.Database.Type {
+		Config.Database.Type = envValue
+	}
+	if envValue := os.Getenv("DATABASE_HOST"); envValue != "" && envValue != Config.Database.Host {
+		Config.Database.Host = envValue
+	}
+	if envValue := os.Getenv("DATABASE_USERNAME"); envValue != "" && envValue != Config.Database.Username {
+		Config.Database.Username = envValue
+	}
+	if envValue := os.Getenv("DATABASE_PASSWORD"); envValue != "" && envValue != Config.Database.Password {
+		Config.Database.Password = envValue
+	}
+	if envValue := os.Getenv("DATABASE_NAME"); envValue != "" && envValue != Config.Database.Database {
+		Config.Database.Database = envValue
+	}
+}
+
+func updateServerConfigFromEnv() {
+	if envValue := os.Getenv("SERVER_ADDRESS"); envValue != "" && envValue != Config.Server.Address {
+		Config.Server.Address = envValue
+	}
+	if envValue := os.Getenv("SERVER_PORT"); envValue != "" {
+		if envPort, err := strconv.Atoi(envValue); err == nil && envPort != Config.Server.Port {
+			Config.Server.Port = envPort
+		}
+	}
+	if envValue := os.Getenv("SERVER_SECRET"); envValue != "" && envValue != Config.Server.Secret {
+		Config.Server.Secret = envValue
+	}
 }
 
 var Config config = readConfig("config.json")
