@@ -29,6 +29,15 @@ func (h *Handler) RequireJWT() gin.HandlerFunc {
 
 		authHeaderParts := strings.Split(tokenHeader, " ")
 
+		if len(authHeaderParts) == 1 || len(authHeaderParts) > 2 {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error": "Unauthorized",
+				"message": "Header contains an invalid number of segments",
+			})
+			c.Abort()
+			return
+		}
+
 		authorizationType := authHeaderParts[0]
 		tokenString := authHeaderParts[1]
 
