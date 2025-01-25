@@ -55,6 +55,8 @@ func readConfig(fileName string) config {
 		return config{}
 	}
 
+	UpdateConfigFromEnv(&conf)
+
 	return conf
 }
 
@@ -73,45 +75,45 @@ func saveConfig(filename string, conf config) error {
 	return nil
 }
 
-func UpdateConfigFromEnv () { 
-	updateDatabaseConfigFormEnv()
-	updateServerConfigFromEnv()
+func UpdateConfigFromEnv(conf *config) { 
+	updateConfigField("DATABASE_PORT", func(value string) {
+		if port, err := strconv.Atoi(value); err == nil {
+			conf.Database.Port = port
+		}
+	})
+	updateConfigField("DATABASE_TYPE", func(value string) {
+		conf.Database.Type = value
+	})
+	updateConfigField("DATABASE_HOST", func(value string) {
+		conf.Database.Host = value
+	})
+	updateConfigField("DATABASE_USERNAME", func(value string) {
+		conf.Database.Username = value
+	})
+	updateConfigField("DATABASE_PASSWORD", func(value string) {
+		conf.Database.Password = value
+	})
+	updateConfigField("DATABASE_NAME", func(value string) {
+		conf.Database.Database = value
+	})
+	
+	//server
+	updateConfigField("SERVER_ADDRESS", func(value string) {
+		conf.Server.Address = value
+	})
+	updateConfigField("SERVER_PORT", func(value string) {
+		if port, err := strconv.Atoi(value); err == nil {
+			conf.Server.Port = port
+		}
+	})
+	updateConfigField("SERVER_SECRET", func(value string) {
+		conf.Server.Secret = value
+	})
 }
 
-func updateDatabaseConfigFormEnv() {
-	if envValue := os.Getenv("DATABASE_PORT"); envValue != "" {
-		if envPort, err := strconv.Atoi(envValue); err == nil && envPort != Config.Database.Port {
-			Config.Database.Port = envPort
-		}
-	}
-	if envValue := os.Getenv("DATABASE_TYPE"); envValue != "" && envValue != Config.Database.Type {
-		Config.Database.Type = envValue
-	}
-	if envValue := os.Getenv("DATABASE_HOST"); envValue != "" && envValue != Config.Database.Host {
-		Config.Database.Host = envValue
-	}
-	if envValue := os.Getenv("DATABASE_USERNAME"); envValue != "" && envValue != Config.Database.Username {
-		Config.Database.Username = envValue
-	}
-	if envValue := os.Getenv("DATABASE_PASSWORD"); envValue != "" && envValue != Config.Database.Password {
-		Config.Database.Password = envValue
-	}
-	if envValue := os.Getenv("DATABASE_NAME"); envValue != "" && envValue != Config.Database.Database {
-		Config.Database.Database = envValue
-	}
-}
-
-func updateServerConfigFromEnv() {
-	if envValue := os.Getenv("SERVER_ADDRESS"); envValue != "" && envValue != Config.Server.Address {
-		Config.Server.Address = envValue
-	}
-	if envValue := os.Getenv("SERVER_PORT"); envValue != "" {
-		if envPort, err := strconv.Atoi(envValue); err == nil && envPort != Config.Server.Port {
-			Config.Server.Port = envPort
-		}
-	}
-	if envValue := os.Getenv("SERVER_SECRET"); envValue != "" && envValue != Config.Server.Secret {
-		Config.Server.Secret = envValue
+func updateConfigField(envKey string, updateFunc func(string)) {
+	if envValue := os.Getenv(envKey); envValue != "" {
+		updateFunc(envValue)
 	}
 }
 
