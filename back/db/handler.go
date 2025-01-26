@@ -2,6 +2,7 @@ package db
 
 import (
 	model "back/model/db"
+
 	"gorm.io/gorm"
 )
 
@@ -10,6 +11,9 @@ func NewDbHandler(Db *gorm.DB) DbHandler {
 		Db : Db,
 		User : UserHandler{
 			Db : Db,
+		},
+		Region: RegionHandler{
+			Db: Db,
 		},
 	}
 }
@@ -20,9 +24,14 @@ func NewDbHandler(Db *gorm.DB) DbHandler {
 type DbHandler struct {
 	Db *gorm.DB
 	User UserHandler
+	Region RegionHandler
 }
 
 type UserHandler struct {
+	Db *gorm.DB
+}
+
+type RegionHandler struct {
 	Db *gorm.DB
 }
 
@@ -37,7 +46,7 @@ func (uh *UserHandler) SelectById(id uint) (model.User, error) {
 	user := model.User {
 		Id : id,
 	}
-	result := uh.Db.Find(&user)
+	result := uh.Db.First(&user)
 	return user, result.Error
 }
 
@@ -46,8 +55,16 @@ func (uh *UserHandler) CreateUser(user model.User) (uint, error) {
 	return user.Id, result.Error
 }
 
+func (rh *RegionHandler) SelectAll() ([]model.Region, error) {
+	var regions []model.Region
+	result := rh.Db.Find(&regions)
+	return regions, result.Error
+}
 
-
-
-
-
+func (rh *RegionHandler) SelectById(id uint) (model.Region, error) {
+	region := model.Region {
+		Id: id,
+	}
+	result := rh.Db.First(&region)
+	return region, result.Error
+}

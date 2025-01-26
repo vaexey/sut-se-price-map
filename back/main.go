@@ -1,6 +1,7 @@
 package main
 
 import (
+	"back/api"
 	"back/auth"
 	"back/config"
 	dbh "back/db"
@@ -103,6 +104,14 @@ func main() {
 	// TODO: cache
 	router.Use(static.Serve("/", static.LocalFile("./static", false)))
 	router.NoRoute(serveStaticIndex)
+
+	// Search
+	router.GET("/api/regions", func(c *gin.Context) {
+		api.Regions(c, &dbHandler)
+	})
+	router.GET("/api/regions/:regionID", func(c *gin.Context) {
+		api.RegionById(c, &dbHandler)
+	})
 
 	conf := config.Config
 	addr := fmt.Sprintf("%s:%d", conf.Server.Address, conf.Server.Port)
