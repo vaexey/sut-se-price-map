@@ -11,20 +11,21 @@ import (
 )
 func NewApi(db db.DbHandler) Api {
 	return Api {
-		Region: Region,
+		Regions: Regions,
+		RegionById: RegionById,
 	}
 }
 
 type Api struct {
 	Db db.DbHandler
-	Region func(c *gin.Context, db db.DbHandler)
+	Regions func(c *gin.Context, db *db.DbHandler)
+	RegionById func(c *gin.Context, db *db.DbHandler)
 }
 
-
-func regions(c *gin.Context, db db.DbHandler){
+func Regions(c *gin.Context, dbHandler *db.DbHandler) {
 	var regions []model.Region
 	var err error
-	regions, err = db.Region.SelectAll()
+	regions, err = dbHandler.Region.SelectAll()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error":   "Failed to fetch regions",
@@ -36,10 +37,12 @@ func regions(c *gin.Context, db db.DbHandler){
 	c.JSON(http.StatusOK, gin.H{
 		"regions": regions,
 	})
+	c.Abort()
 }
 
-func regionById(c *gin.Context, db db.DbHandler, id string) {
-	regionIDasStr := id
+
+func RegionById(c *gin.Context, dbHandler *db.DbHandler) {
+	regionIDasStr := c.Param("regionID")
 	if regionIDasStr == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error":   "Bad request",
@@ -59,7 +62,8 @@ func regionById(c *gin.Context, db db.DbHandler, id string) {
 		return
 	}
 
-	region, err := db.Region.SelectById(uint(regionID))
+	region, err := dbHandler.Region.SelectById(uint(regionID))
+	fmt.Println(err)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error":   "Failed to fetch region",
@@ -72,16 +76,6 @@ func regionById(c *gin.Context, db db.DbHandler, id string) {
 	c.JSON(http.StatusOK, gin.H{
 		"region": region,
 	})
+	c.Abort()
 }
-
-func Region(c *gin.Context, db db.DbHandler) {
-	id := c.Query("id")
-	fmt.Println(id)
-	if id != "" {
-		regionById(c, db, id)
-		return
-	}
-	regions(c, db)
-}
-
 

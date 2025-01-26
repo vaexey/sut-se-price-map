@@ -86,8 +86,12 @@ func main() {
 		v1.POST("login", authHandler.Login)
 		v1.POST("register", authHandler.Register)
 
-		v1.GET("region", func(c *gin.Context) {
-			api.Region(c, dbHandler)
+		v1.GET("regions", func(c *gin.Context) {
+			api.Regions(c, &dbHandler)
+		})
+
+		v1.GET("regions/:regionID", func(c *gin.Context) {
+			api.RegionById(c, &dbHandler)
 		})
 
 		// Auth-guarded
