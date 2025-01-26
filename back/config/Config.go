@@ -118,3 +118,6 @@ func updateConfigField(envKey string, updateFunc func(string)) {
 }
 
 var Config config = readConfig("config.json")
+var API_PATH string = "/api/v1"
+
+

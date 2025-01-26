@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"back/config"
+	"back/db"
 	"fmt"
 	"net/http"
 	"strings"
@@ -9,9 +11,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const secret = "redacted"
+var secret = config.Config.Server.Secret
 
-type Handler struct{}
+type Handler struct {
+	Db *db.DbHandler
+}
 
 func (h *Handler) RequireJWT() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -99,3 +103,6 @@ func (h *Handler) RequireAdmin() gin.HandlerFunc {
 	}
 
 }
+
+
+

@@ -1,36 +1,39 @@
 package auth
 
 import (
+	"errors"
 	"net/http"
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
+func (h *Handler)login(username string, password string) (int, gin.H, *string) {
 
-type loginRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
-func (h *Handler) Login(c *gin.Context) {
-	var req loginRequest
-	c.BindJSON(&req)
-	username := req.Username
-	password := req.Password
-
-	// dev
-	var role string
-	if username == "admin" && password == "password" {
-		role = "admin"
-	} else if username == "user" && password == "password" {
-		role = "user"
-	} else {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "Invalid credentials",
-		})
-		return
+	if username == "" || password == "" {
+		return http.StatusUnauthorized, gin.H { "message" : "invalid credentials"}, nil
 	}
+	// query user from db
+	dbUser, err  := h.Db.User.SelectByUsername(username)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return http.StatusUnauthorized, gin.H { "message" : "invalid credentials"}, nil
+	}
+
+	if err != nil {
+		return http.StatusServiceUnavailable, gin.H { "message" : "service failure"}, nil
+	}
+
+	if !h.CompareHash(password, dbUser.Password) || dbUser.Login != username {
+		return http.StatusUnauthorized, gin.H { "message" : "invalid credentials"}, nil
+	}
+
+	var role string = "user"
+	if dbUser.IsAdmin {
+		role = "admin"
+	}
+
+
 	// token object
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": username,
@@ -41,13 +44,30 @@ func (h *Handler) Login(c *gin.Context) {
 	// sign and get encoded token as str
 	tokenString, err := token.SignedString([]byte(secret))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+		return http.StatusServiceUnavailable, gin.H { "message" : "service failure"}, nil
+	}
+	return http.StatusOK, gin.H { "message" : "success" }, &tokenString
+}
+
+func (h *Handler) Login(c *gin.Context) {
+	var req loginRequest
+	err := c.BindJSON(&req)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H {
+			"message" : err.Error(),
+		})
+		return
+	}
+	code, json, tokenString := h.login(req.Username, req.Password)
+	if tokenString == nil {
+		c.JSON(code, json)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"token": tokenString})
+	c.JSON(http.StatusOK, gin.H{
+		"token" : *tokenString,
+	})
 }
 
-func (h *Handler) Register(c *gin.Context) {
 
-}
+

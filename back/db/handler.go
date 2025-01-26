@@ -1,15 +1,17 @@
 package db
 
 import (
-	model "back/model/db"
 	"gorm.io/gorm"
 )
 
 func NewDbHandler(Db *gorm.DB) DbHandler {
 	return DbHandler {
 		Db : Db,
-		User : UserHandler{
+		User : userService{
 			Db : Db,
+		},
+		Region: regionService{
+			Db: Db,
 		},
 	}
 }
@@ -19,35 +21,16 @@ func NewDbHandler(Db *gorm.DB) DbHandler {
 // TODO: log standard for gorm
 type DbHandler struct {
 	Db *gorm.DB
-	User UserHandler
+	User userService
+	Region regionService
 }
 
-type UserHandler struct {
+type userService struct {
 	Db *gorm.DB
 }
 
-
-func (uh *UserHandler) SelectAll() ([]model.User, error) {
-	var user []model.User
-	result := uh.Db.Find(&user)
-	return user, result.Error
+type regionService struct {
+	Db *gorm.DB
 }
-
-func (uh *UserHandler) SelectById(id uint) (model.User, error) {
-	user := model.User {
-		Id : id,
-	}
-	result := uh.Db.Find(&user)
-	return user, result.Error
-}
-
-func (uh *UserHandler) CreateUser(user model.User) (uint, error) {
-	result := uh.Db.Create(&user)
-	return user.Id, result.Error
-}
-
-
-
-
 
 
