@@ -9,7 +9,7 @@ import (
 func NewDbHandler(Db *gorm.DB) DbHandler {
 	return DbHandler {
 		Db : Db,
-		User : UserHandler{
+		User : userService{
 			Db : Db,
 		},
 		Region: RegionHandler{
@@ -23,11 +23,11 @@ func NewDbHandler(Db *gorm.DB) DbHandler {
 // TODO: log standard for gorm
 type DbHandler struct {
 	Db *gorm.DB
-	User UserHandler
+	User userService
 	Region RegionHandler
 }
 
-type UserHandler struct {
+type userService struct {
 	Db *gorm.DB
 }
 
@@ -36,21 +36,26 @@ type RegionHandler struct {
 }
 
 
-func (uh *UserHandler) SelectAll() ([]model.User, error) {
+func (uh *userService) SelectAll() ([]model.User, error) {
 	var user []model.User
 	result := uh.Db.Find(&user)
 	return user, result.Error
 }
 
-func (uh *UserHandler) SelectById(id uint) (model.User, error) {
+func (uh *userService) SelectById(id uint) (model.User, error) {
 	user := model.User {
 		Id : id,
 	}
-	result := uh.Db.First(&user)
+	result := uh.Db.Find(&user)
+	return user, result.Error
+}
+func (uh *userService) SelectByUsername(username string) (model.User, error) {
+	var user model.User
+	result := uh.Db.First(&user, "display_name = ?", username)
 	return user, result.Error
 }
 
-func (uh *UserHandler) CreateUser(user model.User) (uint, error) {
+func (uh *userService) CreateUser(user model.User) (uint, error) {
 	result := uh.Db.Create(&user)
 	return user.Id, result.Error
 }

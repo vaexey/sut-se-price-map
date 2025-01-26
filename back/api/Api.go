@@ -3,7 +3,6 @@ package api
 import (
 	"back/db"
 	model "back/model/db"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -51,7 +50,6 @@ func RegionById(c *gin.Context, dbHandler *db.DbHandler) {
 	}
 
 	region, err := dbHandler.Region.SelectById(uint(regionID))
-	fmt.Println(err)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error":   "Failed to fetch region",

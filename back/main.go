@@ -1,18 +1,20 @@
 package main
 
 import (
-	"back/api"
+	apiFile "back/api"
 	"back/auth"
 	"back/config"
+
+	// "back/db"
+
 	dbh "back/db"
-	model "back/model/db"
+	// model "back/model/db"
 	"fmt"
 	"net/http"
 	"os"
 
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
-
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -59,24 +61,14 @@ func main() {
 
 
 	// TODO: derive from env variables
+
 	dsn := "postgres://docker:root@localhost:5432/docker"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-
-
-	if err != nil {
-		fmt.Fprint(gin.DefaultErrorWriter, "Could not open connection with DB\n")
-	}
-
-	// example db interface usage
-	dbHandler := dbh.NewDbHandler(db)
-	var users []model.User
-
-	users, err = dbHandler.User.SelectAll()
-
-	for i, user := range users {
-		fmt.Printf("[%d] id: %d, name: %s, password: %s\n", i, user.Id, user.DisplayName, user.Password)
-	}
-
+	//
+	//
+	// if err != nil {
+	// 	fmt.Fprint(gin.DefaultErrorWriter, "Could not open connection with DB\n")
+	// }
 
 
 	// Preload main static file for quick response
@@ -86,17 +78,24 @@ func main() {
 	if err != nil {
 		fmt.Fprint(gin.DefaultErrorWriter, "Could not load static index file\n")
 	}
+	dbHandler := dbh.NewDbHandler(db)
 
-	var authHandler auth.Handler
+	authHandler := auth.Handler {
+		Db : &dbHandler,
+	}
+
 	authMiddleware := authHandler.RequireJWT()
 	adminMiddleware := authHandler.RequireAdmin()
 
-	// Anonymous
-	router.POST("/api/login", authHandler.Login)
+	api := router.Group(config.API_PATH)
+	{
+		// Anonymous
+		api.POST("login", authHandler.Login)
 
-	// Auth-guarded
-	router.GET("/api/hello", authMiddleware, hello)
-	router.GET("/api/admin", authMiddleware, adminMiddleware, admin)
+		// Auth-guarded
+		api.GET("hello", authMiddleware, hello)
+		api.GET("admin", authMiddleware, adminMiddleware, admin)
+	}
 
 	// Static files
 	router.GET("/", serveStaticIndex)
@@ -107,10 +106,10 @@ func main() {
 
 	// Search
 	router.GET("/api/regions", func(c *gin.Context) {
-		api.Regions(c, &dbHandler)
+		apiFile.Regions(c, &dbHandler)
 	})
 	router.GET("/api/regions/:regionID", func(c *gin.Context) {
-		api.RegionById(c, &dbHandler)
+		apiFile.RegionById(c, &dbHandler)
 	})
 
 	conf := config.Config
