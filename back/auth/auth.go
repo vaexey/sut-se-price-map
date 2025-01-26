@@ -1,17 +1,21 @@
 package auth
 
 import (
+	"back/db"
 	"fmt"
 	"net/http"
 	"strings"
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 )
 
 const secret = "redacted"
 
-type Handler struct{}
+type Handler struct {
+	Db *db.DbHandler
+}
 
 func (h *Handler) RequireJWT() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -99,3 +103,16 @@ func (h *Handler) RequireAdmin() gin.HandlerFunc {
 	}
 
 }
+
+func (h *Handler) HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	return string(bytes), err
+}
+
+func (h* Handler) CompareHash(password string, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
+}
+
+
+
