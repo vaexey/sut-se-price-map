@@ -6,4 +6,6 @@ export interface Region
     parent: DbRef<Region>
 
     name: string
+
+    parentCount: number
 }

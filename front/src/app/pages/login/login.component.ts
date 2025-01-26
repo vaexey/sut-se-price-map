@@ -1,14 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { AuthService } from '../../services/auth.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { MessageBannerComponent } from '../../components/message-banner/message-banner.component';
+import { ErrorService } from '../../services/error.service';
 
 @Component({
   selector: 'app-login',
   imports: [
     ReactiveFormsModule,
     RouterLink,
+    MessageBannerComponent,
     IonicModule // TODO: split
   ],
   templateUrl: './login.component.html',
@@ -17,14 +20,17 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 export class LoginComponent  implements OnInit {
 
   loginForm = new FormGroup({
-    username: new FormControl(""),
-    password: new FormControl(""),
+    username: new FormControl("", [Validators.required]),
+    password: new FormControl("", [Validators.required]),
   })
 
-  nextUrl = "/";
+  nextUrl = "/"
+
+  error?: string
 
   constructor(
     private auth: AuthService,
+    private errors: ErrorService,
     private router: Router,
     private route: ActivatedRoute,
   ) { }
@@ -35,7 +41,6 @@ export class LoginComponent  implements OnInit {
 
   login()
   {
-    console.log(this.loginForm.value)
     this.auth.login(
       this.loginForm.value.username ?? "",
       this.loginForm.value.password ?? ""
@@ -44,7 +49,7 @@ export class LoginComponent  implements OnInit {
         this.router.navigateByUrl(this.nextUrl)
       },
       error: err => {
-        console.log(err)
+        this.error = this.errors.get(err)
       }
     })
   }
