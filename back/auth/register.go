@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"regexp"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -21,6 +22,13 @@ func (h *Handler) Register(c *gin.Context) {
 		c.Abort()
 		return
 	}
+
+	if !isUsernameValid(req.Username) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "username contains illegal characters",
+		})
+	}
+
 	hash, err := h.HashPassword(req.Password)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H {
@@ -71,6 +79,11 @@ func (h *Handler) Register(c *gin.Context) {
 	})
 }
 
+
+func isUsernameValid(name string) bool {
+	_, err := regexp.MatchString("^[a-zA-Z\\d_]+$", name)
+	return err == nil
+}
 
 
 
