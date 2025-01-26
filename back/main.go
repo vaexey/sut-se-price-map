@@ -56,11 +56,9 @@ func main() {
 	recovery := gin.Recovery()
 	router.Use(logger, recovery)
 
-
 	// TODO: derive from env variables
 	dsn := "postgres://docker:root@localhost:5432/docker"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-
 
 	if err != nil {
 		fmt.Fprint(gin.DefaultErrorWriter, "Could not open connection with DB\n")
@@ -76,8 +74,6 @@ func main() {
 		fmt.Printf("[%d] id: %d, name: %s, password: %s\n", i, user.Id, user.DisplayName, user.Password)
 	}
 
-
-
 	// Preload main static file for quick response
 	file, err := os.ReadFile("./static/index.html")
 	staticIndexFile = file
@@ -91,11 +87,11 @@ func main() {
 	adminMiddleware := authHandler.RequireAdmin()
 
 	// Anonymous
-	router.POST("/api/login", authHandler.Login)
+	router.POST("/api/v1/login", authHandler.Login)
 
 	// Auth-guarded
-	router.GET("/api/hello", authMiddleware, hello)
-	router.GET("/api/admin", authMiddleware, adminMiddleware, admin)
+	router.GET("/api/v1/hello", authMiddleware, hello)
+	router.GET("/api/v1/admin", authMiddleware, adminMiddleware, admin)
 
 	// Static files
 	router.GET("/", serveStaticIndex)

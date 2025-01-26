@@ -48,6 +48,68 @@ paths:
           $ref: '#/components/responses/400Error'
         '404':
           $ref: '#/components/responses/404Error'
+  /login:
+    post:
+      summary: Creates login session and returns a token
+      description: ''
+      operationId: ''
+      tags:
+        - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        '400':
+          $ref: '#/components/responses/400Error'
+        '401':
+          $ref: '#/components/responses/401Error'
+  /sign-up:
+    put:
+      summary: Registers an user
+      description: ''
+      operationId: ''
+      tags:
+        - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                displayName:
+                  type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        '400':
+          $ref: '#/components/responses/400Error'
 components:
   schemas:
     Region:
@@ -61,6 +123,12 @@ components:
           format: serial
         parent:
           $ref: '#/components/schemas/Region'
+        parentCount:
+          type: integer
+          format: number
+          description: |
+            Number of parent nodes till null parent.
+            Should be derived from database, not stored.
     ErrorResponse:
       type: object
       properties:
@@ -100,7 +168,7 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
           example:
-            code: 401
+            code: 403
             message: This resource is forbidden for this scope of permissions
     404Error:
       description: requested resource not found
@@ -114,3 +182,5 @@ components:
 tags:
   - name: contrib
     description: Everything related to contributions
+  - name: users
+    description: Everything related to users

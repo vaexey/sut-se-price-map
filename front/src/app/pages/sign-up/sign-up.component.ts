@@ -1,13 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
+import { AuthService } from '../../services/auth.service';
+import { MessageBannerComponent } from '../../components/message-banner/message-banner.component';
+import { ErrorService } from '../../services/error.service';
 
 @Component({
   selector: 'app-sign-up',
   imports: [
     ReactiveFormsModule,
     RouterLink,
+    MessageBannerComponent,
     IonicModule // TODO: split
   ],
   templateUrl: './sign-up.component.html',
@@ -16,15 +20,70 @@ import { IonicModule } from '@ionic/angular';
 export class SignUpComponent  implements OnInit {
 
   signUpForm = new FormGroup({
-    username: new FormControl(""),
-    password: new FormControl(""),
-    password2: new FormControl(""),
+    displayName: new FormControl("", [Validators.required]),
+    username: new FormControl("", [Validators.required]),
+    password: new FormControl("", [Validators.required]),
+    password2: new FormControl("", [Validators.required]),
+  }, {
+    validators: this.matchPasswordsValidator()
   })
 
-  constructor() { }
+  error?: string
+
+  constructor(
+    private auth: AuthService,
+    private errors: ErrorService,
+    private router: Router,
+  ) { }
 
   ngOnInit() {}
 
-  signUp() {}
+  signUp()
+  {
+    this.auth.signUp({
+      displayName: this.signUpForm.value.displayName ?? "",
+      username: this.signUpForm.value.username ?? "",
+      password: this.signUpForm.value.password ?? "",
+    }).subscribe({
+      complete: () => {
+        this.router.navigateByUrl("/profile")
+      },
+      error: err => {
+        this.error = this.errors.get(err)
+      }
+    })
+  }
+
+  matchPasswordsValidator(): ValidatorFn
+  {
+    return (_) => {
+      if(!this.signUpForm)
+      {
+        return null
+      }
+
+      const p1 = this.signUpForm.controls["password"]
+      const p2 = this.signUpForm.controls["password2"]
+
+      if(p2.errors && p2.errors['matchPasswordsValidator'])
+      {
+        return null
+      }
+
+      if(p1.value != p2.value)
+      {
+        const error = {
+          matchPasswordsValidator: "Passwords do not match"
+        }
+
+        p2.setErrors(error)
+
+        return error
+      }
+
+      p2.setErrors(null)
+      return null
+    }
+  }
 
 }

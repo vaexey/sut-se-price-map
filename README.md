@@ -94,4 +94,4 @@ The app will be available under http://localhost:4200/
 # Documentation
 
 OpenAPI specification is stored in `docs/openapi.json`.  
-Local version can be viewed and edited using [Swagger Editor](https://github.com/swagger-api/swagger-editor) provided with the `dev` Docker compose config and current master version using [an online version](https://editor.swagger.io/?url=https://raw.githubusercontent.com/vaexey/sut-se-price-map/refs/heads/master/docs/openapi.json).
+Local version can be viewed and edited using [Swagger Editor](https://github.com/swagger-api/swagger-editor) provided with the `dev` Docker compose config and current master version using [an online version](https://editor.swagger.io/?url=https://raw.githubusercontent.com/vaexey/sut-se-price-map/refs/heads/master/docs/openapi.yaml).
