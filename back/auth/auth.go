@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"back/config"
 	"back/db"
 	"fmt"
 	"net/http"
@@ -8,10 +9,9 @@ import (
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/bcrypt"
 )
 
-const secret = "redacted"
+var secret = config.Config.Server.Secret
 
 type Handler struct {
 	Db *db.DbHandler
@@ -102,16 +102,6 @@ func (h *Handler) RequireAdmin() gin.HandlerFunc {
 		c.Next()
 	}
 
-}
-
-func (h *Handler) HashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	return string(bytes), err
-}
-
-func (h* Handler) CompareHash(password string, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
 }
 
 

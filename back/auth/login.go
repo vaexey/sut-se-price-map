@@ -2,18 +2,13 @@ package auth
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
-
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
-
-type loginRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
 
 func (h *Handler) Login(c *gin.Context) {
 	var req loginRequest
@@ -41,26 +36,19 @@ func (h *Handler) Login(c *gin.Context) {
 		return
 	}
 
-	var role string = "user"
 
-	// if username == "admin" && password == "password" {
-	// 	role = "admin"
-	// } else if username == "user" && password == "password" {
-	// 	role = "user"
-	// } else {
-	// 	c.JSON(http.StatusUnauthorized, gin.H{
-	// 		"error": "Invalid credentials",
-	// 	})
-	// 	return
-	// }
-	
+	fmt.Println(user)
 
-
-	if !h.CompareHash(req.Password, user.Password) || user.DisplayName != req.Username {
+	if !h.CompareHash(req.Password, user.Password) || user.Login != req.Username {
 		c.JSON(http.StatusUnauthorized, gin.H {
 			"message": "invalid credentials",
 		})
 		return
+	}
+
+	var role string = "user"
+	if user.IsAdmin {
+		role = "admin"
 	}
 
 
@@ -83,6 +71,5 @@ func (h *Handler) Login(c *gin.Context) {
 	})
 }
 
-func (h *Handler) Register(c *gin.Context) {
 
-}
+

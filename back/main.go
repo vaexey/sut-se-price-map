@@ -3,10 +3,7 @@ package main
 import (
 	"back/auth"
 	"back/config"
-	// "back/db"
-
 	dbh "back/db"
-	// model "back/model/db"
 	"fmt"
 	"net/http"
 	"os"
@@ -89,6 +86,7 @@ func main() {
 	{
 		// Anonymous
 		api.POST("login", authHandler.Login)
+		api.POST("register", authHandler.Register)
 
 		// Auth-guarded
 		api.GET("hello", authMiddleware, hello)

@@ -1,9 +1,11 @@
 package model
 
 type User struct {
-	Id          uint `gorm:"unique;primaryKey;autoIncrement"`
-	DisplayName string `gorm:"unique"`
+	Id          uint	`gorm:"unique;primaryKey;autoIncrement"`
+	Login		string	`gorm:"unique"`
+	DisplayName string
 	Password	string
+	IsAdmin		bool
 	Avatar      *int
 }
 
