@@ -82,8 +82,8 @@ func main() {
 	v1 := router.Group(config.API_PATH)
 	{
 		// Anonymous
-		v1.POST("login", authHandler.Login)
 		v1.PUT("sign-up", authHandler.Register)
+		v1.POST("login", authHandler.Login)
 
 		v1.GET("regions", func(c *gin.Context) {
 			api.Regions(c, &dbHandler)

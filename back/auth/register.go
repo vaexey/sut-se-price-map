@@ -17,7 +17,6 @@ func (h *Handler) Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H {
 			"message" : "no username or password provided",
 		})
-		c.Abort()
 		return
 	}
 
@@ -25,6 +24,7 @@ func (h *Handler) Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "username contains illegal characters",
 		})
+		return
 	}
 
 	hash, err := h.HashPassword(req.Password)
@@ -32,7 +32,6 @@ func (h *Handler) Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H {
 			"message" : "bad password",
 		})
-		c.Abort()
 		return
 	}
 	// default displayName
@@ -56,24 +55,29 @@ func (h *Handler) Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H {
 			"message" : "username taken",
 		})
-		c.Abort()
 		return
 	}
 
 	// insert user
 	id, err := h.Db.User.CreateUser(newUser)
 	if err != nil {
-		fmt.Fprintf(gin.DefaultErrorWriter, "Failed to insert user at /register, err: %s\n", err.Error())
+		fmt.Fprintf(gin.DefaultErrorWriter, "Failed to insert user at /sign-up, err: %s\n", err.Error())
 		c.JSON(http.StatusServiceUnavailable, gin.H {
 			"message" : "service failure",
 		})
-		c.Abort()
 		return
 	}
 	// response ok
 	fmt.Fprintf(gin.DefaultWriter, "User with id [%d] inserted successfully\n", id)
-	c.JSON(http.StatusOK, gin.H {
-		"message" : "success",
+
+	code, json, tokenString := h.login(req.Username, req.Password)
+	if tokenString == nil {
+		c.JSON(code, json)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"token" : *tokenString,
 	})
 }
 
