@@ -3,7 +3,6 @@ package api
 import (
 	"back/db"
 	"back/model"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -34,9 +33,19 @@ func Regions(c *gin.Context, dbHandler *db.DbHandler) {
 		c.Abort()
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"regions": regions,
-	})
+
+	////
+	for i := 0; i < len(regions); i++ {
+		length := len(regions[i].Name)
+		if length % 2 == 0 {
+			regions[i].ParentsNumber = 1
+		} else {
+			regions[i].ParentsNumber = 2
+		}
+	}
+	////
+
+	c.JSON(http.StatusOK, regions)
 	c.Abort()
 }
 
@@ -63,7 +72,6 @@ func RegionById(c *gin.Context, dbHandler *db.DbHandler) {
 	}
 
 	region, err := dbHandler.Region.SelectById(uint(regionID))
-	fmt.Println(err)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error":   "Failed to fetch region",
@@ -73,9 +81,16 @@ func RegionById(c *gin.Context, dbHandler *db.DbHandler) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"region": region,
-	})
+	////
+	length := len(region.Name)
+	if length % 2 == 0 {
+		region.ParentsNumber = 1
+	} else {
+		region.ParentsNumber = 2
+	}
+	////
+
+	c.JSON(http.StatusOK, region)
 	c.Abort()
 }
 
