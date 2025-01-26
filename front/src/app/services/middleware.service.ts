@@ -16,8 +16,6 @@ export class MiddlewareService implements HttpInterceptor {
   {
     const token = this.auth.getToken();
 
-    console.log("tkn", token);
-
     if(token)
     {
       const newRequest = req.clone({

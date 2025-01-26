@@ -20,5 +20,15 @@ services:
       db:
         condition: service_healthy
         restart: true
+  swagger:
+    image: swaggerapi/swagger-editor
+    ports:
+      - 6060:8080
+    environment:
+      SWAGGER_FILE: /tmp/openapi.json
+    volumes:
+      - type: bind
+        source: ./docs/openapi.yaml
+        target: /tmp/openapi.yaml
 volumes:
   pgadmin:
