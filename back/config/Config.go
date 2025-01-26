@@ -3,6 +3,7 @@ package config
 import (
 	"encoding/json"
 	"os"
+	"strconv"
 )
 
 type config struct {
@@ -54,6 +55,8 @@ func readConfig(fileName string) config {
 		return config{}
 	}
 
+	UpdateConfigFromEnv(&conf)
+
 	return conf
 }
 
@@ -70,6 +73,48 @@ func saveConfig(filename string, conf config) error {
 	}
 
 	return nil
+}
+
+func UpdateConfigFromEnv(conf *config) { 
+	updateConfigField("DATABASE_PORT", func(value string) {
+		if port, err := strconv.Atoi(value); err == nil {
+			conf.Database.Port = port
+		}
+	})
+	updateConfigField("DATABASE_TYPE", func(value string) {
+		conf.Database.Type = value
+	})
+	updateConfigField("DATABASE_HOST", func(value string) {
+		conf.Database.Host = value
+	})
+	updateConfigField("DATABASE_USERNAME", func(value string) {
+		conf.Database.Username = value
+	})
+	updateConfigField("DATABASE_PASSWORD", func(value string) {
+		conf.Database.Password = value
+	})
+	updateConfigField("DATABASE_NAME", func(value string) {
+		conf.Database.Database = value
+	})
+	
+	//server
+	updateConfigField("SERVER_ADDRESS", func(value string) {
+		conf.Server.Address = value
+	})
+	updateConfigField("SERVER_PORT", func(value string) {
+		if port, err := strconv.Atoi(value); err == nil {
+			conf.Server.Port = port
+		}
+	})
+	updateConfigField("SERVER_SECRET", func(value string) {
+		conf.Server.Secret = value
+	})
+}
+
+func updateConfigField(envKey string, updateFunc func(string)) {
+	if envValue := os.Getenv(envKey); envValue != "" {
+		updateFunc(envValue)
+	}
 }
 
 var Config config = readConfig("config.json")

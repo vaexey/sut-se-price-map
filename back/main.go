@@ -3,12 +3,17 @@ package main
 import (
 	"back/auth"
 	"back/config"
+	dbh "back/db"
+	model "back/model/db"
 	"fmt"
 	"net/http"
 	"os"
 
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
+
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 func hello(c *gin.Context) {
@@ -50,6 +55,28 @@ func main() {
 	logger := gin.Logger()
 	recovery := gin.Recovery()
 	router.Use(logger, recovery)
+
+
+	// TODO: derive from env variables
+	dsn := "postgres://docker:root@localhost:5432/docker"
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+
+
+	if err != nil {
+		fmt.Fprint(gin.DefaultErrorWriter, "Could not open connection with DB\n")
+	}
+
+	// example db interface usage
+	dbHandler := dbh.NewDbHandler(db)
+	var users []model.User
+
+	users, err = dbHandler.User.SelectAll()
+
+	for i, user := range users {
+		fmt.Printf("[%d] id: %d, name: %s, password: %s\n", i, user.Id, user.DisplayName, user.Password)
+	}
+
+
 
 	// Preload main static file for quick response
 	file, err := os.ReadFile("./static/index.html")
