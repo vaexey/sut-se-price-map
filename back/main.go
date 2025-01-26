@@ -83,7 +83,7 @@ func main() {
 	{
 		// Anonymous
 		v1.POST("login", authHandler.Login)
-		v1.POST("register", authHandler.Register)
+		v1.PUT("sign-up", authHandler.Register)
 
 		v1.GET("regions", func(c *gin.Context) {
 			api.Regions(c, &dbHandler)
