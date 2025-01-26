@@ -10,6 +10,9 @@ func NewDbHandler(Db *gorm.DB) DbHandler {
 		User : userService{
 			Db : Db,
 		},
+		Region: regionService{
+			Db: Db,
+		},
 	}
 }
 
@@ -19,14 +22,15 @@ func NewDbHandler(Db *gorm.DB) DbHandler {
 type DbHandler struct {
 	Db *gorm.DB
 	User userService
+	Region regionService
 }
 
 type userService struct {
 	Db *gorm.DB
 }
 
-
-
-
+type regionService struct {
+	Db *gorm.DB
+}
 
 

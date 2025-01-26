@@ -18,6 +18,7 @@ func (h *Handler) Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H {
 			"message" : "no username or password provided",
 		})
+		c.Abort()
 		return
 	}
 	hash, err := h.HashPassword(req.Password)
@@ -25,6 +26,7 @@ func (h *Handler) Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H {
 			"message" : "bad password",
 		})
+		c.Abort()
 		return
 	}
 	// default displayName
@@ -48,6 +50,7 @@ func (h *Handler) Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H {
 			"message" : "username taken",
 		})
+		c.Abort()
 		return
 	}
 
@@ -58,6 +61,7 @@ func (h *Handler) Register(c *gin.Context) {
 		c.JSON(http.StatusServiceUnavailable, gin.H {
 			"message" : "service failure",
 		})
+		c.Abort()
 		return
 	}
 	// response ok

@@ -1,9 +1,10 @@
 package main
 
 import (
+	apiFile "back/api"
+	dbh "back/db"
 	"back/auth"
 	"back/config"
-	dbh "back/db"
 	"fmt"
 	"net/http"
 	"os"
@@ -59,11 +60,6 @@ func main() {
 
 	dsn := "postgres://docker:root@localhost:5432/docker"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	//
-	//
-	// if err != nil {
-	// 	fmt.Fprint(gin.DefaultErrorWriter, "Could not open connection with DB\n")
-	// }
 
 
 	// Preload main static file for quick response
@@ -73,7 +69,9 @@ func main() {
 	if err != nil {
 		fmt.Fprint(gin.DefaultErrorWriter, "Could not load static index file\n")
 	}
+
 	dbHandler := dbh.NewDbHandler(db)
+	api := apiFile.NewApi(dbHandler)
 
 	authHandler := auth.Handler {
 		Db : &dbHandler,
@@ -82,15 +80,19 @@ func main() {
 	authMiddleware := authHandler.RequireJWT()
 	adminMiddleware := authHandler.RequireAdmin()
 
-	api := router.Group(config.API_PATH)
+	v1 := router.Group(config.API_PATH)
 	{
 		// Anonymous
-		api.POST("login", authHandler.Login)
-		api.POST("register", authHandler.Register)
+		v1.POST("login", authHandler.Login)
+		v1.POST("register", authHandler.Register)
+
+		v1.GET("region", func(c *gin.Context) {
+			api.Region(c, dbHandler)
+		})
 
 		// Auth-guarded
-		api.GET("hello", authMiddleware, hello)
-		api.GET("admin", authMiddleware, adminMiddleware, admin)
+		v1.GET("hello", authMiddleware, hello)
+		v1.GET("admin", authMiddleware, adminMiddleware, admin)
 	}
 
 	// Static files
