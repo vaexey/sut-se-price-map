@@ -12,20 +12,20 @@ import (
 func (h *Handler)login(username string, password string) (int, gin.H, *string) {
 
 	if username == "" || password == "" {
-		return http.StatusUnauthorized, gin.H { "message" : "invalid credentials1"}, nil
+		return http.StatusUnauthorized, gin.H { "message" : "invalid credentials"}, nil
 	}
 	// query user from db
 	dbUser, err  := h.Db.User.SelectByUsername(username)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return http.StatusUnauthorized, gin.H { "message" : "invalid credentials2"}, nil
+		return http.StatusUnauthorized, gin.H { "message" : "invalid credentials"}, nil
 	}
 
 	if err != nil {
-		return http.StatusServiceUnavailable, gin.H { "message" : "service failure3"}, nil
+		return http.StatusServiceUnavailable, gin.H { "message" : "service failure"}, nil
 	}
 
 	if !h.CompareHash(password, dbUser.Password) || dbUser.Login != username {
-		return http.StatusUnauthorized, gin.H { "message" : "invalid credentials4"}, nil
+		return http.StatusUnauthorized, gin.H { "message" : "invalid credentials"}, nil
 	}
 
 	var role string = "user"
