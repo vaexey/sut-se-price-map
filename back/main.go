@@ -55,12 +55,10 @@ func main() {
 	recovery := gin.Recovery()
 	router.Use(logger, recovery)
 
-
 	// TODO: derive from env variables
 
 	dsn := "postgres://docker:root@localhost:5432/docker"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-
 
 	// Preload main static file for quick response
 	file, err := os.ReadFile("./static/index.html")
@@ -79,6 +77,7 @@ func main() {
 
 	authMiddleware := authHandler.RequireJWT()
 	adminMiddleware := authHandler.RequireAdmin()
+
 
 	v1 := router.Group(config.API_PATH)
 	{

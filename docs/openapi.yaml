@@ -1,0 +1,186 @@
+openapi: 3.0.3
+info:
+  title: Price Compass
+  version: '1.0'
+  description: API spec
+servers:
+  - url: https://pricecompass.local/api/v1
+paths:
+  /regions:
+    get:
+      tags:
+        - contrib
+      summary: Returns all regions
+      description: ''
+      operationId: ''
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Region'
+  /regions/{regionId}:
+    get:
+      tags:
+        - contrib
+      summary: Returns specified region
+      description: ''
+      operationId: ''
+      parameters:
+        - name: regionId
+          in: path
+          description: ID of region parent to be returned
+          required: true
+          schema:
+            type: integer
+            format: serial
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Region'
+        '400':
+          $ref: '#/components/responses/400Error'
+        '404':
+          $ref: '#/components/responses/404Error'
+  /login:
+    post:
+      summary: Creates login session and returns a token
+      description: ''
+      operationId: ''
+      tags:
+        - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        '400':
+          $ref: '#/components/responses/400Error'
+        '401':
+          $ref: '#/components/responses/401Error'
+  /sign-up:
+    put:
+      summary: Registers an user
+      description: ''
+      operationId: ''
+      tags:
+        - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                displayName:
+                  type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        '400':
+          $ref: '#/components/responses/400Error'
+components:
+  schemas:
+    Region:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: serial
+        name:
+          type: string
+          format: serial
+        parent:
+          $ref: '#/components/schemas/Region'
+        parentCount:
+          type: integer
+          format: number
+          description: |
+            Number of parent nodes till null parent.
+            Should be derived from database, not stored.
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+  responses:
+    GenericError:
+      description: generic error response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    400Error:
+      description: invalid request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 400
+            message: Invalid request
+    401Error:
+      description: no authorization
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 401
+            message: No authorization
+    403Error:
+      description: this resource is forbidden for this scope of permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 403
+            message: This resource is forbidden for this scope of permissions
+    404Error:
+      description: requested resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 404
+            message: Requested resource not found
+tags:
+  - name: contrib
+    description: Everything related to contributions
+  - name: users
+    description: Everything related to users
