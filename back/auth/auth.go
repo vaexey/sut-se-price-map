@@ -14,7 +14,7 @@ import (
 var secret = config.Config.Server.Secret
 
 type Handler struct {
-	Db *db.DbHandler
+	Db *db.Database
 }
 
 func (h *Handler) RequireJWT() gin.HandlerFunc {
@@ -24,7 +24,6 @@ func (h *Handler) RequireJWT() gin.HandlerFunc {
 
 		if tokenHeader == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "Unauthorized",
 				"message": "Authorization header does not exists",
 			})
 			c.Abort()
@@ -35,7 +34,6 @@ func (h *Handler) RequireJWT() gin.HandlerFunc {
 
 		if len(authHeaderParts) != 2 {
 			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "Unauthorized",
 				"message": "Header contains an invalid number of segments",
 			})
 			c.Abort()
@@ -47,7 +45,6 @@ func (h *Handler) RequireJWT() gin.HandlerFunc {
 
 		if authorizationType != "Bearer" {
 			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "Unauthorized",
 				"message": "Wrong type of authorization",
 			})
 			c.Abort()
@@ -63,7 +60,6 @@ func (h *Handler) RequireJWT() gin.HandlerFunc {
 
 		if err != nil || !token.Valid {
 			c.JSON(http.StatusUnauthorized, gin.H{
-				"error":   "Unauthorized",
 				"message": fmt.Sprintf("%s", err),
 			})
 			c.Abort()
@@ -74,7 +70,6 @@ func (h *Handler) RequireJWT() gin.HandlerFunc {
 			c.Set("claims", claims)
 		} else {
 			c.JSON(http.StatusUnauthorized, gin.H{
-				"error":   "Unauthorized",
 				"message": "Bad claims",
 			})
 			c.Abort()
@@ -93,7 +88,7 @@ func (h *Handler) RequireAdmin() gin.HandlerFunc {
 
 		if role != "admin" {
 			c.JSON(http.StatusForbidden, gin.H{
-				"error": "Forbidden",
+				"message": "Admin access only",
 			})
 			c.Abort()
 			return

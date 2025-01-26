@@ -1,14 +1,13 @@
 package main
 
 import (
-	apiFile "back/api"
-	dbh "back/db"
+	lapi "back/api"
+	ldb "back/db"
 	"back/auth"
 	"back/config"
 	"fmt"
 	"net/http"
 	"os"
-
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/postgres"
@@ -25,6 +24,7 @@ func hello(c *gin.Context) {
 		},
 	)
 }
+
 func admin(c *gin.Context) {
 	c.JSON(http.StatusOK,
 		gin.H{
@@ -68,11 +68,11 @@ func main() {
 		fmt.Fprint(gin.DefaultErrorWriter, "Could not load static index file\n")
 	}
 
-	dbHandler := dbh.NewDbHandler(db)
-	api := apiFile.NewApi(dbHandler)
+	database := ldb.NewDatabase(db)
+	api := lapi.NewApi(&database)
 
 	authHandler := auth.Handler {
-		Db : &dbHandler,
+		Db : &database,
 	}
 
 	authMiddleware := authHandler.RequireJWT()
@@ -85,18 +85,17 @@ func main() {
 		v1.PUT("sign-up", authHandler.Register)
 		v1.POST("login", authHandler.Login)
 
-		v1.GET("regions", func(c *gin.Context) {
-			api.Regions(c, &dbHandler)
-		})
-
-		v1.GET("regions/:regionID", func(c *gin.Context) {
-			api.RegionById(c, &dbHandler)
-		})
+		// API
+		v1.GET("regions", api.Regions)
+		v1.GET("regions/:regionID", api.RegionById)
 
 		// Auth-guarded
 		v1.GET("hello", authMiddleware, hello)
 		v1.GET("admin", authMiddleware, adminMiddleware, admin)
 	}
+
+	router.Use(lapi.ApiFallback())
+
 
 	// Static files
 	router.GET("/", serveStaticIndex)
