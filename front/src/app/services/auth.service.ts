@@ -1,6 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { shareReplay, tap } from 'rxjs';
+import { Observable, shareReplay, tap } from 'rxjs';
+import { API_PATH } from './API';
+import { LoginRequest, LoginResponse } from '../model/api/LoginRequest';
+import { SignUpRequest, SignUpResponse } from '../model/api/SignUpRequest';
 
 @Injectable({
   providedIn: 'root'
@@ -11,19 +14,34 @@ export class AuthService {
     private http: HttpClient
   ) { }
 
-  login(username: string, password: string)
+  login(username: string, password: string): Observable<LoginResponse>
   {
-    // TODO: create login response structure
-    // TODO: parametrize api url
-    return this.http.post<any>("/api/login", {
+    let request: LoginRequest = {
       username,
       password
-    }).pipe(
+    }
+
+    return this.http.post<LoginResponse>(`${API_PATH}/login`, request).pipe(
       tap(res => {
-        this.setToken(res.token)
+        this.onAuthRequestComplete(res)
       }),
       shareReplay()
     )
+  }
+
+  signUp(data: SignUpRequest): Observable<SignUpResponse>
+  {
+    return this.http.put<SignUpResponse>(`${API_PATH}/sign-up`, data).pipe(
+      tap(res => {
+        this.onAuthRequestComplete(res)
+      }),
+      shareReplay()
+    )
+  }
+
+  private onAuthRequestComplete(response: LoginResponse | SignUpResponse)
+  {
+    this.setToken(response.token)
   }
 
   logout()

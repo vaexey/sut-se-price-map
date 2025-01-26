@@ -58,6 +58,21 @@ services:
         target: /root/.pgadmin
         type: volume
         volume: {}
+  swagger:
+    environment:
+      SWAGGER_FILE: /tmp/openapi.json
+    image: swaggerapi/swagger-editor
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        protocol: tcp
+        published: "6060"
+        target: 8080
+    volumes:
+      - source: ./docs/openapi.yaml
+        target: /tmp/openapi.yaml
+        type: bind
   web:
     build:
       context: .

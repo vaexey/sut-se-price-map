@@ -1,0 +1,16 @@
+<ion-grid>
+  <ion-row>
+    <ion-col></ion-col>
+    
+    <ion-col>
+      <ion-item [className]="type + (hidden ? ' hidden' : '')">
+        <ion-label [color]="colors[type]">
+          <h3>{{ setTitle ?? defaultTitles[type] }}</h3>
+          <p><ng-content></ng-content></p>
+        </ion-label>
+      </ion-item>
+    </ion-col>
+
+    <ion-col></ion-col>
+  </ion-row>
+</ion-grid>

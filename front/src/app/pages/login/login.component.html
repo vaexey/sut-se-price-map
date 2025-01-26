@@ -1,4 +1,9 @@
 <ion-content class="ion-padding">
+  <app-message-banner
+    type="error"
+    [hidden]="!error"
+  >{{ error }}</app-message-banner>
+  
   <ion-grid
     style="display: flex; flex-flow: column; height: 100%"
     class="ion-justify-content-center"
@@ -11,6 +16,7 @@
           class="ion-justify-content-center ion-align-items-center"
           style="display: flex; flex-flow: column"
         >
+        
           <ion-input
             formControlName="username"
             class="ion-margin"
