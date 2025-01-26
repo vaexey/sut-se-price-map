@@ -1,6 +1,9 @@
 package auth
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"regexp"
+	"golang.org/x/crypto/bcrypt"
+)
 
 type loginRequest struct {
 	Username string `json:"username"`
@@ -21,5 +24,10 @@ func (h *Handler) HashPassword(password string) (string, error) {
 
 func (h* Handler) CompareHash(password string, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
+}
+
+func isUsernameValid(name string) bool {
+	_, err := regexp.MatchString("^[a-zA-Z\\d_]+$", name)
 	return err == nil
 }

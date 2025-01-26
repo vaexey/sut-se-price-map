@@ -5,8 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"regexp"
-
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -77,12 +75,6 @@ func (h *Handler) Register(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H {
 		"message" : "success",
 	})
-}
-
-
-func isUsernameValid(name string) bool {
-	_, err := regexp.MatchString("^[a-zA-Z\\d_]+$", name)
-	return err == nil
 }
 
 
