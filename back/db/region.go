@@ -1,4 +1,5 @@
 package db
+
 import "back/model"
 
 func (rh *regionService) SelectAll() ([]model.Region, error) {
@@ -13,4 +14,22 @@ func (rh *regionService) SelectById(id uint) (model.Region, error) {
 	}
 	result := rh.Db.First(&region)
 	return region, result.Error
+}
+
+func (rh *regionService) CountParents(id uint) (int, error) {
+	count := 0
+	currentId := id
+	for {
+		var region model.Region
+		result:= rh.Db.First(&region, currentId)
+		if	result.Error != nil {
+			return count, result.Error 
+		}
+		if region.Parent == 0 {
+			break;
+		}
+		count++
+		currentId = region.Parent
+	}
+	return count, nil
 }
