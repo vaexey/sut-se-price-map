@@ -1,5 +1,5 @@
 import { Attachement } from "./Attachement";
-import { DbId, DbRef } from "./dbDefs";
+import { DbDate, DbId, DbInsert } from "./dbDefs";
 import { Product } from "./Product";
 import { Store } from "./Store";
 import { User } from "./User";
@@ -11,17 +11,17 @@ export interface Contrib
     id: DbId
 
     // Grouped by
-    product: DbRef<Product>
-    store: DbRef<Store>
+    product: DbInsert<Product>
+    store: DbInsert<Store>
 
     // Detail view
-    author: DbRef<User>
+    author: DbInsert<User>
     price: number
-    date: any // TODO: define date type
+    date: DbDate
 
     // Optional detail view
     comment?: string
-    attachements: DbRef<Attachement>[]
+    attachements: DbInsert<Attachement>[]
 
     // View status
     status: ContribStatus

@@ -1,4 +1,4 @@
-import { DbId, DbRef } from "./dbDefs";
+import { DbId, DbInsert, DbRef } from "./dbDefs";
 import { Resource } from "./Resource";
 
 export interface User
@@ -6,5 +6,5 @@ export interface User
     id: DbId
 
     displayName: string
-    avatar: DbRef<Resource>
+    avatar: DbInsert<Resource>
 }
