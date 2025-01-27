@@ -279,11 +279,44 @@ paths:
         - contribs
     put:
       summary: Creates a new contribution.
-      description: ''
+      description: |
+        Creates a new contribution with specified fields.
+        Product and store field can be set only on creation and cannot be edited.
+        Comment can be null, meaning no comment has been added.
+        Status field on creation must be equal to ACTIVE. If request contains
+        other value, it will be overwritten by server.
+        This does not apply to admin users - they can set the status to their
+        desired value.
       operationId: ''
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product:
+                  type: integer
+                  format: product_id
+                store:
+                  type: integer
+                  format: store_id
+                price:
+                  type: integer
+                  format: float
+                comment:
+                  type: string
+                  nullable: true
+                status:
+                  $ref: '#/components/schemas/ContribStatus'
       responses:
-        default:
-          description: Default error sample response
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contrib'
+        '400':
+          $ref: '#/components/responses/400Error'
       tags:
         - contribs
   /contribs/{contribId}:
@@ -316,7 +349,15 @@ paths:
       summary: >-
         Updates contribution fields. Scope of editable fields depends on
         permissions.
-      description: ''
+      description: |
+        Updates specified contribution with new fields.
+        Product and store field can be set only on creation and cannot be edited.
+        Comment can be null, meaning no comment has been added.
+        Comment may be removed or added.
+        Status field can be changed only from ACTIVE to REVOKED.
+        Any other change is not allowed.
+        This does not apply to admin users - they can set the status to their
+        desired value.
       operationId: ''
       parameters:
         - name: contribId
@@ -326,9 +367,29 @@ paths:
           schema:
             type: integer
             format: id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                price:
+                  type: integer
+                  format: float
+                comment:
+                  type: string
+                  nullable: true
+                status:
+                  $ref: '#/components/schemas/ContribStatus'
       responses:
-        default:
-          description: Default error sample response
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contrib'
+        '400':
+          $ref: '#/components/responses/400Error'
       tags:
         - contribs
   /contribs/group:
@@ -336,7 +397,13 @@ paths:
       summary: >-
         Returns contribution groups, grouped by specified filters. Generates
         additional statistics.
-      description: ''
+      description: |
+        Returns contribution groups, grouped by specified filters.
+        First, contributions are grouped by stores and products.
+        Then all specified filters are applied. Request should
+        return IDs of matching contribution as well as metadata containing:
+        generated statistics (avg price, rating), first contributor,
+        pagination fields.
       operationId: ''
       parameters:
         - name: limit
@@ -469,7 +536,9 @@ paths:
       tags:
         - contribs
       summary: Returns all regions
-      description: ''
+      description: |
+        Returns all regions. Generates additional data: number of parent nodes 
+        till null parent. Should be derived from database, not stored.
       operationId: ''
       responses:
         '200':
@@ -485,7 +554,9 @@ paths:
       tags:
         - contribs
       summary: Returns specified region
-      description: ''
+      description: |
+        Returns a region. Generates additional data: number of parent nodes 
+        till null parent. Should be derived from database, not stored.
       operationId: ''
       parameters:
         - name: regionId
@@ -512,8 +583,14 @@ paths:
       description: ''
       operationId: ''
       responses:
-        default:
-          description: Default error sample response
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
       tags:
         - contribs
   /stores:
@@ -521,28 +598,89 @@ paths:
       summary: Returns all available stores. Can be filtered by region.
       description: ''
       operationId: ''
+      parameters:
+        - name: regionsInclude
+          in: query
+          description: regions include
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+              format: id
+        - name: regionsExclude
+          in: query
+          description: regions exclude
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+              format: id
       responses:
-        default:
-          description: Default error sample response
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Store'
+        '400':
+          $ref: '#/components/responses/400Error'
       tags:
         - contribs
   /reports:
     put:
       summary: Creates a new report
-      description: ''
+      description: |
+        Creates a new report. Author and date fields should not be sent
+        in request, becuase they will be overwritten by server.
       operationId: ''
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Report'
       responses:
-        default:
-          description: Default error sample response
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Report'
+        '400':
+          $ref: '#/components/responses/400Error'
       tags:
         - contribs
     get:
       summary: Returns all reports. Can be filtered.
       description: ''
       operationId: ''
+      parameters:
+        - name: timespanBefore
+          in: query
+          description: timespan before
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: timespanAfter
+          in: query
+          description: timespan after
+          required: false
+          schema:
+            type: string
+            format: date-time
       responses:
-        default:
-          description: Default error sample response
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Report'
       tags:
         - admin
 components:
@@ -583,6 +721,8 @@ components:
           format: id
         name:
           type: string
+        photo:
+          $ref: '#/components/schemas/Resource'
     Store:
       type: object
       properties:
@@ -603,6 +743,8 @@ components:
           type: string
         displayName:
           type: string
+        avatar:
+          $ref: '#/components/schemas/Resource'
           # TODO: server-side fields
     Region:
       type: object
@@ -621,6 +763,33 @@ components:
           description: |
             Number of parent nodes till null parent.
             Should be derived from database, not stored.
+    Resource:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: id
+        url:
+          type: string
+        blob:
+          type: string
+          format: base64
+    Report:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: id
+        reported:
+          type: integer
+          format: contrib_id
+        message:
+          type: string
+        author:
+          $ref: '#/components/schemas/User'
+        date:
+          type: string
+          format: date-time
     GetContribsGroupResponseEntry:
       type: object
       properties:
