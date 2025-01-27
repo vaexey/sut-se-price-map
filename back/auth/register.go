@@ -15,14 +15,14 @@ func (h *Handler) Register(c *gin.Context) {
 	c.BindJSON(&req)
 	if req.Username == "" || req.Password == "" {
 		c.JSON(http.StatusBadRequest, gin.H {
-			"message" : "no username or password provided",
+			"message" : "Invalid request",
 		})
 		return
 	}
 
 	if !isUsernameValid(req.Username) {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "username contains illegal characters",
+			"message": "Illegal username",
 		})
 		return
 	}
@@ -30,7 +30,7 @@ func (h *Handler) Register(c *gin.Context) {
 	hash, err := h.HashPassword(req.Password)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H {
-			"message" : "bad password",
+			"message" : "Bad password",
 		})
 		return
 	}
@@ -53,7 +53,7 @@ func (h *Handler) Register(c *gin.Context) {
 	dbUser, err = h.Db.User.SelectByUsername(req.Username)
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		c.JSON(http.StatusBadRequest, gin.H {
-			"message" : "username taken",
+			"message" : "Username taken",
 		})
 		return
 	}
@@ -63,7 +63,7 @@ func (h *Handler) Register(c *gin.Context) {
 	if err != nil {
 		fmt.Fprintf(gin.DefaultErrorWriter, "Failed to insert user at /sign-up, err: %s\n", err.Error())
 		c.JSON(http.StatusServiceUnavailable, gin.H {
-			"message" : "service failure",
+			"message" : "Service failure",
 		})
 		return
 	}

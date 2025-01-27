@@ -4,8 +4,8 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewDbHandler(Db *gorm.DB) DbHandler {
-	return DbHandler {
+func NewDatabase(Db *gorm.DB) Database {
+	return Database {
 		Db : Db,
 		User : userService{
 			Db : Db,
@@ -19,7 +19,7 @@ func NewDbHandler(Db *gorm.DB) DbHandler {
 // TODO: log query results
 // TODO: log format
 // TODO: log standard for gorm
-type DbHandler struct {
+type Database struct {
 	Db *gorm.DB
 	User userService
 	Region regionService

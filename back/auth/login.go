@@ -12,20 +12,20 @@ import (
 func (h *Handler)login(username string, password string) (int, gin.H, *string) {
 
 	if username == "" || password == "" {
-		return http.StatusUnauthorized, gin.H { "message" : "invalid credentials"}, nil
+		return http.StatusUnauthorized, gin.H { "message" : "Invalid credentials"}, nil
 	}
 	// query user from db
 	dbUser, err  := h.Db.User.SelectByUsername(username)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return http.StatusUnauthorized, gin.H { "message" : "invalid credentials"}, nil
+		return http.StatusUnauthorized, gin.H { "message" : "Invalid credentials"}, nil
 	}
 
 	if err != nil {
-		return http.StatusServiceUnavailable, gin.H { "message" : "service failure"}, nil
+		return http.StatusServiceUnavailable, gin.H { "message" : "Service failure"}, nil
 	}
 
 	if !h.CompareHash(password, dbUser.Password) || dbUser.Login != username {
-		return http.StatusUnauthorized, gin.H { "message" : "invalid credentials"}, nil
+		return http.StatusUnauthorized, gin.H { "message" : "Invalid credentials"}, nil
 	}
 
 	var role string = "user"
@@ -44,7 +44,7 @@ func (h *Handler)login(username string, password string) (int, gin.H, *string) {
 	// sign and get encoded token as str
 	tokenString, err := token.SignedString([]byte(secret))
 	if err != nil {
-		return http.StatusServiceUnavailable, gin.H { "message" : "service failure"}, nil
+		return http.StatusServiceUnavailable, gin.H { "message" : "Service failure"}, nil
 	}
 	return http.StatusOK, gin.H { "message" : "success" }, &tokenString
 }
