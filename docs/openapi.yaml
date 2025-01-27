@@ -6,48 +6,6 @@ info:
 servers:
   - url: https://pricecompass.local/api/v1
 paths:
-  /regions:
-    get:
-      tags:
-        - contrib
-      summary: Returns all regions
-      description: ''
-      operationId: ''
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Region'
-  /regions/{regionId}:
-    get:
-      tags:
-        - contrib
-      summary: Returns specified region
-      description: ''
-      operationId: ''
-      parameters:
-        - name: regionId
-          in: path
-          description: ID of region parent to be returned
-          required: true
-          schema:
-            type: integer
-            format: serial
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Region'
-        '400':
-          $ref: '#/components/responses/400Error'
-        '404':
-          $ref: '#/components/responses/404Error'
   /login:
     post:
       summary: Creates login session and returns a token
@@ -110,17 +68,551 @@ paths:
                     type: string
         '400':
           $ref: '#/components/responses/400Error'
+  /profile:
+    get:
+      summary: Returns profile info for current user
+      description: ''
+      operationId: ''
+      responses:
+        default:
+          description: Default error sample response
+      tags:
+        - users
+    post:
+      summary: Updates editable fields for current user
+      description: ''
+      operationId: ''
+      responses:
+        default:
+          description: Default error sample response
+      tags:
+        - users
+  /profiles/{userLogin}:
+    get:
+      summary: Returns profile info for specified user
+      description: ''
+      operationId: ''
+      responses:
+        default:
+          description: Default error sample response
+      parameters:
+        - name: userLogin
+          in: path
+          description: Login of the user to be returned
+          required: true
+          schema:
+            type: string
+      tags:
+        - users
+    post:
+      summary: Updates fields for specified user. Admin only.
+      description: ''
+      operationId: ''
+      responses:
+        default:
+          description: Default error sample response
+      parameters:
+        - name: userLogin
+          in: path
+          description: Login of the user to be edited
+          required: true
+          schema:
+            type: string
+      tags:
+        - admin
+  /contribs:
+    get:
+      summary: Returns all contribs matching criteria. Supports pagination.
+      description: ''
+      operationId: ''
+      parameters:
+        - name: limit
+          in: query
+          description: pagination limit
+          required: false
+          schema:
+            type: integer
+            default: 10
+        - name: afterMany
+          in: query
+          description: entries to skip using pagination
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: sortBy
+          in: query
+          description: column to sort by using pagination
+          required: false
+          schema:
+            type: string
+            enum: [id, date, ...]
+        - name: idInclude
+          in: query
+          description: IDs include
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+              format: id
+        - name: idExclude
+          in: query
+          description: IDs exclude
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+              format: id
+        - name: regionsInclude
+          in: query
+          description: regions include
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+              format: id
+        - name: regionsExclude
+          in: query
+          description: regions exclude
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+              format: id
+        - name: storesInclude
+          in: query
+          description: stores include
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+              format: id
+        - name: storesExclude
+          in: query
+          description: stores exclude
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+              format: id
+        - name: productsInclude
+          in: query
+          description: products include
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+              format: id
+        - name: productsExclude
+          in: query
+          description: products exclude
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+              format: id
+        - name: usersInclude
+          in: query
+          description: users include
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+              format: id
+        - name: usersExclude
+          in: query
+          description: users exclude
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+              format: id
+        - name: timespanBefore
+          in: query
+          description: timespan before
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: timespanAfter
+          in: query
+          description: timespan after
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: status
+          in: query
+          description: select status types
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/ContribStatus'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginationResponse'
+                  - type: object
+                    properties:
+                      entries:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Contrib'
+        '400':
+          $ref: '#/components/responses/400Error'
+      tags:
+        - contribs
+    put:
+      summary: Creates a new contribution.
+      description: ''
+      operationId: ''
+      responses:
+        default:
+          description: Default error sample response
+      tags:
+        - contribs
+  /contribs/{contribId}:
+    get:
+      summary: Returns contribution with specified id.
+      description: ''
+      operationId: ''
+      parameters:
+        - name: contribId
+          in: path
+          description: Id of the contribution
+          required: true
+          schema:
+            type: integer
+            format: id
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contrib'
+        '400':
+          $ref: '#/components/responses/400Error'
+        '404':
+          $ref: '#/components/responses/404Error'
+      tags:
+        - contribs
+    post:
+      summary: >-
+        Updates contribution fields. Scope of editable fields depends on
+        permissions.
+      description: ''
+      operationId: ''
+      parameters:
+        - name: contribId
+          in: path
+          description: Id of the contribution
+          required: true
+          schema:
+            type: integer
+            format: id
+      responses:
+        default:
+          description: Default error sample response
+      tags:
+        - contribs
+  /contribs/group:
+    get:
+      summary: >-
+        Returns contribution groups, grouped by specified filters. Generates
+        additional statistics.
+      description: ''
+      operationId: ''
+      parameters:
+        - name: limit
+          in: query
+          description: pagination limit
+          required: false
+          schema:
+            type: integer
+            default: 10
+        - name: afterMany
+          in: query
+          description: entries to skip using pagination
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: sortBy
+          in: query
+          description: column to sort by using pagination
+          required: false
+          schema:
+            type: string
+            enum: [id, date, ...]
+        - name: regionsInclude
+          in: query
+          description: regions include
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+              format: id
+        - name: regionsExclude
+          in: query
+          description: regions exclude
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+              format: id
+        - name: storesInclude
+          in: query
+          description: stores include
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+              format: id
+        - name: storesExclude
+          in: query
+          description: stores exclude
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+              format: id
+        - name: productsInclude
+          in: query
+          description: products include
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+              format: id
+        - name: productsExclude
+          in: query
+          description: products exclude
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+              format: id
+        - name: usersInclude
+          in: query
+          description: users include
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+              format: id
+        - name: usersExclude
+          in: query
+          description: users exclude
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+              format: id
+        - name: timespanBefore
+          in: query
+          description: timespan before
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: timespanAfter
+          in: query
+          description: timespan after
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginationResponse'
+                  - type: object
+                    properties:
+                      entries:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/GetContribsGroupResponseEntry'
+        '400':
+          $ref: '#/components/responses/400Error'
+      tags:
+        - contribs
+  /regions:
+    get:
+      tags:
+        - contribs
+      summary: Returns all regions
+      description: ''
+      operationId: ''
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Region'
+  /regions/{regionId}:
+    get:
+      tags:
+        - contribs
+      summary: Returns specified region
+      description: ''
+      operationId: ''
+      parameters:
+        - name: regionId
+          in: path
+          description: ID of region parent to be returned
+          required: true
+          schema:
+            type: integer
+            format: id
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Region'
+        '400':
+          $ref: '#/components/responses/400Error'
+        '404':
+          $ref: '#/components/responses/404Error'
+  /products:
+    get:
+      summary: Returns all available products.
+      description: ''
+      operationId: ''
+      responses:
+        default:
+          description: Default error sample response
+      tags:
+        - contribs
+  /stores:
+    get:
+      summary: Returns all available stores. Can be filtered by region.
+      description: ''
+      operationId: ''
+      responses:
+        default:
+          description: Default error sample response
+      tags:
+        - contribs
+  /reports:
+    put:
+      summary: Creates a new report
+      description: ''
+      operationId: ''
+      responses:
+        default:
+          description: Default error sample response
+      tags:
+        - contribs
+    get:
+      summary: Returns all reports. Can be filtered.
+      description: ''
+      operationId: ''
+      responses:
+        default:
+          description: Default error sample response
+      tags:
+        - admin
 components:
   schemas:
+    Contrib:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: id
+        product:
+          $ref: '#/components/schemas/Product'
+        store:
+          $ref: '#/components/schemas/Store'
+        author:
+          $ref: '#/components/schemas/User'
+        price:
+          type: integer
+          format: float
+        date:
+          type: string
+          format: date-time
+        comment:
+          type: string
+        attachements:
+          type: object
+          # TODO: attachement scheme
+        status:
+          $ref: '#/components/schemas/ContribStatus'
+    ContribStatus:
+      type: string
+      enum: [ACTIVE, REVOKED, REMOVED]
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: id
+        name:
+          type: string
+    Store:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: id
+        name:
+          type: string
+        region:
+          $ref: '#/components/schemas/Region'
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: id
+        username:
+          type: string
+        displayName:
+          type: string
+          # TODO: server-side fields
     Region:
       type: object
       properties:
         id:
           type: integer
-          format: serial
+          format: id
         name:
           type: string
-          format: serial
+          format: id
         parent:
           $ref: '#/components/schemas/Region'
         parentCount:
@@ -129,6 +621,28 @@ components:
           description: |
             Number of parent nodes till null parent.
             Should be derived from database, not stored.
+    GetContribsGroupResponseEntry:
+      type: object
+      properties:
+        region:
+          $ref: '#/components/schemas/Region'
+        store:
+          $ref: '#/components/schemas/Store'
+        product:
+          $ref: '#/components/schemas/Product'
+        contribs:
+          type: array
+          items:
+            type: integer
+            format: contrib_id
+        firstAuthor:
+          $ref: '#/components/schemas/User'
+        averagePrice:
+          type: integer
+          format: float
+        rating:
+          type: integer
+          format: float
     ErrorResponse:
       type: object
       properties:
@@ -136,6 +650,18 @@ components:
           type: integer
         message:
           type: string
+    PaginationResponse:
+      type: object
+      properties:
+        total:
+          description: Total number of entries in collection
+          type: number
+        returned:
+          description: Number of returned elements (<= limit)
+          type: number
+        pages:
+          description: Number of pages (ceil(total / limit))
+          type: number
   responses:
     GenericError:
       description: generic error response
@@ -180,7 +706,9 @@ components:
             code: 404
             message: Requested resource not found
 tags:
-  - name: contrib
+  - name: contribs
     description: Everything related to contributions
   - name: users
     description: Everything related to users
+  - name: admin
+    description: Admin-only accessible requests
