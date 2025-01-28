@@ -1,0 +1,20 @@
+<app-region-picker [isOpen]="this.isOpen" (didDismissEvent)="onClose($event)"></app-region-picker>
+
+<ion-input
+  label="Region"
+  label-placement="floating"
+  fill="outline"
+  style="min-width: 170px; cursor: pointer !important; user-select: none !important;"
+  [readonly]="true"
+
+  (click)="open()"
+>
+  <ion-label slot="start">{{ this.comboText }}</ion-label>
+  <ion-button fill="clear" slot="end" aria-label="search">
+    <ion-icon
+      slot="icon-only"
+      name="caret-down-outline"
+      aria-hidden="true"
+    ></ion-icon>
+  </ion-button>
+</ion-input>

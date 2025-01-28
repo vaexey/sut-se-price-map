@@ -1,0 +1,37 @@
+@if(this.model) {
+  @if(this.model.subtree.children.length > 0) {
+    <ion-accordion-group>
+      <ion-accordion>
+        <ion-item slot="header">
+          <ion-checkbox 
+            [checked]="this.model.model.checked | checkboxPipe : this.model.subtree.id"
+            [indeterminate]="this.model.model.indeterminate | checkboxPipe : this.model.subtree.id"
+            (ionChange)="this.onIonChange($event, this.model.subtree.id)"
+            (click)="$event.stopPropagation();"
+          >
+            {{ this.model.subtree.name }}
+          </ion-checkbox>
+        </ion-item>
+        
+        <div class="ion-padding" slot="content">
+          @for (item of this.model.subtree.children; track item.id) {
+            <app-region-picker-node 
+              (ionChangeEvent)="this.onIonChange($event, item.id)"
+              [model]="{
+                model:  this.model.model,
+                subtree: item
+              }"></app-region-picker-node>
+          }
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
+  } @else {
+    <ion-item>
+      <ion-checkbox
+        [checked]="this.model.model.checked | checkboxPipe : this.model.subtree.id"
+        [indeterminate]="this.model.model.indeterminate | checkboxPipe : this.model.subtree.id"
+        (ionChange)="this.onIonChange($event, this.model.subtree.id)"
+      >{{ this.model.subtree.name }}</ion-checkbox>
+    </ion-item>
+  }
+}
