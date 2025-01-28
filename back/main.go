@@ -101,10 +101,10 @@ func main() {
 		v1.GET("regions", api.Regions)
 		v1.GET("regions/:regionID", api.RegionById)
 
-		v1.GET("contribs/:contribId", api.ContribsByIdGet)
-		v1.GET("contribs", api.ContribsGet)
 		v1.POST("contribs/group", api.ContribsGroup)
 		v1.POST("contribs/:contribId", api.ContribsByIdPost)
+		v1.GET("contribs/:contribId", api.ContribsByIdGet)
+		v1.GET("contribs", api.ContribsGet)
 		v1.PUT("contribs", api.ContribsPut)
 
 		// Auth-guarded
