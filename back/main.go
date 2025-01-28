@@ -101,6 +101,7 @@ func main() {
 		v1.GET("regions", api.Regions)
 		v1.GET("regions/:regionID", api.RegionById)
 		v1.GET("/products", api.Products)
+		v1.GET("stores", api.Stores)
 
 		// Auth-guarded
 		v1.GET("hello", authMiddleware, hello)
