@@ -5,7 +5,7 @@
 -- Dumped from database version 17.2 (Debian 17.2-1.pgdg120+1)
 -- Dumped by pg_dump version 17.2
 
--- Started on 2025-01-27 18:22:01 UTC
+-- Started on 2025-01-28 08:38:40 UTC
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -68,7 +68,7 @@ SET default_table_access_method = heap;
 CREATE TABLE sut_se_price_map.attachement (
     id integer NOT NULL,
     type sut_se_price_map.attachement_type NOT NULL,
-    resource integer NOT NULL,
+    resource_id integer NOT NULL,
     title text
 );
 
@@ -92,7 +92,7 @@ CREATE SEQUENCE sut_se_price_map.attachement_id_seq
 ALTER SEQUENCE sut_se_price_map.attachement_id_seq OWNER TO docker;
 
 --
--- TOC entry 3462 (class 0 OID 0)
+-- TOC entry 3463 (class 0 OID 0)
 -- Dependencies: 219
 -- Name: attachement_id_seq; Type: SEQUENCE OWNED BY; Schema: sut_se_price_map; Owner: docker
 --
@@ -107,9 +107,9 @@ ALTER SEQUENCE sut_se_price_map.attachement_id_seq OWNED BY sut_se_price_map.att
 
 CREATE TABLE sut_se_price_map.contrib (
     id integer NOT NULL,
-    product integer NOT NULL,
-    store integer NOT NULL,
-    author integer NOT NULL,
+    product_id integer NOT NULL,
+    store_id integer NOT NULL,
+    author_id integer NOT NULL,
     price numeric(10,2) NOT NULL,
     date timestamp without time zone NOT NULL,
     comment text,
@@ -137,7 +137,7 @@ CREATE SEQUENCE sut_se_price_map.contrib_id_seq
 ALTER SEQUENCE sut_se_price_map.contrib_id_seq OWNER TO docker;
 
 --
--- TOC entry 3463 (class 0 OID 0)
+-- TOC entry 3464 (class 0 OID 0)
 -- Dependencies: 221
 -- Name: contrib_id_seq; Type: SEQUENCE OWNED BY; Schema: sut_se_price_map; Owner: docker
 --
@@ -152,7 +152,8 @@ ALTER SEQUENCE sut_se_price_map.contrib_id_seq OWNED BY sut_se_price_map.contrib
 
 CREATE TABLE sut_se_price_map.product (
     id integer NOT NULL,
-    name character varying(255) NOT NULL
+    name character varying(255) NOT NULL,
+    photo_id integer
 );
 
 
@@ -175,7 +176,7 @@ CREATE SEQUENCE sut_se_price_map.product_id_seq
 ALTER SEQUENCE sut_se_price_map.product_id_seq OWNER TO docker;
 
 --
--- TOC entry 3464 (class 0 OID 0)
+-- TOC entry 3465 (class 0 OID 0)
 -- Dependencies: 223
 -- Name: product_id_seq; Type: SEQUENCE OWNED BY; Schema: sut_se_price_map; Owner: docker
 --
@@ -190,7 +191,7 @@ ALTER SEQUENCE sut_se_price_map.product_id_seq OWNED BY sut_se_price_map.product
 
 CREATE TABLE sut_se_price_map.region (
     id integer NOT NULL,
-    parent integer,
+    parent_id integer,
     name character varying(255) NOT NULL
 );
 
@@ -214,7 +215,7 @@ CREATE SEQUENCE sut_se_price_map.region_id_seq
 ALTER SEQUENCE sut_se_price_map.region_id_seq OWNER TO docker;
 
 --
--- TOC entry 3465 (class 0 OID 0)
+-- TOC entry 3466 (class 0 OID 0)
 -- Dependencies: 225
 -- Name: region_id_seq; Type: SEQUENCE OWNED BY; Schema: sut_se_price_map; Owner: docker
 --
@@ -223,15 +224,15 @@ ALTER SEQUENCE sut_se_price_map.region_id_seq OWNED BY sut_se_price_map.region.i
 
 
 --
--- TOC entry 233 (class 1259 OID 16503)
+-- TOC entry 226 (class 1259 OID 16419)
 -- Name: report; Type: TABLE; Schema: sut_se_price_map; Owner: docker
 --
 
 CREATE TABLE sut_se_price_map.report (
     id integer NOT NULL,
-    reported integer NOT NULL,
+    reported_id integer NOT NULL,
     message text NOT NULL,
-    author integer NOT NULL,
+    author_id integer NOT NULL,
     date timestamp without time zone DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -239,7 +240,7 @@ CREATE TABLE sut_se_price_map.report (
 ALTER TABLE sut_se_price_map.report OWNER TO docker;
 
 --
--- TOC entry 232 (class 1259 OID 16502)
+-- TOC entry 227 (class 1259 OID 16425)
 -- Name: report_id_seq; Type: SEQUENCE; Schema: sut_se_price_map; Owner: docker
 --
 
@@ -255,8 +256,8 @@ CREATE SEQUENCE sut_se_price_map.report_id_seq
 ALTER SEQUENCE sut_se_price_map.report_id_seq OWNER TO docker;
 
 --
--- TOC entry 3466 (class 0 OID 0)
--- Dependencies: 232
+-- TOC entry 3467 (class 0 OID 0)
+-- Dependencies: 227
 -- Name: report_id_seq; Type: SEQUENCE OWNED BY; Schema: sut_se_price_map; Owner: docker
 --
 
@@ -264,7 +265,7 @@ ALTER SEQUENCE sut_se_price_map.report_id_seq OWNED BY sut_se_price_map.report.i
 
 
 --
--- TOC entry 226 (class 1259 OID 16419)
+-- TOC entry 228 (class 1259 OID 16426)
 -- Name: resource; Type: TABLE; Schema: sut_se_price_map; Owner: docker
 --
 
@@ -279,7 +280,7 @@ CREATE TABLE sut_se_price_map.resource (
 ALTER TABLE sut_se_price_map.resource OWNER TO docker;
 
 --
--- TOC entry 227 (class 1259 OID 16424)
+-- TOC entry 229 (class 1259 OID 16431)
 -- Name: resource_id_seq; Type: SEQUENCE; Schema: sut_se_price_map; Owner: docker
 --
 
@@ -295,8 +296,8 @@ CREATE SEQUENCE sut_se_price_map.resource_id_seq
 ALTER SEQUENCE sut_se_price_map.resource_id_seq OWNER TO docker;
 
 --
--- TOC entry 3467 (class 0 OID 0)
--- Dependencies: 227
+-- TOC entry 3468 (class 0 OID 0)
+-- Dependencies: 229
 -- Name: resource_id_seq; Type: SEQUENCE OWNED BY; Schema: sut_se_price_map; Owner: docker
 --
 
@@ -304,13 +305,13 @@ ALTER SEQUENCE sut_se_price_map.resource_id_seq OWNED BY sut_se_price_map.resour
 
 
 --
--- TOC entry 228 (class 1259 OID 16425)
+-- TOC entry 230 (class 1259 OID 16432)
 -- Name: store; Type: TABLE; Schema: sut_se_price_map; Owner: docker
 --
 
 CREATE TABLE sut_se_price_map.store (
     id integer NOT NULL,
-    region integer NOT NULL,
+    region_id integer NOT NULL,
     name character varying(255) NOT NULL
 );
 
@@ -318,7 +319,7 @@ CREATE TABLE sut_se_price_map.store (
 ALTER TABLE sut_se_price_map.store OWNER TO docker;
 
 --
--- TOC entry 229 (class 1259 OID 16428)
+-- TOC entry 231 (class 1259 OID 16435)
 -- Name: store_id_seq; Type: SEQUENCE; Schema: sut_se_price_map; Owner: docker
 --
 
@@ -334,8 +335,8 @@ CREATE SEQUENCE sut_se_price_map.store_id_seq
 ALTER SEQUENCE sut_se_price_map.store_id_seq OWNER TO docker;
 
 --
--- TOC entry 3468 (class 0 OID 0)
--- Dependencies: 229
+-- TOC entry 3469 (class 0 OID 0)
+-- Dependencies: 231
 -- Name: store_id_seq; Type: SEQUENCE OWNED BY; Schema: sut_se_price_map; Owner: docker
 --
 
@@ -343,14 +344,14 @@ ALTER SEQUENCE sut_se_price_map.store_id_seq OWNED BY sut_se_price_map.store.id;
 
 
 --
--- TOC entry 230 (class 1259 OID 16429)
+-- TOC entry 232 (class 1259 OID 16436)
 -- Name: user; Type: TABLE; Schema: sut_se_price_map; Owner: docker
 --
 
 CREATE TABLE sut_se_price_map."user" (
     id integer NOT NULL,
     display_name character varying(255) NOT NULL,
-    avatar integer,
+    avatar_id integer,
     password character varying(255) NOT NULL,
     is_admin boolean DEFAULT false NOT NULL,
     login character varying(255) NOT NULL
@@ -360,7 +361,7 @@ CREATE TABLE sut_se_price_map."user" (
 ALTER TABLE sut_se_price_map."user" OWNER TO docker;
 
 --
--- TOC entry 231 (class 1259 OID 16437)
+-- TOC entry 233 (class 1259 OID 16442)
 -- Name: user_id_seq; Type: SEQUENCE; Schema: sut_se_price_map; Owner: docker
 --
 
@@ -376,8 +377,8 @@ CREATE SEQUENCE sut_se_price_map.user_id_seq
 ALTER SEQUENCE sut_se_price_map.user_id_seq OWNER TO docker;
 
 --
--- TOC entry 3469 (class 0 OID 0)
--- Dependencies: 231
+-- TOC entry 3470 (class 0 OID 0)
+-- Dependencies: 233
 -- Name: user_id_seq; Type: SEQUENCE OWNED BY; Schema: sut_se_price_map; Owner: docker
 --
 
@@ -385,7 +386,7 @@ ALTER SEQUENCE sut_se_price_map.user_id_seq OWNED BY sut_se_price_map."user".id;
 
 
 --
--- TOC entry 3252 (class 2604 OID 16438)
+-- TOC entry 3252 (class 2604 OID 16443)
 -- Name: attachement id; Type: DEFAULT; Schema: sut_se_price_map; Owner: docker
 --
 
@@ -393,7 +394,7 @@ ALTER TABLE ONLY sut_se_price_map.attachement ALTER COLUMN id SET DEFAULT nextva
 
 
 --
--- TOC entry 3253 (class 2604 OID 16439)
+-- TOC entry 3253 (class 2604 OID 16444)
 -- Name: contrib id; Type: DEFAULT; Schema: sut_se_price_map; Owner: docker
 --
 
@@ -401,7 +402,7 @@ ALTER TABLE ONLY sut_se_price_map.contrib ALTER COLUMN id SET DEFAULT nextval('s
 
 
 --
--- TOC entry 3254 (class 2604 OID 16440)
+-- TOC entry 3254 (class 2604 OID 16445)
 -- Name: product id; Type: DEFAULT; Schema: sut_se_price_map; Owner: docker
 --
 
@@ -409,7 +410,7 @@ ALTER TABLE ONLY sut_se_price_map.product ALTER COLUMN id SET DEFAULT nextval('s
 
 
 --
--- TOC entry 3255 (class 2604 OID 16441)
+-- TOC entry 3255 (class 2604 OID 16446)
 -- Name: region id; Type: DEFAULT; Schema: sut_se_price_map; Owner: docker
 --
 
@@ -417,7 +418,7 @@ ALTER TABLE ONLY sut_se_price_map.region ALTER COLUMN id SET DEFAULT nextval('su
 
 
 --
--- TOC entry 3260 (class 2604 OID 16506)
+-- TOC entry 3256 (class 2604 OID 16447)
 -- Name: report id; Type: DEFAULT; Schema: sut_se_price_map; Owner: docker
 --
 
@@ -425,7 +426,7 @@ ALTER TABLE ONLY sut_se_price_map.report ALTER COLUMN id SET DEFAULT nextval('su
 
 
 --
--- TOC entry 3256 (class 2604 OID 16442)
+-- TOC entry 3258 (class 2604 OID 16448)
 -- Name: resource id; Type: DEFAULT; Schema: sut_se_price_map; Owner: docker
 --
 
@@ -433,7 +434,7 @@ ALTER TABLE ONLY sut_se_price_map.resource ALTER COLUMN id SET DEFAULT nextval('
 
 
 --
--- TOC entry 3257 (class 2604 OID 16443)
+-- TOC entry 3259 (class 2604 OID 16449)
 -- Name: store id; Type: DEFAULT; Schema: sut_se_price_map; Owner: docker
 --
 
@@ -441,7 +442,7 @@ ALTER TABLE ONLY sut_se_price_map.store ALTER COLUMN id SET DEFAULT nextval('sut
 
 
 --
--- TOC entry 3258 (class 2604 OID 16444)
+-- TOC entry 3260 (class 2604 OID 16450)
 -- Name: user id; Type: DEFAULT; Schema: sut_se_price_map; Owner: docker
 --
 
@@ -449,7 +450,7 @@ ALTER TABLE ONLY sut_se_price_map."user" ALTER COLUMN id SET DEFAULT nextval('su
 
 
 --
--- TOC entry 3441 (class 0 OID 16399)
+-- TOC entry 3442 (class 0 OID 16399)
 -- Dependencies: 218
 -- Data for Name: attachement; Type: TABLE DATA; Schema: sut_se_price_map; Owner: docker
 --
@@ -457,87 +458,87 @@ ALTER TABLE ONLY sut_se_price_map."user" ALTER COLUMN id SET DEFAULT nextval('su
 
 
 --
--- TOC entry 3443 (class 0 OID 16405)
+-- TOC entry 3444 (class 0 OID 16405)
 -- Dependencies: 220
 -- Data for Name: contrib; Type: TABLE DATA; Schema: sut_se_price_map; Owner: docker
 --
 
-INSERT INTO sut_se_price_map.contrib (id, product, store, author, price, date, comment, attachements, status) VALUES (23, 1, 1, 16, 10.99, '2024-01-01 00:00:00', 'Dobry Zakup', NULL, 'ACTIVE');
-INSERT INTO sut_se_price_map.contrib (id, product, store, author, price, date, comment, attachements, status) VALUES (24, 1, 2, 19, 6.99, '2024-01-01 00:00:00', 'Dobry Zakup', NULL, 'ACTIVE');
-INSERT INTO sut_se_price_map.contrib (id, product, store, author, price, date, comment, attachements, status) VALUES (25, 4, 2, 16, 16.99, '2024-03-03 00:00:00', 'Dobry Zakup', NULL, 'ACTIVE');
-INSERT INTO sut_se_price_map.contrib (id, product, store, author, price, date, comment, attachements, status) VALUES (26, 15, 2, 20, 6.00, '2024-07-06 00:00:00', 'Dobry Zakup', NULL, 'ACTIVE');
-INSERT INTO sut_se_price_map.contrib (id, product, store, author, price, date, comment, attachements, status) VALUES (27, 6, 4, 16, 10.99, '2024-01-01 00:00:00', 'Fatalny Zakup', NULL, 'ACTIVE');
-INSERT INTO sut_se_price_map.contrib (id, product, store, author, price, date, comment, attachements, status) VALUES (28, 1, 1, 27, 10.99, '2025-01-01 00:00:00', 'Dobry Zakup', NULL, 'ACTIVE');
-INSERT INTO sut_se_price_map.contrib (id, product, store, author, price, date, comment, attachements, status) VALUES (29, 1, 4, 16, 10.99, '2024-01-01 00:00:00', 'Dobry Zakup', NULL, 'ACTIVE');
-INSERT INTO sut_se_price_map.contrib (id, product, store, author, price, date, comment, attachements, status) VALUES (30, 1, 4, 21, 6.99, '2024-01-01 00:00:00', 'Dobry Zakup', NULL, 'ACTIVE');
-INSERT INTO sut_se_price_map.contrib (id, product, store, author, price, date, comment, attachements, status) VALUES (31, 5, 13, 16, 2.22, '2024-07-07 00:00:00', 'Dobry Zakup', NULL, 'ACTIVE');
-INSERT INTO sut_se_price_map.contrib (id, product, store, author, price, date, comment, attachements, status) VALUES (32, 2, 2, 27, 4.52, '2024-05-03 00:00:00', 'Dobry Zakup', NULL, 'ACTIVE');
-INSERT INTO sut_se_price_map.contrib (id, product, store, author, price, date, comment, attachements, status) VALUES (33, 13, 9, 16, 13.33, '2024-06-06 00:00:00', 'Fatalny Zakup', NULL, 'ACTIVE');
-INSERT INTO sut_se_price_map.contrib (id, product, store, author, price, date, comment, attachements, status) VALUES (34, 8, 13, 25, 6.66, '2024-04-04 00:00:00', 'Dobry Zakup', NULL, 'ACTIVE');
-INSERT INTO sut_se_price_map.contrib (id, product, store, author, price, date, comment, attachements, status) VALUES (35, 11, 13, 21, 2.25, '2024-01-01 00:00:00', 'Dobry Zakup', NULL, 'ACTIVE');
-INSERT INTO sut_se_price_map.contrib (id, product, store, author, price, date, comment, attachements, status) VALUES (36, 13, 13, 16, 4.44, '2024-02-11 00:00:00', 'Dobry Zakup', NULL, 'ACTIVE');
-INSERT INTO sut_se_price_map.contrib (id, product, store, author, price, date, comment, attachements, status) VALUES (37, 4, 10, 28, 3.33, '2024-10-10 00:00:00', 'Dobry Zakup', NULL, 'ACTIVE');
+INSERT INTO sut_se_price_map.contrib (id, product_id, store_id, author_id, price, date, comment, attachements, status) VALUES (23, 1, 1, 16, 10.99, '2024-01-01 00:00:00', 'Dobry Zakup', NULL, 'ACTIVE');
+INSERT INTO sut_se_price_map.contrib (id, product_id, store_id, author_id, price, date, comment, attachements, status) VALUES (24, 1, 2, 19, 6.99, '2024-01-01 00:00:00', 'Dobry Zakup', NULL, 'ACTIVE');
+INSERT INTO sut_se_price_map.contrib (id, product_id, store_id, author_id, price, date, comment, attachements, status) VALUES (25, 4, 2, 16, 16.99, '2024-03-03 00:00:00', 'Dobry Zakup', NULL, 'ACTIVE');
+INSERT INTO sut_se_price_map.contrib (id, product_id, store_id, author_id, price, date, comment, attachements, status) VALUES (26, 15, 2, 20, 6.00, '2024-07-06 00:00:00', 'Dobry Zakup', NULL, 'ACTIVE');
+INSERT INTO sut_se_price_map.contrib (id, product_id, store_id, author_id, price, date, comment, attachements, status) VALUES (27, 6, 4, 16, 10.99, '2024-01-01 00:00:00', 'Fatalny Zakup', NULL, 'ACTIVE');
+INSERT INTO sut_se_price_map.contrib (id, product_id, store_id, author_id, price, date, comment, attachements, status) VALUES (28, 1, 1, 27, 10.99, '2025-01-01 00:00:00', 'Dobry Zakup', NULL, 'ACTIVE');
+INSERT INTO sut_se_price_map.contrib (id, product_id, store_id, author_id, price, date, comment, attachements, status) VALUES (29, 1, 4, 16, 10.99, '2024-01-01 00:00:00', 'Dobry Zakup', NULL, 'ACTIVE');
+INSERT INTO sut_se_price_map.contrib (id, product_id, store_id, author_id, price, date, comment, attachements, status) VALUES (30, 1, 4, 21, 6.99, '2024-01-01 00:00:00', 'Dobry Zakup', NULL, 'ACTIVE');
+INSERT INTO sut_se_price_map.contrib (id, product_id, store_id, author_id, price, date, comment, attachements, status) VALUES (31, 5, 13, 16, 2.22, '2024-07-07 00:00:00', 'Dobry Zakup', NULL, 'ACTIVE');
+INSERT INTO sut_se_price_map.contrib (id, product_id, store_id, author_id, price, date, comment, attachements, status) VALUES (32, 2, 2, 27, 4.52, '2024-05-03 00:00:00', 'Dobry Zakup', NULL, 'ACTIVE');
+INSERT INTO sut_se_price_map.contrib (id, product_id, store_id, author_id, price, date, comment, attachements, status) VALUES (33, 13, 9, 16, 13.33, '2024-06-06 00:00:00', 'Fatalny Zakup', NULL, 'ACTIVE');
+INSERT INTO sut_se_price_map.contrib (id, product_id, store_id, author_id, price, date, comment, attachements, status) VALUES (34, 8, 13, 25, 6.66, '2024-04-04 00:00:00', 'Dobry Zakup', NULL, 'ACTIVE');
+INSERT INTO sut_se_price_map.contrib (id, product_id, store_id, author_id, price, date, comment, attachements, status) VALUES (35, 11, 13, 21, 2.25, '2024-01-01 00:00:00', 'Dobry Zakup', NULL, 'ACTIVE');
+INSERT INTO sut_se_price_map.contrib (id, product_id, store_id, author_id, price, date, comment, attachements, status) VALUES (36, 13, 13, 16, 4.44, '2024-02-11 00:00:00', 'Dobry Zakup', NULL, 'ACTIVE');
+INSERT INTO sut_se_price_map.contrib (id, product_id, store_id, author_id, price, date, comment, attachements, status) VALUES (37, 4, 10, 28, 3.33, '2024-10-10 00:00:00', 'Dobry Zakup', NULL, 'ACTIVE');
 
 
 --
--- TOC entry 3445 (class 0 OID 16411)
+-- TOC entry 3446 (class 0 OID 16411)
 -- Dependencies: 222
 -- Data for Name: product; Type: TABLE DATA; Schema: sut_se_price_map; Owner: docker
 --
 
-INSERT INTO sut_se_price_map.product (id, name) VALUES (1, 'masło');
-INSERT INTO sut_se_price_map.product (id, name) VALUES (2, 'cukier');
-INSERT INTO sut_se_price_map.product (id, name) VALUES (3, 'olej rzepakowy');
-INSERT INTO sut_se_price_map.product (id, name) VALUES (4, 'mydło');
-INSERT INTO sut_se_price_map.product (id, name) VALUES (5, 'ser');
-INSERT INTO sut_se_price_map.product (id, name) VALUES (6, 'kiełbasa Krakowska');
-INSERT INTO sut_se_price_map.product (id, name) VALUES (7, 'Łosoś');
-INSERT INTO sut_se_price_map.product (id, name) VALUES (8, 'pstrąg');
-INSERT INTO sut_se_price_map.product (id, name) VALUES (9, 'skarpetki');
-INSERT INTO sut_se_price_map.product (id, name) VALUES (10, 'kabel RJ45');
-INSERT INTO sut_se_price_map.product (id, name) VALUES (11, 'makaron');
-INSERT INTO sut_se_price_map.product (id, name) VALUES (12, 'mąka');
-INSERT INTO sut_se_price_map.product (id, name) VALUES (13, 'sok pomarańczowy');
-INSERT INTO sut_se_price_map.product (id, name) VALUES (14, 'sok jabłkowy');
-INSERT INTO sut_se_price_map.product (id, name) VALUES (15, 'banan');
+INSERT INTO sut_se_price_map.product (id, name, photo_id) VALUES (1, 'masło', NULL);
+INSERT INTO sut_se_price_map.product (id, name, photo_id) VALUES (2, 'cukier', NULL);
+INSERT INTO sut_se_price_map.product (id, name, photo_id) VALUES (3, 'olej rzepakowy', NULL);
+INSERT INTO sut_se_price_map.product (id, name, photo_id) VALUES (4, 'mydło', NULL);
+INSERT INTO sut_se_price_map.product (id, name, photo_id) VALUES (5, 'ser', NULL);
+INSERT INTO sut_se_price_map.product (id, name, photo_id) VALUES (6, 'kiełbasa Krakowska', NULL);
+INSERT INTO sut_se_price_map.product (id, name, photo_id) VALUES (7, 'Łosoś', NULL);
+INSERT INTO sut_se_price_map.product (id, name, photo_id) VALUES (8, 'pstrąg', NULL);
+INSERT INTO sut_se_price_map.product (id, name, photo_id) VALUES (9, 'skarpetki', NULL);
+INSERT INTO sut_se_price_map.product (id, name, photo_id) VALUES (10, 'kabel RJ45', NULL);
+INSERT INTO sut_se_price_map.product (id, name, photo_id) VALUES (11, 'makaron', NULL);
+INSERT INTO sut_se_price_map.product (id, name, photo_id) VALUES (12, 'mąka', NULL);
+INSERT INTO sut_se_price_map.product (id, name, photo_id) VALUES (13, 'sok pomarańczowy', NULL);
+INSERT INTO sut_se_price_map.product (id, name, photo_id) VALUES (14, 'sok jabłkowy', NULL);
+INSERT INTO sut_se_price_map.product (id, name, photo_id) VALUES (15, 'banan', NULL);
 
 
 --
--- TOC entry 3447 (class 0 OID 16415)
+-- TOC entry 3448 (class 0 OID 16415)
 -- Dependencies: 224
 -- Data for Name: region; Type: TABLE DATA; Schema: sut_se_price_map; Owner: docker
 --
 
-INSERT INTO sut_se_price_map.region (id, parent, name) VALUES (19, 18, 'Kraków');
-INSERT INTO sut_se_price_map.region (id, parent, name) VALUES (18, 16, 'Małopolska');
-INSERT INTO sut_se_price_map.region (id, parent, name) VALUES (17, 16, 'Górny Śląsk');
-INSERT INTO sut_se_price_map.region (id, parent, name) VALUES (1, 17, 'Bytom');
-INSERT INTO sut_se_price_map.region (id, parent, name) VALUES (2, 17, 'Tarnowskie Góry');
-INSERT INTO sut_se_price_map.region (id, parent, name) VALUES (3, 17, 'Katowice');
-INSERT INTO sut_se_price_map.region (id, parent, name) VALUES (4, 17, 'Gliwice');
-INSERT INTO sut_se_price_map.region (id, parent, name) VALUES (5, 17, 'Zabrze');
-INSERT INTO sut_se_price_map.region (id, parent, name) VALUES (6, 17, 'Chorzów');
-INSERT INTO sut_se_price_map.region (id, parent, name) VALUES (7, 17, 'Piekary Śląskie');
-INSERT INTO sut_se_price_map.region (id, parent, name) VALUES (8, 17, 'Sosnowiec');
-INSERT INTO sut_se_price_map.region (id, parent, name) VALUES (9, 17, 'Dąbrowa Górnicza');
-INSERT INTO sut_se_price_map.region (id, parent, name) VALUES (10, 17, 'Tychy');
-INSERT INTO sut_se_price_map.region (id, parent, name) VALUES (11, 17, 'Cieszyn');
-INSERT INTO sut_se_price_map.region (id, parent, name) VALUES (12, 17, 'Rybnik');
-INSERT INTO sut_se_price_map.region (id, parent, name) VALUES (13, 17, 'Żory');
-INSERT INTO sut_se_price_map.region (id, parent, name) VALUES (16, NULL, 'Polska');
+INSERT INTO sut_se_price_map.region (id, parent_id, name) VALUES (19, 18, 'Kraków');
+INSERT INTO sut_se_price_map.region (id, parent_id, name) VALUES (18, 16, 'Małopolska');
+INSERT INTO sut_se_price_map.region (id, parent_id, name) VALUES (17, 16, 'Górny Śląsk');
+INSERT INTO sut_se_price_map.region (id, parent_id, name) VALUES (1, 17, 'Bytom');
+INSERT INTO sut_se_price_map.region (id, parent_id, name) VALUES (2, 17, 'Tarnowskie Góry');
+INSERT INTO sut_se_price_map.region (id, parent_id, name) VALUES (3, 17, 'Katowice');
+INSERT INTO sut_se_price_map.region (id, parent_id, name) VALUES (4, 17, 'Gliwice');
+INSERT INTO sut_se_price_map.region (id, parent_id, name) VALUES (5, 17, 'Zabrze');
+INSERT INTO sut_se_price_map.region (id, parent_id, name) VALUES (6, 17, 'Chorzów');
+INSERT INTO sut_se_price_map.region (id, parent_id, name) VALUES (7, 17, 'Piekary Śląskie');
+INSERT INTO sut_se_price_map.region (id, parent_id, name) VALUES (8, 17, 'Sosnowiec');
+INSERT INTO sut_se_price_map.region (id, parent_id, name) VALUES (9, 17, 'Dąbrowa Górnicza');
+INSERT INTO sut_se_price_map.region (id, parent_id, name) VALUES (10, 17, 'Tychy');
+INSERT INTO sut_se_price_map.region (id, parent_id, name) VALUES (11, 17, 'Cieszyn');
+INSERT INTO sut_se_price_map.region (id, parent_id, name) VALUES (12, 17, 'Rybnik');
+INSERT INTO sut_se_price_map.region (id, parent_id, name) VALUES (13, 17, 'Żory');
+INSERT INTO sut_se_price_map.region (id, parent_id, name) VALUES (16, NULL, 'Polska');
 
 
 --
--- TOC entry 3456 (class 0 OID 16503)
--- Dependencies: 233
+-- TOC entry 3450 (class 0 OID 16419)
+-- Dependencies: 226
 -- Data for Name: report; Type: TABLE DATA; Schema: sut_se_price_map; Owner: docker
 --
 
 
 
 --
--- TOC entry 3449 (class 0 OID 16419)
--- Dependencies: 226
+-- TOC entry 3452 (class 0 OID 16426)
+-- Dependencies: 228
 -- Data for Name: resource; Type: TABLE DATA; Schema: sut_se_price_map; Owner: docker
 --
 
@@ -545,58 +546,58 @@ INSERT INTO sut_se_price_map.resource (id, source, name, url) VALUES (3, '\xffd8
 
 
 --
--- TOC entry 3451 (class 0 OID 16425)
--- Dependencies: 228
+-- TOC entry 3454 (class 0 OID 16432)
+-- Dependencies: 230
 -- Data for Name: store; Type: TABLE DATA; Schema: sut_se_price_map; Owner: docker
 --
 
-INSERT INTO sut_se_price_map.store (id, region, name) VALUES (1, 1, 'Warzywniak ABC');
-INSERT INTO sut_se_price_map.store (id, region, name) VALUES (2, 2, 'Lidl TG');
-INSERT INTO sut_se_price_map.store (id, region, name) VALUES (3, 2, 'Carrefour TG');
-INSERT INTO sut_se_price_map.store (id, region, name) VALUES (4, 1, 'Biedronka Bytom');
-INSERT INTO sut_se_price_map.store (id, region, name) VALUES (5, 3, 'Biedronka Katowice');
-INSERT INTO sut_se_price_map.store (id, region, name) VALUES (6, 11, 'Sklep Elektroniczny Kabel');
-INSERT INTO sut_se_price_map.store (id, region, name) VALUES (7, 8, 'Sklep Elektroniczny XYZ');
-INSERT INTO sut_se_price_map.store (id, region, name) VALUES (8, 8, 'Warzywniak Pomidor');
-INSERT INTO sut_se_price_map.store (id, region, name) VALUES (9, 10, 'Żabka Tychy');
-INSERT INTO sut_se_price_map.store (id, region, name) VALUES (10, 10, 'Biedronka Tychy');
-INSERT INTO sut_se_price_map.store (id, region, name) VALUES (11, 8, 'Biedronka Sosnowiec');
-INSERT INTO sut_se_price_map.store (id, region, name) VALUES (12, 11, 'Biedronka Cieszyn');
-INSERT INTO sut_se_price_map.store (id, region, name) VALUES (13, 11, 'Lidl Cieszyn');
-INSERT INTO sut_se_price_map.store (id, region, name) VALUES (14, 11, 'Żabka Cieszyn');
+INSERT INTO sut_se_price_map.store (id, region_id, name) VALUES (1, 1, 'Warzywniak ABC');
+INSERT INTO sut_se_price_map.store (id, region_id, name) VALUES (2, 2, 'Lidl TG');
+INSERT INTO sut_se_price_map.store (id, region_id, name) VALUES (3, 2, 'Carrefour TG');
+INSERT INTO sut_se_price_map.store (id, region_id, name) VALUES (4, 1, 'Biedronka Bytom');
+INSERT INTO sut_se_price_map.store (id, region_id, name) VALUES (5, 3, 'Biedronka Katowice');
+INSERT INTO sut_se_price_map.store (id, region_id, name) VALUES (6, 11, 'Sklep Elektroniczny Kabel');
+INSERT INTO sut_se_price_map.store (id, region_id, name) VALUES (7, 8, 'Sklep Elektroniczny XYZ');
+INSERT INTO sut_se_price_map.store (id, region_id, name) VALUES (8, 8, 'Warzywniak Pomidor');
+INSERT INTO sut_se_price_map.store (id, region_id, name) VALUES (9, 10, 'Żabka Tychy');
+INSERT INTO sut_se_price_map.store (id, region_id, name) VALUES (10, 10, 'Biedronka Tychy');
+INSERT INTO sut_se_price_map.store (id, region_id, name) VALUES (11, 8, 'Biedronka Sosnowiec');
+INSERT INTO sut_se_price_map.store (id, region_id, name) VALUES (12, 11, 'Biedronka Cieszyn');
+INSERT INTO sut_se_price_map.store (id, region_id, name) VALUES (13, 11, 'Lidl Cieszyn');
+INSERT INTO sut_se_price_map.store (id, region_id, name) VALUES (14, 11, 'Żabka Cieszyn');
 
 
 --
--- TOC entry 3453 (class 0 OID 16429)
--- Dependencies: 230
+-- TOC entry 3456 (class 0 OID 16436)
+-- Dependencies: 232
 -- Data for Name: user; Type: TABLE DATA; Schema: sut_se_price_map; Owner: docker
 --
 
-INSERT INTO sut_se_price_map."user" (id, display_name, avatar, password, is_admin, login) VALUES (16, 'Pan X', NULL, '1234', false, 'Pan X');
-INSERT INTO sut_se_price_map."user" (id, display_name, avatar, password, is_admin, login) VALUES (19, 'Kermit45000', NULL, '0000', false, 'Kermit45000');
-INSERT INTO sut_se_price_map."user" (id, display_name, avatar, password, is_admin, login) VALUES (20, 'Wlad Palownik', NULL, 'Wallachia1431', false, 'Wlad Palownik');
-INSERT INTO sut_se_price_map."user" (id, display_name, avatar, password, is_admin, login) VALUES (21, 'Herr_AB', NULL, '123456', false, 'Herr_AB');
-INSERT INTO sut_se_price_map."user" (id, display_name, avatar, password, is_admin, login) VALUES (22, 'Stanislaw1', NULL, '111', false, 'Stanislaw1');
-INSERT INTO sut_se_price_map."user" (id, display_name, avatar, password, is_admin, login) VALUES (23, 'Adam Nowak', NULL, '4321', false, 'Adam Nowak');
-INSERT INTO sut_se_price_map."user" (id, display_name, avatar, password, is_admin, login) VALUES (24, 'Jan Nowy', NULL, '9999', false, 'Jan Nowy');
-INSERT INTO sut_se_price_map."user" (id, display_name, avatar, password, is_admin, login) VALUES (25, 'Gandalf Szary', NULL, 'Gandalf Szarybcdef', false, 'a');
-INSERT INTO sut_se_price_map."user" (id, display_name, avatar, password, is_admin, login) VALUES (26, 'Gandalf Biały', NULL, 'fedcba', false, 'Gandalf Biały');
-INSERT INTO sut_se_price_map."user" (id, display_name, avatar, password, is_admin, login) VALUES (27, 'R2D2', NULL, 'r2d2', false, 'R2D2');
-INSERT INTO sut_se_price_map."user" (id, display_name, avatar, password, is_admin, login) VALUES (28, 'Jan22', NULL, '2137', false, 'Jan22');
-INSERT INTO sut_se_price_map."user" (id, display_name, avatar, password, is_admin, login) VALUES (31, 'Franzl Lang', 3, 'jodler base arena', false, 'Franzl Lang');
-INSERT INTO sut_se_price_map."user" (id, display_name, avatar, password, is_admin, login) VALUES (32, 'Franzl Lang', 3, 'jodler base arena', false, 'Franzl Lang1');
-INSERT INTO sut_se_price_map."user" (id, display_name, avatar, password, is_admin, login) VALUES (34, 'franzl', NULL, '$2a$10$XyaQ5y664ZaOlz91MDeZteoXzZMORsjUc3P1UmYuJtttgc6QeNBAG', true, 'franzl_lang');
-INSERT INTO sut_se_price_map."user" (id, display_name, avatar, password, is_admin, login) VALUES (33, 'Jodler Base', NULL, '$2a$10$XyaQ5y664ZaOlz91MDeZteoXzZMORsjUc3P1UmYuJtttgc6QeNBAG', false, 'jodler');
-INSERT INTO sut_se_price_map."user" (id, display_name, avatar, password, is_admin, login) VALUES (37, 'ben123', NULL, '$2a$10$hVEa77JWki/z3xU/4pOhpOOtm3v.7xN7Qdp5GOHrKEmRjfRlB4a0a', false, 'ben123');
-INSERT INTO sut_se_price_map."user" (id, display_name, avatar, password, is_admin, login) VALUES (38, 'ben1234', NULL, '$2a$10$3rfGJb.dVq2YbxU/LXamEO0wVN7gmH3pyOKpVTOpX0sY4JK1/bMY2', false, 'ben1234');
-INSERT INTO sut_se_price_map."user" (id, display_name, avatar, password, is_admin, login) VALUES (39, 'ben12345', NULL, '$2a$10$HXCMtThpOAZ2zZMacJ3upu15SjblVwvKPhsdRPKUZh/bQEpbe6jmi', false, 'ben12345');
-INSERT INTO sut_se_price_map."user" (id, display_name, avatar, password, is_admin, login) VALUES (40, 'ben9', NULL, '$2a$10$gBl7mVDNM2sXEV8uV51On.WGohFlpK7qksJj3fHwB4krT7ivf9gUy', false, 'ben9');
-INSERT INTO sut_se_price_map."user" (id, display_name, avatar, password, is_admin, login) VALUES (41, 'ben', NULL, '$2a$10$u/k4R/pFcB3nsEtXV6ONzuVD0pmc6JsB72HWHbAWQ2ycRZ7g0VAbC', false, 'ben99');
-INSERT INTO sut_se_price_map."user" (id, display_name, avatar, password, is_admin, login) VALUES (42, 'ben', NULL, '$2a$10$DARJmbCI5HGQeSb13GfYoeK4j0SWs0giAPCnfoeLKy1G6PBXSvrIe', false, 'ben9123');
+INSERT INTO sut_se_price_map."user" (id, display_name, avatar_id, password, is_admin, login) VALUES (16, 'Pan X', NULL, '1234', false, 'Pan X');
+INSERT INTO sut_se_price_map."user" (id, display_name, avatar_id, password, is_admin, login) VALUES (19, 'Kermit45000', NULL, '0000', false, 'Kermit45000');
+INSERT INTO sut_se_price_map."user" (id, display_name, avatar_id, password, is_admin, login) VALUES (20, 'Wlad Palownik', NULL, 'Wallachia1431', false, 'Wlad Palownik');
+INSERT INTO sut_se_price_map."user" (id, display_name, avatar_id, password, is_admin, login) VALUES (21, 'Herr_AB', NULL, '123456', false, 'Herr_AB');
+INSERT INTO sut_se_price_map."user" (id, display_name, avatar_id, password, is_admin, login) VALUES (22, 'Stanislaw1', NULL, '111', false, 'Stanislaw1');
+INSERT INTO sut_se_price_map."user" (id, display_name, avatar_id, password, is_admin, login) VALUES (23, 'Adam Nowak', NULL, '4321', false, 'Adam Nowak');
+INSERT INTO sut_se_price_map."user" (id, display_name, avatar_id, password, is_admin, login) VALUES (24, 'Jan Nowy', NULL, '9999', false, 'Jan Nowy');
+INSERT INTO sut_se_price_map."user" (id, display_name, avatar_id, password, is_admin, login) VALUES (25, 'Gandalf Szary', NULL, 'Gandalf Szarybcdef', false, 'a');
+INSERT INTO sut_se_price_map."user" (id, display_name, avatar_id, password, is_admin, login) VALUES (26, 'Gandalf Biały', NULL, 'fedcba', false, 'Gandalf Biały');
+INSERT INTO sut_se_price_map."user" (id, display_name, avatar_id, password, is_admin, login) VALUES (27, 'R2D2', NULL, 'r2d2', false, 'R2D2');
+INSERT INTO sut_se_price_map."user" (id, display_name, avatar_id, password, is_admin, login) VALUES (28, 'Jan22', NULL, '2137', false, 'Jan22');
+INSERT INTO sut_se_price_map."user" (id, display_name, avatar_id, password, is_admin, login) VALUES (31, 'Franzl Lang', 3, 'jodler base arena', false, 'Franzl Lang');
+INSERT INTO sut_se_price_map."user" (id, display_name, avatar_id, password, is_admin, login) VALUES (32, 'Franzl Lang', 3, 'jodler base arena', false, 'Franzl Lang1');
+INSERT INTO sut_se_price_map."user" (id, display_name, avatar_id, password, is_admin, login) VALUES (34, 'franzl', NULL, '$2a$10$XyaQ5y664ZaOlz91MDeZteoXzZMORsjUc3P1UmYuJtttgc6QeNBAG', true, 'franzl_lang');
+INSERT INTO sut_se_price_map."user" (id, display_name, avatar_id, password, is_admin, login) VALUES (33, 'Jodler Base', NULL, '$2a$10$XyaQ5y664ZaOlz91MDeZteoXzZMORsjUc3P1UmYuJtttgc6QeNBAG', false, 'jodler');
+INSERT INTO sut_se_price_map."user" (id, display_name, avatar_id, password, is_admin, login) VALUES (37, 'ben123', NULL, '$2a$10$hVEa77JWki/z3xU/4pOhpOOtm3v.7xN7Qdp5GOHrKEmRjfRlB4a0a', false, 'ben123');
+INSERT INTO sut_se_price_map."user" (id, display_name, avatar_id, password, is_admin, login) VALUES (38, 'ben1234', NULL, '$2a$10$3rfGJb.dVq2YbxU/LXamEO0wVN7gmH3pyOKpVTOpX0sY4JK1/bMY2', false, 'ben1234');
+INSERT INTO sut_se_price_map."user" (id, display_name, avatar_id, password, is_admin, login) VALUES (39, 'ben12345', NULL, '$2a$10$HXCMtThpOAZ2zZMacJ3upu15SjblVwvKPhsdRPKUZh/bQEpbe6jmi', false, 'ben12345');
+INSERT INTO sut_se_price_map."user" (id, display_name, avatar_id, password, is_admin, login) VALUES (40, 'ben9', NULL, '$2a$10$gBl7mVDNM2sXEV8uV51On.WGohFlpK7qksJj3fHwB4krT7ivf9gUy', false, 'ben9');
+INSERT INTO sut_se_price_map."user" (id, display_name, avatar_id, password, is_admin, login) VALUES (41, 'ben', NULL, '$2a$10$u/k4R/pFcB3nsEtXV6ONzuVD0pmc6JsB72HWHbAWQ2ycRZ7g0VAbC', false, 'ben99');
+INSERT INTO sut_se_price_map."user" (id, display_name, avatar_id, password, is_admin, login) VALUES (42, 'ben', NULL, '$2a$10$DARJmbCI5HGQeSb13GfYoeK4j0SWs0giAPCnfoeLKy1G6PBXSvrIe', false, 'ben9123');
 
 
 --
--- TOC entry 3470 (class 0 OID 0)
+-- TOC entry 3471 (class 0 OID 0)
 -- Dependencies: 219
 -- Name: attachement_id_seq; Type: SEQUENCE SET; Schema: sut_se_price_map; Owner: docker
 --
@@ -605,7 +606,7 @@ SELECT pg_catalog.setval('sut_se_price_map.attachement_id_seq', 1, false);
 
 
 --
--- TOC entry 3471 (class 0 OID 0)
+-- TOC entry 3472 (class 0 OID 0)
 -- Dependencies: 221
 -- Name: contrib_id_seq; Type: SEQUENCE SET; Schema: sut_se_price_map; Owner: docker
 --
@@ -614,7 +615,7 @@ SELECT pg_catalog.setval('sut_se_price_map.contrib_id_seq', 37, true);
 
 
 --
--- TOC entry 3472 (class 0 OID 0)
+-- TOC entry 3473 (class 0 OID 0)
 -- Dependencies: 223
 -- Name: product_id_seq; Type: SEQUENCE SET; Schema: sut_se_price_map; Owner: docker
 --
@@ -623,7 +624,7 @@ SELECT pg_catalog.setval('sut_se_price_map.product_id_seq', 15, true);
 
 
 --
--- TOC entry 3473 (class 0 OID 0)
+-- TOC entry 3474 (class 0 OID 0)
 -- Dependencies: 225
 -- Name: region_id_seq; Type: SEQUENCE SET; Schema: sut_se_price_map; Owner: docker
 --
@@ -632,8 +633,8 @@ SELECT pg_catalog.setval('sut_se_price_map.region_id_seq', 19, true);
 
 
 --
--- TOC entry 3474 (class 0 OID 0)
--- Dependencies: 232
+-- TOC entry 3475 (class 0 OID 0)
+-- Dependencies: 227
 -- Name: report_id_seq; Type: SEQUENCE SET; Schema: sut_se_price_map; Owner: docker
 --
 
@@ -641,8 +642,8 @@ SELECT pg_catalog.setval('sut_se_price_map.report_id_seq', 1, false);
 
 
 --
--- TOC entry 3475 (class 0 OID 0)
--- Dependencies: 227
+-- TOC entry 3476 (class 0 OID 0)
+-- Dependencies: 229
 -- Name: resource_id_seq; Type: SEQUENCE SET; Schema: sut_se_price_map; Owner: docker
 --
 
@@ -650,8 +651,8 @@ SELECT pg_catalog.setval('sut_se_price_map.resource_id_seq', 3, true);
 
 
 --
--- TOC entry 3476 (class 0 OID 0)
--- Dependencies: 229
+-- TOC entry 3477 (class 0 OID 0)
+-- Dependencies: 231
 -- Name: store_id_seq; Type: SEQUENCE SET; Schema: sut_se_price_map; Owner: docker
 --
 
@@ -659,8 +660,8 @@ SELECT pg_catalog.setval('sut_se_price_map.store_id_seq', 15, true);
 
 
 --
--- TOC entry 3477 (class 0 OID 0)
--- Dependencies: 231
+-- TOC entry 3478 (class 0 OID 0)
+-- Dependencies: 233
 -- Name: user_id_seq; Type: SEQUENCE SET; Schema: sut_se_price_map; Owner: docker
 --
 
@@ -668,7 +669,7 @@ SELECT pg_catalog.setval('sut_se_price_map.user_id_seq', 42, true);
 
 
 --
--- TOC entry 3263 (class 2606 OID 16447)
+-- TOC entry 3263 (class 2606 OID 16453)
 -- Name: attachement attachement_pkey; Type: CONSTRAINT; Schema: sut_se_price_map; Owner: docker
 --
 
@@ -677,7 +678,7 @@ ALTER TABLE ONLY sut_se_price_map.attachement
 
 
 --
--- TOC entry 3266 (class 2606 OID 16449)
+-- TOC entry 3266 (class 2606 OID 16455)
 -- Name: contrib contrib_pkey; Type: CONSTRAINT; Schema: sut_se_price_map; Owner: docker
 --
 
@@ -686,7 +687,7 @@ ALTER TABLE ONLY sut_se_price_map.contrib
 
 
 --
--- TOC entry 3271 (class 2606 OID 16451)
+-- TOC entry 3271 (class 2606 OID 16457)
 -- Name: product product_pkey; Type: CONSTRAINT; Schema: sut_se_price_map; Owner: docker
 --
 
@@ -695,7 +696,7 @@ ALTER TABLE ONLY sut_se_price_map.product
 
 
 --
--- TOC entry 3274 (class 2606 OID 16453)
+-- TOC entry 3274 (class 2606 OID 16459)
 -- Name: region region_pkey; Type: CONSTRAINT; Schema: sut_se_price_map; Owner: docker
 --
 
@@ -704,7 +705,7 @@ ALTER TABLE ONLY sut_se_price_map.region
 
 
 --
--- TOC entry 3286 (class 2606 OID 16511)
+-- TOC entry 3276 (class 2606 OID 16461)
 -- Name: report report_pkey; Type: CONSTRAINT; Schema: sut_se_price_map; Owner: docker
 --
 
@@ -713,7 +714,7 @@ ALTER TABLE ONLY sut_se_price_map.report
 
 
 --
--- TOC entry 3276 (class 2606 OID 16455)
+-- TOC entry 3278 (class 2606 OID 16463)
 -- Name: resource resource_pkey; Type: CONSTRAINT; Schema: sut_se_price_map; Owner: docker
 --
 
@@ -722,7 +723,7 @@ ALTER TABLE ONLY sut_se_price_map.resource
 
 
 --
--- TOC entry 3279 (class 2606 OID 16457)
+-- TOC entry 3281 (class 2606 OID 16465)
 -- Name: store store_pkey; Type: CONSTRAINT; Schema: sut_se_price_map; Owner: docker
 --
 
@@ -731,7 +732,7 @@ ALTER TABLE ONLY sut_se_price_map.store
 
 
 --
--- TOC entry 3282 (class 2606 OID 16436)
+-- TOC entry 3284 (class 2606 OID 16467)
 -- Name: user user_login_key; Type: CONSTRAINT; Schema: sut_se_price_map; Owner: docker
 --
 
@@ -740,7 +741,7 @@ ALTER TABLE ONLY sut_se_price_map."user"
 
 
 --
--- TOC entry 3284 (class 2606 OID 16459)
+-- TOC entry 3286 (class 2606 OID 16469)
 -- Name: user user_pkey; Type: CONSTRAINT; Schema: sut_se_price_map; Owner: docker
 --
 
@@ -749,143 +750,152 @@ ALTER TABLE ONLY sut_se_price_map."user"
 
 
 --
--- TOC entry 3264 (class 1259 OID 16460)
+-- TOC entry 3264 (class 1259 OID 16470)
 -- Name: fki_attachement_resource_fk; Type: INDEX; Schema: sut_se_price_map; Owner: docker
 --
 
-CREATE INDEX fki_attachement_resource_fk ON sut_se_price_map.attachement USING btree (resource);
+CREATE INDEX fki_attachement_resource_fk ON sut_se_price_map.attachement USING btree (resource_id);
 
 
 --
--- TOC entry 3267 (class 1259 OID 16461)
+-- TOC entry 3267 (class 1259 OID 16471)
 -- Name: fki_contrib_author_fk; Type: INDEX; Schema: sut_se_price_map; Owner: docker
 --
 
-CREATE INDEX fki_contrib_author_fk ON sut_se_price_map.contrib USING btree (author);
+CREATE INDEX fki_contrib_author_fk ON sut_se_price_map.contrib USING btree (author_id);
 
 
 --
--- TOC entry 3268 (class 1259 OID 16462)
+-- TOC entry 3268 (class 1259 OID 16472)
 -- Name: fki_contrib_product_fk; Type: INDEX; Schema: sut_se_price_map; Owner: docker
 --
 
-CREATE INDEX fki_contrib_product_fk ON sut_se_price_map.contrib USING btree (product);
+CREATE INDEX fki_contrib_product_fk ON sut_se_price_map.contrib USING btree (product_id);
 
 
 --
--- TOC entry 3269 (class 1259 OID 16463)
+-- TOC entry 3269 (class 1259 OID 16473)
 -- Name: fki_contrib_store_fk; Type: INDEX; Schema: sut_se_price_map; Owner: docker
 --
 
-CREATE INDEX fki_contrib_store_fk ON sut_se_price_map.contrib USING btree (store);
+CREATE INDEX fki_contrib_store_fk ON sut_se_price_map.contrib USING btree (store_id);
 
 
 --
--- TOC entry 3272 (class 1259 OID 16464)
+-- TOC entry 3272 (class 1259 OID 16474)
 -- Name: fki_parent_region_fk; Type: INDEX; Schema: sut_se_price_map; Owner: docker
 --
 
-CREATE INDEX fki_parent_region_fk ON sut_se_price_map.region USING btree (parent);
+CREATE INDEX fki_parent_region_fk ON sut_se_price_map.region USING btree (parent_id);
 
 
 --
--- TOC entry 3277 (class 1259 OID 16465)
+-- TOC entry 3279 (class 1259 OID 16475)
 -- Name: fki_store_region_fk; Type: INDEX; Schema: sut_se_price_map; Owner: docker
 --
 
-CREATE INDEX fki_store_region_fk ON sut_se_price_map.store USING btree (region);
+CREATE INDEX fki_store_region_fk ON sut_se_price_map.store USING btree (region_id);
 
 
 --
--- TOC entry 3280 (class 1259 OID 16466)
+-- TOC entry 3282 (class 1259 OID 16476)
 -- Name: fki_user_avatar_fk; Type: INDEX; Schema: sut_se_price_map; Owner: docker
 --
 
-CREATE INDEX fki_user_avatar_fk ON sut_se_price_map."user" USING btree (avatar);
+CREATE INDEX fki_user_avatar_fk ON sut_se_price_map."user" USING btree (avatar_id);
 
 
 --
--- TOC entry 3287 (class 2606 OID 16467)
+-- TOC entry 3287 (class 2606 OID 16477)
 -- Name: attachement attachement_resource_fk; Type: FK CONSTRAINT; Schema: sut_se_price_map; Owner: docker
 --
 
 ALTER TABLE ONLY sut_se_price_map.attachement
-    ADD CONSTRAINT attachement_resource_fk FOREIGN KEY (resource) REFERENCES sut_se_price_map.resource(id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT attachement_resource_fk FOREIGN KEY (resource_id) REFERENCES sut_se_price_map.resource(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
--- TOC entry 3288 (class 2606 OID 16472)
+-- TOC entry 3288 (class 2606 OID 16482)
 -- Name: contrib contrib_author_fk; Type: FK CONSTRAINT; Schema: sut_se_price_map; Owner: docker
 --
 
 ALTER TABLE ONLY sut_se_price_map.contrib
-    ADD CONSTRAINT contrib_author_fk FOREIGN KEY (author) REFERENCES sut_se_price_map."user"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT contrib_author_fk FOREIGN KEY (author_id) REFERENCES sut_se_price_map."user"(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
--- TOC entry 3289 (class 2606 OID 16477)
+-- TOC entry 3289 (class 2606 OID 16487)
 -- Name: contrib contrib_product_fk; Type: FK CONSTRAINT; Schema: sut_se_price_map; Owner: docker
 --
 
 ALTER TABLE ONLY sut_se_price_map.contrib
-    ADD CONSTRAINT contrib_product_fk FOREIGN KEY (product) REFERENCES sut_se_price_map.product(id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT contrib_product_fk FOREIGN KEY (product_id) REFERENCES sut_se_price_map.product(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
--- TOC entry 3290 (class 2606 OID 16482)
+-- TOC entry 3290 (class 2606 OID 16492)
 -- Name: contrib contrib_store_fk; Type: FK CONSTRAINT; Schema: sut_se_price_map; Owner: docker
 --
 
 ALTER TABLE ONLY sut_se_price_map.contrib
-    ADD CONSTRAINT contrib_store_fk FOREIGN KEY (store) REFERENCES sut_se_price_map.store(id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT contrib_store_fk FOREIGN KEY (store_id) REFERENCES sut_se_price_map.store(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
--- TOC entry 3291 (class 2606 OID 16487)
+-- TOC entry 3292 (class 2606 OID 16497)
 -- Name: region parent_region_fk; Type: FK CONSTRAINT; Schema: sut_se_price_map; Owner: docker
 --
 
 ALTER TABLE ONLY sut_se_price_map.region
-    ADD CONSTRAINT parent_region_fk FOREIGN KEY (parent) REFERENCES sut_se_price_map.region(id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT parent_region_fk FOREIGN KEY (parent_id) REFERENCES sut_se_price_map.region(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
--- TOC entry 3294 (class 2606 OID 16517)
+-- TOC entry 3291 (class 2606 OID 16526)
+-- Name: product product_photo_id_fkey; Type: FK CONSTRAINT; Schema: sut_se_price_map; Owner: docker
+--
+
+ALTER TABLE ONLY sut_se_price_map.product
+    ADD CONSTRAINT product_photo_id_fkey FOREIGN KEY (photo_id) REFERENCES sut_se_price_map.resource(id) ON DELETE SET NULL;
+
+
+--
+-- TOC entry 3293 (class 2606 OID 16502)
 -- Name: report report_author_fkey; Type: FK CONSTRAINT; Schema: sut_se_price_map; Owner: docker
 --
 
 ALTER TABLE ONLY sut_se_price_map.report
-    ADD CONSTRAINT report_author_fkey FOREIGN KEY (author) REFERENCES sut_se_price_map."user"(id);
+    ADD CONSTRAINT report_author_fkey FOREIGN KEY (author_id) REFERENCES sut_se_price_map."user"(id);
 
 
 --
--- TOC entry 3295 (class 2606 OID 16512)
+-- TOC entry 3294 (class 2606 OID 16507)
 -- Name: report report_reported_fkey; Type: FK CONSTRAINT; Schema: sut_se_price_map; Owner: docker
 --
 
 ALTER TABLE ONLY sut_se_price_map.report
-    ADD CONSTRAINT report_reported_fkey FOREIGN KEY (reported) REFERENCES sut_se_price_map.contrib(id);
+    ADD CONSTRAINT report_reported_fkey FOREIGN KEY (reported_id) REFERENCES sut_se_price_map.contrib(id);
 
 
 --
--- TOC entry 3292 (class 2606 OID 16492)
+-- TOC entry 3295 (class 2606 OID 16512)
 -- Name: store store_region_fk; Type: FK CONSTRAINT; Schema: sut_se_price_map; Owner: docker
 --
 
 ALTER TABLE ONLY sut_se_price_map.store
-    ADD CONSTRAINT store_region_fk FOREIGN KEY (region) REFERENCES sut_se_price_map.region(id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT store_region_fk FOREIGN KEY (region_id) REFERENCES sut_se_price_map.region(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
--- TOC entry 3293 (class 2606 OID 16497)
+-- TOC entry 3296 (class 2606 OID 16517)
 -- Name: user user_avatar_fk; Type: FK CONSTRAINT; Schema: sut_se_price_map; Owner: docker
 --
 
 ALTER TABLE ONLY sut_se_price_map."user"
-    ADD CONSTRAINT user_avatar_fk FOREIGN KEY (avatar) REFERENCES sut_se_price_map.resource(id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT user_avatar_fk FOREIGN KEY (avatar_id) REFERENCES sut_se_price_map.resource(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
--- Completed on 2025-01-27 18:22:01 UTC
+-- Completed on 2025-01-28 08:38:40 UTC
 
 --
 -- PostgreSQL database dump complete
