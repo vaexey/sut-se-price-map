@@ -3,6 +3,12 @@ services:
     build: .
     ports:
       - 8080:6969
+    environment:
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_USERNAME: docker
+      DATABASE_PASSWORD: root
+      DATABASE_NAME: docker
     depends_on:
       db:
         condition: service_healthy
