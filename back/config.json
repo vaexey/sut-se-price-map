@@ -1,11 +1,11 @@
 {
   "Database": {
     "Type": "postgresql",
-    "Host": "",
+    "Host": "localhost",
     "Port": 5432,
-    "Username": "",
-    "Password": "",
-    "Database": ""
+    "Username": "docker",
+    "Password": "root",
+    "Database": "docker"
   },
   "Server": {
     "Address": "127.0.0.1",

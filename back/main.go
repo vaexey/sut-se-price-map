@@ -2,12 +2,13 @@ package main
 
 import (
 	lapi "back/api"
-	ldb "back/db"
 	"back/auth"
 	"back/config"
+	ldb "back/db"
 	"fmt"
 	"net/http"
 	"os"
+
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/postgres"
@@ -47,6 +48,8 @@ func serveStaticIndex(c *gin.Context) {
 }
 
 func main() {
+	conf := config.Config
+
 	// TODO: make configurable (through env)
 	// --> gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
@@ -55,10 +58,20 @@ func main() {
 	recovery := gin.Recovery()
 	router.Use(logger, recovery)
 
-	// TODO: derive from env variables
+	dsn := fmt.Sprintf(
+		"host=%s port=%d user=%s password=%s dbname=%s",
+		conf.Database.Host,
+		conf.Database.Port,
+		conf.Database.Username,
+		conf.Database.Password,
+		conf.Database.Database,
+	)
 
-	dsn := "postgres://docker:root@localhost:5432/docker"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+
+	if err != nil {
+		panic(err)
+	}
 
 	// Preload main static file for quick response
 	file, err := os.ReadFile("./static/index.html")
@@ -71,13 +84,12 @@ func main() {
 	database := ldb.NewDatabase(db)
 	api := lapi.NewApi(&database)
 
-	authHandler := auth.Handler {
-		Db : &database,
+	authHandler := auth.Handler{
+		Db: &database,
 	}
 
 	authMiddleware := authHandler.RequireJWT()
 	adminMiddleware := authHandler.RequireAdmin()
-
 
 	v1 := router.Group(config.API_PATH)
 	{
@@ -96,7 +108,6 @@ func main() {
 
 	router.Use(lapi.ApiFallback())
 
-
 	// Static files
 	router.GET("/", serveStaticIndex)
 	router.GET("/index.html", serveStaticIndex)
@@ -104,7 +115,6 @@ func main() {
 	router.Use(static.Serve("/", static.LocalFile("./static", false)))
 	router.NoRoute(serveStaticIndex)
 
-	conf := config.Config
 	addr := fmt.Sprintf("%s:%d", conf.Server.Address, conf.Server.Port)
 	panic(router.Run(addr))
 }

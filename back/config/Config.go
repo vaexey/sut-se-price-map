@@ -26,36 +26,41 @@ type databaseConfig struct {
 	Database string
 }
 
+var defaultConfig config = config{
+	Server: serverConfig{
+		Address: "0.0.0.0",
+		Port:    6969,
+		Secret:  "",
+	},
+	Database: databaseConfig{
+		Type:     "postgresql",
+		Host:     "",
+		Port:     5432,
+		Username: "",
+		Password: "",
+		Database: "",
+	},
+}
+
 func readConfig(fileName string) config {
 	var conf config
 	data, err := os.ReadFile(fileName)
 	if err != nil {
-		conf = config{
-			Server: serverConfig{
-				Address: "0.0.0.0",
-				Port:    6969,
-				Secret:  "",
-			},
-			Database: databaseConfig{
-				Type:     "postgresql",
-				Host:     "",
-				Port:     5432,
-				Username: "",
-				Password: "",
-				Database: "",
-			},
-		}
+		conf = defaultConfig
+
 		saveConfig(fileName, conf)
+		updateConfigFromEnv(&conf)
+
 		return conf
 	}
 
 	err = json.Unmarshal(data, &conf)
 
 	if err != nil {
-		return config{}
+		conf = defaultConfig
 	}
 
-	UpdateConfigFromEnv(&conf)
+	updateConfigFromEnv(&conf)
 
 	return conf
 }
@@ -75,7 +80,7 @@ func saveConfig(filename string, conf config) error {
 	return nil
 }
 
-func UpdateConfigFromEnv(conf *config) { 
+func updateConfigFromEnv(conf *config) {
 	updateConfigField("DATABASE_PORT", func(value string) {
 		if port, err := strconv.Atoi(value); err == nil {
 			conf.Database.Port = port
@@ -96,7 +101,7 @@ func UpdateConfigFromEnv(conf *config) {
 	updateConfigField("DATABASE_NAME", func(value string) {
 		conf.Database.Database = value
 	})
-	
+
 	//server
 	updateConfigField("SERVER_ADDRESS", func(value string) {
 		conf.Server.Address = value
@@ -119,5 +124,3 @@ func updateConfigField(envKey string, updateFunc func(string)) {
 
 var Config config = readConfig("config.json")
 var API_PATH string = "/api/v1"
-
-
