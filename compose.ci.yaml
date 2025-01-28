@@ -36,6 +36,11 @@ services:
         required: true
         restart: true
     environment:
+      - DATABASE_HOST=db
+      - DATABASE_NAME=docker
+      - DATABASE_PASSWORD=root
+      - DATABASE_PORT=5432
+      - DATABASE_USERNAME=docker
       - CI_MODE=1
     networks:
       default: null
