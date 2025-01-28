@@ -2,12 +2,13 @@ package main
 
 import (
 	lapi "back/api"
-	ldb "back/db"
 	"back/auth"
 	"back/config"
+	ldb "back/db"
 	"fmt"
 	"net/http"
 	"os"
+
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/postgres"
@@ -88,6 +89,12 @@ func main() {
 		// API
 		v1.GET("regions", api.Regions)
 		v1.GET("regions/:regionID", api.RegionById)
+
+		v1.POST("contribs/group", api.ContribsGroup)
+		v1.POST("contribs/:contribId", api.ContribsByIdPost)
+		v1.GET("contribs/:contribId", api.ContribsByIdGet)
+		v1.GET("contribs", api.ContribsGet)
+		v1.PUT("contribs", api.ContribsPut)
 
 		// Auth-guarded
 		v1.GET("hello", authMiddleware, hello)

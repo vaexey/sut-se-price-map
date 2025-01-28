@@ -1,23 +1,29 @@
 package model
 
-// due to no union/enums in language, ContribStatus = string
-type ContribStatus string
 
 type Contrib struct {
-	id DbId
-
+	Id          uint	`gorm:"unique;primaryKey;autoIncrement" json:"id"`
 	// grouped by
-	product DbRef[Product]
-	store   DbRef[Store]
+	ProductID uint `json:"-"`
+	Product Product `json:"product"`
 
-	author DbRef[User]
-	price  float32
-	date   any // todo: define date
+	StoreID uint `json:"-"`
+	Store   Store `json:"store"`
+
+	AuthorID uint `json:"-"`
+	Author User `json:"author"`
+
+	Price  float32 `json:"price"`
+	Date   string `json:"date"`
 
 	// optional detail view
-	comment     *string
-	attachments []DbRef[Attachment]
+	Comment     *string `json:"comment"`
+	//Attachments []uint `gorm:"column:attachments"`
 
 	// view status
-	status ContribStatus
+	Status string `json:"status"`
+}
+
+func (Contrib) TableName() string {
+	return "sut_se_price_map.contrib"
 }
