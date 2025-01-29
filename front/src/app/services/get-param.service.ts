@@ -40,7 +40,7 @@ export class GetParamService {
     keys.forEach(k => {
       const v = request[k]
 
-      if(!v)
+      if(v === undefined || v === null)
         return
 
       if(typeof v === "string" || typeof v === "number")

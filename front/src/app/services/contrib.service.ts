@@ -4,6 +4,7 @@ import { GetContribsRequest, GetContribsResponse } from '../model/api/GetContrib
 import { Observable } from 'rxjs';
 import { API_PATH } from './API';
 import { GetParamService, SquashableRequest } from './get-param.service';
+import { GetContribsGroupRequest, GetContribsGroupResponse } from '../model/api/GetContribsGroupRequest';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +20,16 @@ export class ContribService {
   {
     return this.http.get<GetContribsResponse>(
       `${API_PATH}/contribs`,
+      {
+        params: this.getParam.squashRequest(request as SquashableRequest)
+      }
+    )
+  }
+
+  getContribGroups(request: GetContribsGroupRequest): Observable<GetContribsGroupResponse>
+  {
+    return this.http.get<GetContribsGroupResponse>(
+      `${API_PATH}/contribs/group`,
       {
         params: this.getParam.squashRequest(request as SquashableRequest)
       }
