@@ -23,10 +23,10 @@ export class GetParamService {
       request = this.squashRequestToArray(request)
     }
 
-    const params = new HttpParams()
+    let params = new HttpParams()
 
     request.forEach(p => {
-      params.set(p.key, p.value)
+      params = params.set(p.key, p.value)
     })
 
     return params
