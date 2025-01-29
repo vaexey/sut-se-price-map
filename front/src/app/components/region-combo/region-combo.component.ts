@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { RegionPickerComponent, RegionPickerDismissEvent } from '../region-picker/region-picker.component';
 import { FormsModule } from '@angular/forms';
 import { IonSelect, IonSelectOption } from '@ionic/angular/standalone';
@@ -17,6 +17,7 @@ import { caretDownOutline } from 'ionicons/icons';
   styleUrls: ['./region-combo.component.scss'],
 })
 export class RegionComboComponent  implements OnInit {
+  @Input() isSearchResults: boolean = false; 
 
   comboText = "Everywhere"
   isOpen = false
@@ -27,7 +28,9 @@ export class RegionComboComponent  implements OnInit {
     })
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    console.log(`searchresults: ` + this.isSearchResults)
+  }
 
   open()
   {
