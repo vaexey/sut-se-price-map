@@ -49,7 +49,15 @@ export class LoginComponent  implements OnInit {
         this.router.navigateByUrl(this.nextUrl)
       },
       error: err => {
-        this.error = this.errors.get(err)
+        const e = this.errors.getBody(err)
+
+        if(e?.code == 401)
+        {
+          this.error = this.errors.get(err)
+          return
+        }
+
+        this.errors.routeError(err)
       }
     })
   }

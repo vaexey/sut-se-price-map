@@ -3,13 +3,17 @@ import { IonicModule } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { filterCircleOutline } from 'ionicons/icons';
 import { InlineSVGModule } from 'ng-inline-svg-2';
+import { RegionComboComponent } from "../../components/region-combo/region-combo.component";
+import { ContribGroupViewComponent } from "../../components/contrib-group-view/contrib-group-view.component";
 
 @Component({
   selector: 'app-search',
   imports: [
     IonicModule,
     InlineSVGModule,
-  ],
+    RegionComboComponent,
+    ContribGroupViewComponent
+],
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss'],
 })

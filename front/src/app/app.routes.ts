@@ -7,6 +7,7 @@ import { ErrorNotFoundComponent } from './pages/error-not-found/error-not-found.
 import { OnlyLoggedService } from './services/only-logged.service';
 import { OnlyAnonymousService } from './services/only-anonymous.service';
 import { SignUpComponent } from './pages/sign-up/sign-up.component';
+import { ErrorUnavailableComponent } from './pages/error-unavailable/error-unavailable.component';
 
 export const routes: Routes = [
     { 
@@ -27,6 +28,11 @@ export const routes: Routes = [
     { 
         path: 'search', 
         component: SearchComponent 
+    },
+
+    {
+        path: '503',
+        component: ErrorUnavailableComponent
     },
 
     { path: '', pathMatch: 'full', component: HomeComponent },

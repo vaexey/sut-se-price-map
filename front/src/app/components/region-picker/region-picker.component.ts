@@ -4,6 +4,8 @@ import { RegionService } from '../../services/region.service';
 import { RegionTree } from '../../model/local/RegionTree';
 import { RegionPickerNodeComponent, RegionPickerNodeEvent } from "../region-picker-node/region-picker-node.component";
 import { DbId } from '../../model/db/dbDefs';
+import { Region } from '../../model/db/Region';
+import { ErrorService } from '../../services/error.service';
 
 export type RegionPickerDismissEvent = {
   selected: boolean,
@@ -50,14 +52,23 @@ export class RegionPickerComponent  implements OnInit {
     indeterminate: []
   }
 
+  regions: Region[] = []
+
   constructor(
-    private regionService: RegionService
+    private regionService: RegionService,
+    private errors: ErrorService
   ) { }
 
   ngOnInit()
   {
-    this.regionService.getRegionsTree().subscribe(res => {
-      this.model.tree = res
+    this.regionService.getRegions().subscribe({
+      next: res => {
+        this.regions = res
+        this.model.tree = this.regionService.regionsToRegionTree(res)
+      },
+      error: err => {
+        this.errors.routeError(err, "Could not load regions")
+      }
     })
   }
 
@@ -74,11 +85,32 @@ export class RegionPickerComponent  implements OnInit {
 
   onDismissed()
   {
+    let label = "Everywhere"
+
+    let show = this.model.checked.map(id => 
+      this.regions.find(r => r.id == id)?.name as string
+    )
+
+    if(show.length == 1)
+    {
+      label = show[0]
+    } else if(show.length > 2)
+    {
+      show = show.slice(0, 2)
+
+      label = `${show.join(", ")} and ${this.model.checked.length - show.length} more...`
+    } else if(show.length > 1) 
+    {
+      const last = show.pop()
+
+      label = `${show.join(", ")} and ${last}`
+    }
+
     this.didDismissEvent.emit({
       selected: !this.didCancel,
 
       regions: this.model.checked,
-      label: `[${this.model.checked.join(", ")}]`
+      label
     })
   }
 
