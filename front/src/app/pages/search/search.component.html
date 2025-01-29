@@ -1,92 +1,96 @@
 <ion-content class="ion-padding">
   <ion-grid>
-      <ion-row>
-        <ion-col></ion-col>
-        <ion-col style="text-align: center;">
-          <ion-title>Search results</ion-title>
-        </ion-col>
-        <ion-col></ion-col>
-      </ion-row>
+    <ion-row>
+      <ion-col></ion-col>
+      <ion-col style="text-align: center">
+        <ion-title>Search results</ion-title>
+      </ion-col>
+      <ion-col></ion-col>
+    </ion-row>
 
-      <ion-row>
-        <ion-col size="2">
-          <ion-card style="height: 100%;">
-            <ion-card-header>
-              <ion-card-title>Filters</ion-card-title>
-              <ion-card-subtitle>Narrow down your search results</ion-card-subtitle>
-            </ion-card-header>
+    <ion-row>
+      <ion-col size="2">
+        <ion-card style="height: 100%">
+          <ion-card-header>
+            <ion-card-title>Filters</ion-card-title>
+            <ion-card-subtitle
+              >Narrow down your search results</ion-card-subtitle
+            >
+          </ion-card-header>
 
-            <ion-card-content>
-              <ion-label color="dark">
-                <h2>Region</h2>
-              </ion-label>
-              <app-region-combo></app-region-combo>
+          <ion-card-content>
+            <ion-label color="dark">
+              <h2>Region</h2>
+            </ion-label>
+            <app-region-combo [isSearchResults]="true"></app-region-combo>
 
-              <ion-label color="dark">
-                <h2>Store</h2>
-              </ion-label>
-              <ion-select 
-              label="Store" 
-              label-placement="default" 
+            <ion-label color="dark">
+              <h2>Store</h2>
+            </ion-label>
+            <ion-select
+              label="Store"
+              label-placement="default"
               fill="outline"
               interface="modal"
-              class="ion-margin-top ion-margin-bottom">
-                  <ion-select-option value="everywhere">All stores</ion-select-option>
-                  <ion-select-option>Biedronka</ion-select-option>
-              </ion-select>
+              class="ion-margin-top ion-margin-bottom"
+            >
+              <ion-select-option value="everywhere"
+                >All stores</ion-select-option
+              >
+              <ion-select-option>Biedronka</ion-select-option>
+            </ion-select>
 
-              <ion-label color="dark">
-                <h2>Timespan</h2>
-              </ion-label>
+            <ion-label color="dark">
+              <h2>Timespan</h2>
+            </ion-label>
 
-              <ion-modal [keepContentsMounted]="true">
-                <ng-template>
-                  <ion-datetime id="timespanBefore"></ion-datetime>
-                </ng-template>
-              </ion-modal>
+            <ion-modal [keepContentsMounted]="true">
+              <ng-template>
+                <ion-datetime id="timespanBefore"></ion-datetime>
+              </ng-template>
+            </ion-modal>
 
-              <ion-modal [keepContentsMounted]="true">
-                <ng-template>
-                  <ion-datetime id="timespanAfter"></ion-datetime>
-                </ng-template>
-              </ion-modal>
+            <ion-modal [keepContentsMounted]="true">
+              <ng-template>
+                <ion-datetime id="timespanAfter"></ion-datetime>
+              </ng-template>
+            </ion-modal>
 
+            <ion-label color="dark" class="ion-margin-top"> Before </ion-label>
+            <ion-datetime-button
+              datetime="timespanBefore"
+              class="ion-margin-bottom"
+            ></ion-datetime-button>
 
-              <ion-label color="dark" class="ion-margin-top">
-                Before
-              </ion-label>
-              <ion-datetime-button 
-                datetime="timespanBefore"
-                class="ion-margin-bottom"
-              ></ion-datetime-button>
-              
-              <ion-label color="dark" class="ion-margin-top">
-                After
-              </ion-label>
-              <ion-datetime-button 
-                datetime="timespanAfter"
-                class="ion-margin-bottom"
-              ></ion-datetime-button>
-            </ion-card-content>
-          </ion-card>
-        </ion-col>
+            <ion-label color="dark" class="ion-margin-top"> After </ion-label>
+            <ion-datetime-button
+              datetime="timespanAfter"
+              class="ion-margin-bottom"
+            ></ion-datetime-button>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
 
-        <ion-col size="7">
-          <app-contrib-group-view></app-contrib-group-view>
-        </ion-col>
+      <ion-col size="7">
+        <app-contrib-group-view></app-contrib-group-view>
+      </ion-col>
 
-        <ion-col size="3">
-          <ion-card style="height: 100%;">
-            <ion-card-header>
-              <ion-card-title>Map</ion-card-title>
-              <ion-card-subtitle>Choose your location</ion-card-subtitle>
-            </ion-card-header>
+      <ion-col size="3">
+        <ion-card style="height: 100%">
+          <ion-card-header>
+            <ion-card-title>Map</ion-card-title>
+            <ion-card-subtitle>Choose your location</ion-card-subtitle>
+          </ion-card-header>
 
-            <ion-card-content>
-              <div class="map" [inlineSVG]="'/map_POL.svg'" (onSVGInserted)="this.onMapLoad()"></div>
-            </ion-card-content>
-          </ion-card>
-        </ion-col>
-      </ion-row>
+          <ion-card-content>
+            <div
+              class="map"
+              [inlineSVG]="'/map_POL.svg'"
+              (onSVGInserted)="this.onMapLoad()"
+            ></div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
   </ion-grid>
 </ion-content>
