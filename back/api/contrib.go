@@ -1,6 +1,7 @@
 package api
 
 import (
+	"back/db"
 	"back/model"
 	"errors"
 	"fmt"
@@ -50,7 +51,7 @@ func (a *Api) ContribsByIdGet(c *gin.Context) {
 	c.JSON(http.StatusOK, contrib)
 }
 
-func getFilterParam(query func(string) string, prefix string) (*[]uint, *[]uint, error) {
+func getFilterParam(query func(string) string, prefix string) (db.Filter, error) {
 	includeParam := query(fmt.Sprintf("%sInclude", prefix))
 	excludeParam := query(fmt.Sprintf("%sExclude", prefix))
 	var include *[]uint
@@ -65,7 +66,7 @@ func getFilterParam(query func(string) string, prefix string) (*[]uint, *[]uint,
 			for _, val := range values {
 				id, err := strconv.ParseUint(val, 10, 0)
 				if err != nil {
-					return nil, nil, err
+					return db.NewFilter(include, exclude, prefix),  err
 				}
 				*include = append(*include, uint(id))
 			}
@@ -79,30 +80,35 @@ func getFilterParam(query func(string) string, prefix string) (*[]uint, *[]uint,
 			for _, val := range values {
 				id, err := strconv.ParseUint(val, 10, 0)
 				if err != nil {
-					return nil, nil, err
+					return db.NewFilter(include, exclude, prefix), err
 				}
 				*exclude = append(*exclude, uint(id))
 			}
 		}
 	}
 
-	return include, exclude, nil
+	return db.NewFilter(include, exclude, prefix), nil
 }
 
 
 // contribs
 // returns all contribs matching criteria
 // pagination
+const FILTERS_LEN = 5
 func (a *Api) ContribsGet(c *gin.Context) {
+	filters := make([]db.Filter, FILTERS_LEN)
 	total := 0
 	returned := 0
 	pages := 0
+
 	var entries []model.Contrib
+	// for 4 other filters do the same
+	idFilter, err := getFilterParam(c.Query, "id")
+	authorFilter, err := getFilterParam(c.Query, "author")
+	filters[0] = idFilter
+	filters[1] = authorFilter 
 
-
-	iId, eId, err := getFilterParam(c.Query, "id")
-	fmt.Println(iId)
-	fmt.Println(eId)
+	a.Db.Contrib.SelectWithFilters(filters)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H {
 			"message": "Invalid values in paramateres",
