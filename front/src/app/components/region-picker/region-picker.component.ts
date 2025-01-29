@@ -116,8 +116,6 @@ export class RegionPickerComponent  implements OnInit {
 
   onIonChange(evt: RegionPickerNodeEvent)
   {
-    console.log(evt)
-
     const id = evt.id
 
     let checked = [...this.model.checked]

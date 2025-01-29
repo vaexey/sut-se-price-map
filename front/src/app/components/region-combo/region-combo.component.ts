@@ -28,9 +28,7 @@ export class RegionComboComponent  implements OnInit {
     })
   }
 
-  ngOnInit() {
-    console.log(`searchresults: ` + this.isSearchResults)
-  }
+  ngOnInit() { }
 
   open()
   {

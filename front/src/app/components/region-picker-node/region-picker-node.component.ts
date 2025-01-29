@@ -55,7 +55,6 @@ export class RegionPickerNodeComponent  implements OnInit {
 
   onIonChange(event: any | RegionPickerNodeEvent, id: DbId)
   {
-    console.log(event)
     if(event?.id && event?.checked !== undefined)
     {
       this.ionChangeEvent.emit({
