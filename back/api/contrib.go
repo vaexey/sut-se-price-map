@@ -56,7 +56,7 @@ func (a *Api) ContribsByIdGet(c *gin.Context) {
 
 
 // contribs
-// TODO: regions
+// TODO: inclusive regions
 const FILTERS_LEN = 5
 const DATE_PATTERN = time.RFC3339
 func (a *Api) ContribsGet(c *gin.Context) {
@@ -133,12 +133,12 @@ func (a *Api) ContribsGet(c *gin.Context) {
 	authorsFilter, err := getFilterParam(c.Query, "authors")
 	storesFilter, err := getFilterParam(c.Query, "stores")
 	productsFilter, err := getFilterParam(c.Query, "products")
-	// regionsFilter, err := getFilterParam(c.Query, "regions")
+	regionsFilter, err := getFilterParam(c.Query, "regions")
 	filters[0] = idFilter
 	filters[1] = authorsFilter 
 	filters[2] = storesFilter
 	filters[3] = productsFilter
-	// filters[4] = regionsFilter
+	filters[4] = regionsFilter
 
 	// fetch from db applying filters
 
@@ -161,6 +161,7 @@ func (a *Api) ContribsGet(c *gin.Context) {
 	entries = filter(entries, timespanTest)
 
 	// apply status filters
+
 	statusTest := func(c model.Contrib) bool {
 		return slices.Contains(status, c.Status)
 	}

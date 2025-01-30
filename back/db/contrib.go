@@ -3,7 +3,6 @@ package db
 import (
 	"back/model"
 	"fmt"
-	"strings"
 )
 func NewFilter(include *[]uint, exclude *[]uint, prefix string) Filter {
     field := prefix
@@ -32,30 +31,37 @@ type Filter struct {
 
 
 func (cs *contribService) SelectWithFilters(filters []Filter) ([]model.Contrib, error) {
-    replacer := strings.NewReplacer("[", "(", "]", ")")
     var contribs []model.Contrib
-    stmt := ""
+    query := cs.Db.
+        Debug().
+        Preload("Store.Region").
+	Preload("Store").
+	Preload("Author").
+        Preload("Product")
+
+    join := false
     for _, filter := range filters {
 
-	if filter.Include != nil {
-	    arr := strings.ReplaceAll(fmt.Sprintf("%v", *filter.Include), " ", ",")
-	    stmt += replacer.Replace(fmt.Sprintf(" AND %s IN %s", filter.Field, arr))
+	if filter.Include != nil && len(*filter.Include) > 0 {
+	    query.Where(fmt.Sprintf("%s in ?", filter.Field), *filter.Include)
+	    if filter.Field == "store.region_id" {
+		join = true
+	    }
 	}
 
-	if filter.Exclude != nil {
-	    arr := strings.ReplaceAll(fmt.Sprintf("%v", *filter.Exclude), " ", ",")
-	    stmt += replacer.Replace(fmt.Sprintf(" AND %s NOT IN %s", filter.Field, arr))
+	if filter.Exclude != nil && len(*filter.Exclude) > 0 {
+	    query.Where(fmt.Sprintf("%s not in ?", filter.Field), *filter.Exclude)
+	    if filter.Field == "store.region_id" {
+		join = true
+	    }
 	}
 
     }
-    err := cs.Db.
-	Preload("Store").
-	Preload("Author").
-        Preload("Product").
-        Preload("Store.Region").
-        Where(fmt.Sprintf("1 = 1%s", stmt)).
+    if join {
+	query.Joins("JOIN \"sut_se_price_map\".\"store\" on \"store\".id = contrib.store_id")
+    }
+    err := query.
         Find(&contribs).Error
-    fmt.Println(stmt)
 
     return contribs, err
 }
