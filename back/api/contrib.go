@@ -4,7 +4,6 @@ import (
 	"back/db"
 	"back/model"
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -30,7 +29,6 @@ func (a *Api) ContribsByIdGet(c *gin.Context) {
 		})
 		return
 	}
-	// check id in db
 
 	contrib, err := a.Db.Contrib.SelectById(uint(id))
 	if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -51,64 +49,57 @@ func (a *Api) ContribsByIdGet(c *gin.Context) {
 	c.JSON(http.StatusOK, contrib)
 }
 
-func getFilterParam(query func(string) string, prefix string) (db.Filter, error) {
-	includeParam := query(fmt.Sprintf("%sInclude", prefix))
-	excludeParam := query(fmt.Sprintf("%sExclude", prefix))
-	var include *[]uint
-	var exclude *[]uint
-	include = nil
-	exclude = nil
-
-	if includeParam != "" {
-		values := strings.Split(includeParam, ",")
-		if len(values) > 0 {
-			include = new([]uint)
-			for _, val := range values {
-				id, err := strconv.ParseUint(val, 10, 0)
-				if err != nil {
-					return db.NewFilter(include, exclude, prefix),  err
-				}
-				*include = append(*include, uint(id))
-			}
-		}
-	}
-
-	if excludeParam != "" {
-		values := strings.Split(excludeParam, ",")
-		if len(values) > 0 {
-			exclude = new([]uint)
-			for _, val := range values {
-				id, err := strconv.ParseUint(val, 10, 0)
-				if err != nil {
-					return db.NewFilter(include, exclude, prefix), err
-				}
-				*exclude = append(*exclude, uint(id))
-			}
-		}
-	}
-
-	return db.NewFilter(include, exclude, prefix), nil
-}
-
 
 // contribs
-// returns all contribs matching criteria
-// pagination
+// TODO: regions
+// TODO: timespan filter
+// TODO: apply sort, status, pagination
 const FILTERS_LEN = 5
 func (a *Api) ContribsGet(c *gin.Context) {
+	var entries []model.Contrib
 	filters := make([]db.Filter, FILTERS_LEN)
 	total := 0
 	returned := 0
 	pages := 0
+	afterMany := uint(0)
+	limit := uint(10)
+	// timespanBefore
+	// timespanAfter
+	getUintParam(&afterMany, c.Query, "afterMany")
+	getUintParam(&limit, c.Query, "limit")
 
-	var entries []model.Contrib
-	// for 4 other filters do the same
+	sortBy := c.Query("sortBy")
+	if sortBy != "id" && sortBy != "date" && sortBy != "price" && sortBy != "status" {
+		sortBy = ""
+	}
+
+	status := make([]string, 3)
+	statuses := c.Query("status")
+	if statuses != "" {
+		status = strings.Split(statuses, ",")
+		for _, s := range status {
+			if s != "ACTIVE" && s != "REVOKED" && s != "REMOVED" {
+				c.JSON(http.StatusBadRequest, gin.H {
+					"message": "Invalid status value",
+				})
+				return
+			}
+		}
+	}
+
+
 	idFilter, err := getFilterParam(c.Query, "id")
-	authorFilter, err := getFilterParam(c.Query, "author")
+	authorsFilter, err := getFilterParam(c.Query, "authors")
+	storesFilter, err := getFilterParam(c.Query, "stores")
+	productsFilter, err := getFilterParam(c.Query, "products")
+	// regionsFilter, err := getFilterParam(c.Query, "regions")
 	filters[0] = idFilter
-	filters[1] = authorFilter 
+	filters[1] = authorsFilter 
+	filters[2] = storesFilter
+	filters[3] = productsFilter
+	// filters[4] = regionsFilter
 
-	a.Db.Contrib.SelectWithFilters(filters)
+	entries, err = a.Db.Contrib.SelectWithFilters(filters)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H {
 			"message": "Invalid values in paramateres",

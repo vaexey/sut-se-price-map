@@ -4,12 +4,17 @@ import (
 	"back/model"
 	"fmt"
 	"strings"
-	// "fmt"
 )
 func NewFilter(include *[]uint, exclude *[]uint, prefix string) Filter {
     field := prefix
-    if field != "id" {
-	field = fmt.Sprintf("%s_id", prefix)
+    if prefix != "id" {
+	// cut the 's'
+	field = prefix[:len(prefix) - 1]
+	// append _id
+	field = fmt.Sprintf("%s_id", field)
+    }
+    if prefix == "regions" {
+	field = "store.region_id"
     }
 
     return Filter {
@@ -31,9 +36,6 @@ func (cs *contribService) SelectWithFilters(filters []Filter) ([]model.Contrib, 
     var contribs []model.Contrib
     stmt := ""
     for _, filter := range filters {
-	if filter.Field == "region" {
-	    continue
-	}
 
 	if filter.Include != nil {
 	    arr := strings.ReplaceAll(fmt.Sprintf("%v", *filter.Include), " ", ",")
@@ -46,11 +48,16 @@ func (cs *contribService) SelectWithFilters(filters []Filter) ([]model.Contrib, 
 	}
 
     }
-    err := cs.Db.Where(fmt.Sprintf("1 = 1 %s", stmt)).Find(&contribs)
-    fmt.Println(err)
-    fmt.Println(contribs)
+    err := cs.Db.
+	Preload("Store").
+	Preload("Author").
+        Preload("Product").
+        Preload("Store.Region").
+        Where(fmt.Sprintf("1 = 1%s", stmt)).
+        Find(&contribs).Error
+    fmt.Println(stmt)
 
-    return contribs, nil
+    return contribs, err
 }
 
 func (cs *contribService) SelectById(id uint) (model.Contrib, error) {
