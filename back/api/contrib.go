@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -112,7 +113,7 @@ func (a *Api) ContribsGet(c *gin.Context) {
 		sortBy = ""
 	}
 
-	status := make([]string, 3)
+	status := []string{"ACTIVE", "REVOKED", "REMOVED"}
 	statuses := c.Query("status")
 	if statuses != "" {
 		status = strings.Split(statuses, ",")
@@ -151,13 +152,20 @@ func (a *Api) ContribsGet(c *gin.Context) {
 
 	// apply timespan filters
 
-	test := func(c model.Contrib) bool { 
+	timespanTest := func(c model.Contrib) bool { 
 		t, _ := time.Parse(DATE_PATTERN, c.Date)
 		mili := t.UnixMilli()
 		return mili < endDate && mili > startDate
 	}
 
-	entries = filter(entries, test)
+	entries = filter(entries, timespanTest)
+
+	// apply status filters
+	statusTest := func(c model.Contrib) bool {
+		return slices.Contains(status, c.Status)
+	}
+
+	entries = filter(entries, statusTest)
 
 
 	// apply pagination
