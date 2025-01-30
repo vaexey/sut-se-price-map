@@ -13,6 +13,9 @@ func NewDatabase(Db *gorm.DB) Database {
 		Region: regionService{
 			Db: Db,
 		},
+		Contrib: contribService {
+			Db: Db,
+		},
 	}
 }
 
@@ -23,6 +26,7 @@ type Database struct {
 	Db *gorm.DB
 	User userService
 	Region regionService
+	Contrib contribService
 }
 
 type userService struct {
@@ -30,6 +34,10 @@ type userService struct {
 }
 
 type regionService struct {
+	Db *gorm.DB
+}
+
+type contribService struct {
 	Db *gorm.DB
 }
 
