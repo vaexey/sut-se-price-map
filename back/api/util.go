@@ -67,3 +67,19 @@ func getUintParam(def *uint, f func(string) string, param string) {
 		}
 	}
 }
+
+func paginate[T any](arr []T, skip uint, limit uint) []T {
+	arrLen := uint(len(arr))
+	// 1. skip > len -> []
+	// 2. skip < len -> skip + limit > len ? skip..len : skip..skip+limit
+	if skip > arrLen {
+		return make([]T, 0)
+	}
+	if skip + limit > arrLen {
+		return arr[skip:arrLen]
+	}
+	return arr[skip:skip+limit]
+}
+
+
+

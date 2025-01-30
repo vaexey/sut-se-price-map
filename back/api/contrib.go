@@ -4,6 +4,7 @@ import (
 	"back/db"
 	"back/model"
 	"errors"
+	"math"
 	"net/http"
 	"strconv"
 	"strings"
@@ -53,20 +54,20 @@ func (a *Api) ContribsByIdGet(c *gin.Context) {
 // contribs
 // TODO: regions
 // TODO: timespan filter
-// TODO: apply sort, status, pagination
+// TODO: apply sort, status
 const FILTERS_LEN = 5
 func (a *Api) ContribsGet(c *gin.Context) {
 	var entries []model.Contrib
 	filters := make([]db.Filter, FILTERS_LEN)
-	total := 0
-	returned := 0
-	pages := 0
 	afterMany := uint(0)
 	limit := uint(10)
 	// timespanBefore
 	// timespanAfter
 	getUintParam(&afterMany, c.Query, "afterMany")
 	getUintParam(&limit, c.Query, "limit")
+	if limit < 1 {
+		limit = 10
+	}
 
 	sortBy := c.Query("sortBy")
 	if sortBy != "id" && sortBy != "date" && sortBy != "price" && sortBy != "status" {
@@ -107,12 +108,17 @@ func (a *Api) ContribsGet(c *gin.Context) {
 		return
 	}
 
+	page := paginate(entries, afterMany, limit)
+	total := len(entries)
+	returned := len(page)
+	pages := uint(math.Ceil(float64(total)/float64(limit)))
+
 
 	c.JSON(http.StatusOK, gin.H {
 		"total": total,
 		"returned": returned,
 		"pages": pages,
-		"entries": entries,
+		"entries": page,
 	})
 }
 
