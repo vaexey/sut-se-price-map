@@ -81,5 +81,12 @@ func paginate[T any](arr []T, skip uint, limit uint) []T {
 	return arr[skip:skip+limit]
 }
 
-
+func filter[T any](ss []T, test func(T) bool) (ret []T) {
+    for _, s := range ss {
+        if test(s) {
+            ret = append(ret, s)
+        }
+    }
+    return
+}
 
