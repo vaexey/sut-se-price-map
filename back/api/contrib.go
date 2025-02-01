@@ -83,13 +83,17 @@ func (a *Api) ContribsGetAll(c *gin.Context) {
 
 	util.ReadyResponse(&entries)
 
-	page := lutil.Paginate(entries, util.AfterMany, util.Limit)
+	page := []model.Contrib{}
+	page = lutil.Paginate(entries, util.AfterMany, util.Limit)
 
 	total := len(entries)
 	returned := len(page)
 
 	pages := uint(math.Ceil(float64(total)/float64(util.Limit)))
 
+	if page == nil || len(page) < 1 {
+		page = make([]model.Contrib, 0)
+	}
 
 	c.JSON(http.StatusOK, gin.H {
 		"total": total,
