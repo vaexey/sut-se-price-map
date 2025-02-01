@@ -215,8 +215,6 @@ func (c *contribUtil) ReadyResponse(entries *[]model.Contrib) {
 	*entries = util.Filter(*entries, statusTest)
 
 
-	// apply pagination
-	*entries = util.Paginate(*entries, c.AfterMany, c.Limit)
 
 	// sortBy key, supports: id, date, price, status
 	c.sort(entries, c.SortBy)

@@ -4,7 +4,7 @@ import (
 	"back/auth"
 	"back/db"
 	"back/model"
-	"back/util"
+	lutil "back/util"
 	"errors"
 	"fmt"
 	"math"
@@ -80,11 +80,14 @@ func (a *Api) ContribsGetAll(c *gin.Context) {
 		return
 	}
 
-	total := len(entries)
 
 	util.ReadyResponse(&entries)
 
-	returned := len(entries)
+	page := lutil.Paginate(entries, util.AfterMany, util.Limit)
+
+	total := len(entries)
+	returned := len(page)
+
 	pages := uint(math.Ceil(float64(total)/float64(util.Limit)))
 
 
@@ -92,7 +95,7 @@ func (a *Api) ContribsGetAll(c *gin.Context) {
 		"total": total,
 		"returned": returned,
 		"pages": pages,
-		"entries": entries,
+		"entries": page,
 	})
 }
 
@@ -127,23 +130,24 @@ func (a *Api) ContribsGetByGroup(c *gin.Context) {
 		return
 	}
 
-	total := len(entries)
 
 	util.ReadyResponse(&entries)
-
-	returned := len(entries)
-	pages := uint(math.Ceil(float64(total)/float64(util.Limit)))
-
 	groups := util.Group(&entries)
 
+	page := lutil.Paginate(groups, util.AfterMany, util.Limit)
 
+	total := len(groups)
+	returned := len(page)
+
+
+	pages := uint(math.Ceil(float64(total)/float64(util.Limit)))
 
 
 	c.JSON(http.StatusOK, gin.H {
 		"total": total,
 		"returned": returned,
 		"pages": pages,
-		"entries": groups,
+		"entries": page,
 	})
 }
 
@@ -182,7 +186,7 @@ func (a *Api) ContribsCreate(c *gin.Context) {
 		AuthorID: *userId,
 		Price: req.Price,
 		Comment: req.Comment,
-		Date: util.TimeNow(),
+		Date: lutil.TimeNow(),
 		Status: status,
 	}
 
