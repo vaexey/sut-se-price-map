@@ -12,8 +12,8 @@ func (a *Api) Products(c *gin.Context) {
 	var err error
 	products, err = a.Db.Product.SelectAll()
 	if err != nil {
-		c.JSON(http.StatusServiceUnavailable, gin.H {
-			"message": "Service failure",
+		c.JSON(http.StatusNotFound, gin.H {
+			"message": "Record not found",
 		})
 		return
 	}

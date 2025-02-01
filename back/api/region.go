@@ -23,7 +23,7 @@ func (a *Api) Regions(c *gin.Context) {
 	for i := 0; i < len(regions); i++ {
 		parentsNumber, err := a.Db.Region.CountParents(regions[i].Id)
 		if	err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
+			c.JSON(http.StatusNotFound, gin.H{
 				"error": "Failed to count parents",
 			})
 			return
