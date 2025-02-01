@@ -37,6 +37,7 @@ export class ContribGroupViewComponent  implements OnInit {
 
   @Input() loading = true
   error: string | null = null
+  availableMore: boolean = false
 
   @Input() contribGroups: GetContribsGroupResponseEntry[] = []
 
@@ -76,15 +77,18 @@ export class ContribGroupViewComponent  implements OnInit {
     this.contribGroups = data
   }
 
-  appendData(data: GetContribsGroupResponseEntry[])
+  appendData(data: GetContribsGroupResponseEntry[], availableMore?: boolean)
   {
     this.loading = false
     this.error = null
 
-    this.contribGroups = [
-      ...this.contribGroups,
-      ...data
-    ]
+    this.availableMore = availableMore ?? false
+
+    this.contribGroups.push(...data)
+    // this.contribGroups = [
+    //   ...this.contribGroups,
+    //   ...data
+    // ]
   }
 
   clearData()
@@ -120,7 +124,7 @@ export class ContribGroupViewComponent  implements OnInit {
     if(this.autoLoad && this.infinite)
     {
       filters.limit = this.limit
-      filters.afterMany = (this.page + 1) * this.limit
+      filters.afterMany = (this.page) * this.limit
     }
 
     const replay = new ReplaySubject<void>(1)
@@ -129,8 +133,8 @@ export class ContribGroupViewComponent  implements OnInit {
       next: res => {
         if(this.autoLoad && this.infinite)
         {
-          this.appendData(res.entries)
           this.page++
+          this.appendData(res.entries, res.pages > this.page)
 
           return
         }
@@ -153,9 +157,16 @@ export class ContribGroupViewComponent  implements OnInit {
   {
     console.log(evt)
 
-    this.fetch().subscribe(() => {
-      evt.target.complete()
-    })
+    if(this.availableMore)
+    {
+      this.fetch().subscribe(() => {
+        evt.target.complete()
+      })
+
+      return
+    }
+
+    evt.target.complete()
   }
 
 }

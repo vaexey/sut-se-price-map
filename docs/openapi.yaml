@@ -147,7 +147,7 @@ paths:
           schema:
             type: string
             enum: [id, date, ...]
-        - name: idInclude
+        - name: idsInclude
           in: query
           description: IDs include
           required: false
@@ -156,7 +156,7 @@ paths:
             items:
               type: integer
               format: id
-        - name: idExclude
+        - name: idsExclude
           in: query
           description: IDs exclude
           required: false
