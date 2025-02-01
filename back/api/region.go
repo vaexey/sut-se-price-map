@@ -72,4 +72,3 @@ func (a *Api) RegionById(c *gin.Context) {
 
 	c.JSON(http.StatusOK, region)
 }
-
