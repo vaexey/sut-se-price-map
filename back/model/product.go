@@ -1,8 +1,9 @@
 package model
 
 type Product struct {
-	Id   uint `gorm:"primaryKey;unique;autoIncrement" json:"id"`
-	Name string `json:"name"`
+	Id    uint     `gorm:"unique;primaryKey;autoIncrement" json:"id"`
+	Name  string   `json:"name"`
+	Photo Resource `json:"photo"`
 }
 
 func (Product) TableName() string {

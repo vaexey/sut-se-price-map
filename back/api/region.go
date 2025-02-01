@@ -4,6 +4,7 @@ import (
 	"back/model"
 	"net/http"
 	"strconv"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,14 +19,16 @@ func (a *Api) Regions(c *gin.Context) {
 		return
 	}
 
-	//dev
+	// count number of parents
 	for i := 0; i < len(regions); i++ {
-		length := len(regions[i].Name)
-		if length % 2 == 0 {
-			regions[i].ParentsNumber = 1
-		} else {
-			regions[i].ParentsNumber = 2
+		parentsNumber, err := a.Db.Region.CountParents(regions[i].Id)
+		if	err != nil {
+			c.JSON(http.StatusServiceUnavailable, gin.H{
+				"error": "Failed to count parents",
+			})
+			return
 		}
+		regions[i].ParentCount = uint(parentsNumber)
 	}
 
 	c.JSON(http.StatusOK, regions)
@@ -57,14 +60,15 @@ func (a *Api) RegionById(c *gin.Context) {
 		return
 	}
 
-	//dev
-	length := len(region.Name)
-	if length % 2 == 0 {
-		region.ParentsNumber = 1
-	} else {
-		region.ParentsNumber = 2
+	// count number of parents
+	parentsNumber, err := a.Db.Region.CountParents(region.Id)
+	if err != nil {
+		c.JSON(http.StatusServiceUnavailable, gin.H{
+			"error": "Failed to count parents",
+		})
+		return
 	}
+	region.ParentCount = uint(parentsNumber)
 
 	c.JSON(http.StatusOK, region)
 }
-

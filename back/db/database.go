@@ -5,15 +5,19 @@ import (
 )
 
 func NewDatabase(Db *gorm.DB) Database {
-	return Database {
-		Db : Db,
-		User : userService{
-			Db : Db,
+	return Database{
+		Db: Db,
+		User: userService{
+			Db: Db,
 		},
 		Region: regionService{
 			Db: Db,
 		},
-		Contrib: contribService {
+
+		Product: productService{
+			Db: Db,
+		},
+		Store: storeService{
 			Db: Db,
 		},
 	}
@@ -23,10 +27,12 @@ func NewDatabase(Db *gorm.DB) Database {
 // TODO: log format
 // TODO: log standard for gorm
 type Database struct {
-	Db *gorm.DB
-	User userService
-	Region regionService
-	Contrib contribService
+	Db      *gorm.DB
+	User    userService
+	Region  regionService
+	Product productService
+	Store   storeService
+
 }
 
 type userService struct {
@@ -37,8 +43,15 @@ type regionService struct {
 	Db *gorm.DB
 }
 
+
+type productService struct {
+	Db *gorm.DB
+}
+
 type contribService struct {
 	Db *gorm.DB
 }
 
-
+type storeService struct {
+	Db *gorm.DB
+}

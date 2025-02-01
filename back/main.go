@@ -84,8 +84,8 @@ func main() {
 	database := ldb.NewDatabase(db)
 	api := lapi.NewApi(&database)
 
-	authHandler := auth.Handler{
-		Db: &database,
+	authHandler := auth.Handler {
+		Db : &database,
 	}
 
 	authMiddleware := authHandler.RequireJWT()
@@ -100,6 +100,9 @@ func main() {
 		// API
 		v1.GET("regions", api.Regions)
 		v1.GET("regions/:regionID", api.RegionById)
+		v1.GET("/products", api.Products)
+		v1.GET("/stores", api.Stores)
+		//v1.GET("/reports", api.Reports)
 
 		v1.GET("contribs/:contribId", api.ContribsByIdGet)
 		v1.GET("contribs", api.ContribsGet)
