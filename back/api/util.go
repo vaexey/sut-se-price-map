@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -35,15 +36,22 @@ func paginate[T any](arr []T, skip uint, limit uint) []T {
 }
 
 func filter[T any](ss []T, test func(T) bool) (ret []T) {
-    for _, s := range ss {
-        if test(s) {
-            ret = append(ret, s)
-        }
-    }
-    return
+	for _, s := range ss {
+		if test(s) {
+			ret = append(ret, s)
+		}
+	}
+	return
 }
 
-type contribUtil struct {}
+type contribUtil struct {
+	StartDate int64
+	EndDate int64
+	AfterMany uint
+	Limit uint
+	SortBy string
+	Status []string
+}
 
 func (c *contribUtil) getFilterParam(query func(string) string, prefix string) (db.Filter, error) {
 	includeParam := query(fmt.Sprintf("%sInclude", prefix))
@@ -93,16 +101,15 @@ func (c *contribUtil) getUintParam(def *uint, f func(string) string, param strin
 		}
 	}
 }
-func (c *contribUtil) GetPaginationParams(q func(string) string) (uint, uint) {
-	afterMany := uint(0)
-	limit := uint(10)
+func (c *contribUtil) GetPaginationParams(q func(string) string) {
+	c.AfterMany = uint(0)
+	c.Limit = uint(10)
 
-	c.getUintParam(&afterMany, q, "afterMany")
-	c.getUintParam(&limit, q, "limit")
-	if limit < 1 {
-		limit = 10
+	c.getUintParam(&c.AfterMany, q, "afterMany")
+	c.getUintParam(&c.Limit, q, "limit")
+	if c.Limit < 1 {
+		c.Limit = 10
 	}
-	return afterMany, limit
 }
 
 
@@ -120,7 +127,7 @@ func (c *contribUtil) GetFilters(filters *[]db.Filter, q func(string) string) er
 	return err
 }
 
-func (c* contribUtil) GetSortStatusParams(q func(string) string) (string, []string, error) {
+func (c* contribUtil) GetSortStatusParams(q func(string) string) error {
 	sortBy := q("sortBy")
 	if sortBy != "id" && sortBy != "date" && sortBy != "price" && sortBy != "status" {
 		sortBy = ""
@@ -132,15 +139,17 @@ func (c* contribUtil) GetSortStatusParams(q func(string) string) (string, []stri
 		status = strings.Split(statuses, ",")
 		for _, s := range status {
 			if s != "ACTIVE" && s != "REVOKED" && s != "REMOVED" {
-				return "", []string{}, errors.New("Invalid status value")
+				return errors.New("Invalid status value")
 			}
 		}
 	}
-	return sortBy, status, nil
+	c.SortBy = sortBy
+	c.Status = status
+	return nil
 
 }
 
-func (c* contribUtil) GetTimespanFilters(q func(string) string) (int64, int64, error) {
+func (c* contribUtil) GetTimespanFilters(q func(string) string) error {
 	var endDate int64
 	var startDate int64
 	timespanBefore := q("timespanBefore")
@@ -150,7 +159,9 @@ func (c* contribUtil) GetTimespanFilters(q func(string) string) (int64, int64, e
 	} else {
 		t, err := time.Parse(DATE_PATTERN, timespanBefore)
 		if err != nil {
-			return 0, 0, err
+			c.StartDate = startDate
+			c.EndDate = endDate
+			return err
 		}
 		endDate = t.UnixMilli()
 	}
@@ -160,16 +171,22 @@ func (c* contribUtil) GetTimespanFilters(q func(string) string) (int64, int64, e
 	} else {
 		t, err := time.Parse(DATE_PATTERN, timespanAfter)
 		if err != nil {
-			return 0, 0, err
+
+			c.StartDate = startDate
+			c.EndDate = endDate
+			return err
 		}
 		startDate = t.UnixMilli()
 	}
 
-	return startDate, endDate, nil
+	c.StartDate = startDate
+	c.EndDate = endDate
+
+	return nil
 }
 
 // TODO: refactor to sort by dynamic field
-func (c* contribUtil) Sort(entries *[]model.Contrib, key string) {
+func (c* contribUtil) sort(entries *[]model.Contrib, key string) {
 	sort.Slice(*entries, func(i int, j int) bool {
 		var con bool
 		switch key {
@@ -188,3 +205,70 @@ func (c* contribUtil) Sort(entries *[]model.Contrib, key string) {
 		return con
 	})
 }
+
+func (c *contribUtil) ReadyResponse(entries *[]model.Contrib) {
+	// apply timespan filters
+	timespanTest := func(con model.Contrib) bool { 
+		t, _ := time.Parse(DATE_PATTERN, con.Date)
+		mili := t.UnixMilli()
+		return mili < c.EndDate && mili > c.StartDate
+	}
+
+	*entries = filter(*entries, timespanTest)
+
+	// apply status filters
+	statusTest := func(con model.Contrib) bool {
+		return slices.Contains(c.Status, con.Status)
+	}
+
+	*entries = filter(*entries, statusTest)
+
+
+	// apply pagination
+	*entries = paginate(*entries, c.AfterMany, c.Limit)
+
+	// sortBy key, supports: id, date, price, status
+	c.sort(entries, c.SortBy)
+
+}
+
+// this groups by product, store
+func (c *contribUtil) Group(entries *[]model.Contrib) []model.ContribGroup {
+	grouped := make(map[string][]model.Contrib)
+	for _, con := range *entries {
+		key := fmt.Sprintf("%d|%d", con.ProductID, con.StoreID)
+		grouped[key] = append(grouped[key], con)
+	}
+	var resultGroup []model.ContribGroup
+	for _, value:= range grouped {
+		sort.Slice(value, func(i int, j int) bool {
+			t1, _:= time.Parse(DATE_PATTERN, value[i].Date)
+			t2, _:= time.Parse(DATE_PATTERN, value[j].Date)
+			return t1.UnixMilli() < t2.UnixMilli()
+		})
+
+		contribs := make([]uint, len(value))
+		avgPrice := float32(0.0)
+		for i, entry := range value {
+			contribs[i] = entry.Id
+			avgPrice += entry.Price
+		}
+		avgPrice = avgPrice / float32(len(value))
+
+
+		first := value[0]
+		resultGroup = append(resultGroup, model.ContribGroup {
+			Region: first.Store.Region,
+			Store: first.Store,
+			Product: first.Product,
+			FirstAuthor: first.Author,
+			Contribs: contribs,
+			AvgPrice: avgPrice,
+			Rating: 0,
+		})
+	}
+	return resultGroup
+}
+
+
+
