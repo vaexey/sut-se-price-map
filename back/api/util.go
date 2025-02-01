@@ -3,6 +3,7 @@ package api
 import (
 	"back/db"
 	"back/model"
+	"back/util"
 	"errors"
 	"fmt"
 	"net/http"
@@ -15,6 +16,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type contribRequest struct {
+	Product uint `json:"product"`
+	Store uint `json:"store"`
+	Price float32 `json:"price"`
+	Comment *string `json:"comment"`
+	Status string `json:"status"`
+}
+
+
 func ApiFallback() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if strings.HasPrefix(c.Request.URL.String(), "/api") {
@@ -24,25 +34,6 @@ func ApiFallback() gin.HandlerFunc {
 	}
 }
 
-func paginate[T any](arr []T, skip uint, limit uint) []T {
-	arrLen := uint(len(arr))
-	if skip > arrLen {
-		return make([]T, 0)
-	}
-	if skip + limit > arrLen {
-		return arr[skip:arrLen]
-	}
-	return arr[skip:skip+limit]
-}
-
-func filter[T any](ss []T, test func(T) bool) (ret []T) {
-	for _, s := range ss {
-		if test(s) {
-			ret = append(ret, s)
-		}
-	}
-	return
-}
 
 type contribUtil struct {
 	StartDate int64
@@ -157,7 +148,7 @@ func (c* contribUtil) GetTimespanFilters(q func(string) string) error {
 	if timespanBefore == "" {
 		endDate = time.Date(3000, time.December, 1, 0, 0, 0, 0, time.UTC).UnixMilli()
 	} else {
-		t, err := time.Parse(DATE_PATTERN, timespanBefore)
+		t, err := time.Parse(util.DATE_PATTERN, timespanBefore)
 		if err != nil {
 			c.StartDate = startDate
 			c.EndDate = endDate
@@ -169,7 +160,7 @@ func (c* contribUtil) GetTimespanFilters(q func(string) string) error {
 	if timespanAfter == "" {
 		startDate = time.Date(1000, time.December, 1, 0, 0, 0, 0, time.UTC).UnixMilli()
 	} else {
-		t, err := time.Parse(DATE_PATTERN, timespanAfter)
+		t, err := time.Parse(util.DATE_PATTERN, timespanAfter)
 		if err != nil {
 
 			c.StartDate = startDate
@@ -193,8 +184,8 @@ func (c* contribUtil) sort(entries *[]model.Contrib, key string) {
 		case "id":
 			con = (*entries)[i].Id < (*entries)[j].Id
 		case "date":
-			t1, _:= time.Parse(DATE_PATTERN, (*entries)[i].Date)
-			t2, _:= time.Parse(DATE_PATTERN, (*entries)[j].Date)
+			t1, _:= time.Parse(util.DATE_PATTERN, (*entries)[i].Date)
+			t2, _:= time.Parse(util.DATE_PATTERN, (*entries)[j].Date)
 			con = t1.UnixMilli() < t2.UnixMilli()
 		case "price":
 			con = (*entries)[i].Price < (*entries)[j].Price
@@ -209,23 +200,23 @@ func (c* contribUtil) sort(entries *[]model.Contrib, key string) {
 func (c *contribUtil) ReadyResponse(entries *[]model.Contrib) {
 	// apply timespan filters
 	timespanTest := func(con model.Contrib) bool { 
-		t, _ := time.Parse(DATE_PATTERN, con.Date)
+		t, _ := time.Parse(util.DATE_PATTERN, con.Date)
 		mili := t.UnixMilli()
 		return mili < c.EndDate && mili > c.StartDate
 	}
 
-	*entries = filter(*entries, timespanTest)
+	*entries = util.Filter(*entries, timespanTest)
 
 	// apply status filters
 	statusTest := func(con model.Contrib) bool {
 		return slices.Contains(c.Status, con.Status)
 	}
 
-	*entries = filter(*entries, statusTest)
+	*entries = util.Filter(*entries, statusTest)
 
 
 	// apply pagination
-	*entries = paginate(*entries, c.AfterMany, c.Limit)
+	*entries = util.Paginate(*entries, c.AfterMany, c.Limit)
 
 	// sortBy key, supports: id, date, price, status
 	c.sort(entries, c.SortBy)
@@ -242,8 +233,8 @@ func (c *contribUtil) Group(entries *[]model.Contrib) []model.ContribGroup {
 	var resultGroup []model.ContribGroup
 	for _, value:= range grouped {
 		sort.Slice(value, func(i int, j int) bool {
-			t1, _:= time.Parse(DATE_PATTERN, value[i].Date)
-			t2, _:= time.Parse(DATE_PATTERN, value[j].Date)
+			t1, _:= time.Parse(util.DATE_PATTERN, value[i].Date)
+			t2, _:= time.Parse(util.DATE_PATTERN, value[j].Date)
 			return t1.UnixMilli() < t2.UnixMilli()
 		})
 

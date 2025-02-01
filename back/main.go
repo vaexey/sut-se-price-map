@@ -102,13 +102,13 @@ func main() {
 		v1.GET("regions/:regionID", api.RegionById)
 
 		// contribs
-		// TODO:
-		v1.POST("contribs/:contribId", api.ContribsByIdPost)
-		v1.PUT("contribs", api.ContribsPut)
 
-		v1.GET("contribs/:contribId", api.ContribsByIdGet)
-		v1.GET("contribs", api.ContribsGet)
-		v1.GET("contribs/group", api.ContribsGroup)
+		v1.GET("contribs/:contribId", api.ContribsGetById)
+		v1.GET("contribs", api.ContribsGetAll)
+		v1.GET("contribs/group", api.ContribsGetByGroup)
+
+		v1.POST("contribs/:contribId", authMiddleware, api.ContribsUpdate)
+		v1.PUT("contribs", authMiddleware, api.ContribsCreate)
 
 		// Auth-guarded
 		v1.GET("hello", authMiddleware, hello)

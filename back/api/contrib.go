@@ -1,13 +1,15 @@
 package api
 
 import (
+	"back/auth"
 	"back/db"
 	"back/model"
+	"back/util"
 	"errors"
+	"fmt"
 	"math"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -15,7 +17,7 @@ import (
 
 // contribs/{contribId}
 // returns contribution
-func (a *Api) ContribsByIdGet(c *gin.Context) {
+func (a *Api) ContribsGetById(c *gin.Context) {
 	contribId := c.Param("contribId")
 	id, err := strconv.ParseUint(contribId, 10, 0)
 	if err != nil {
@@ -48,8 +50,7 @@ func (a *Api) ContribsByIdGet(c *gin.Context) {
 // contribs
 // TODO: inclusive regions
 const FILTERS_LEN = 5
-const DATE_PATTERN = time.RFC3339
-func (a *Api) ContribsGet(c *gin.Context) {
+func (a *Api) ContribsGetAll(c *gin.Context) {
 	util := contribUtil {}
 
 	filters := make([]db.Filter, FILTERS_LEN)
@@ -98,7 +99,7 @@ func (a *Api) ContribsGet(c *gin.Context) {
 // contribs/group
 // returns group of contribution based on filters provided in url params
 // pagination
-func (a *Api) ContribsGroup(c *gin.Context) {
+func (a *Api) ContribsGetByGroup(c *gin.Context) {
 	util := contribUtil{}
 
 	filters := make([]db.Filter, FILTERS_LEN)
@@ -150,14 +151,74 @@ func (a *Api) ContribsGroup(c *gin.Context) {
 // creates new contribution
 // authorized user = author
 // status only changeable by admin
-func (a *Api) ContribsPut(c *gin.Context) {
+func (a *Api) ContribsCreate(c *gin.Context) {
+	var req contribRequest
+	err := c.BindJSON(&req)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H {
+			"message" : err.Error(),
+		})
+		return
+	}
 
+	// check user stuff
+	isAdmin := auth.CtxIsAdmin(c)
+	userId := auth.CtxId(c)
+	if userId == nil {
+		c.JSON(http.StatusOK, gin.H {
+			"message": "Failed to identify user",
+		})
+		return
+	}
+
+	status := "ACTIVE"
+	if req.Status == "REVOKED" || req.Status == "REMOVED" && isAdmin {
+		status = req.Status
+	}
+
+	contrib := model.Contrib {
+		ProductID: req.Product,
+		StoreID: req.Store,
+		AuthorID: *userId,
+		Price: req.Price,
+		Comment: req.Comment,
+		Date: util.TimeNow(),
+		Status: status,
+	}
+
+	// insert to db
+	id, err := a.Db.Contrib.Create(contrib)
+	if err != nil {
+		fmt.Fprintf(gin.DefaultErrorWriter, "Failed to insert contrib at /contribs, err: %s\n", err.Error())
+		c.JSON(http.StatusServiceUnavailable, gin.H {
+			"message" : "Service failure",
+		})
+		return
+	}
+
+	contrib, err = a.Db.Contrib.SelectById(id)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		c.JSON(http.StatusBadRequest, gin.H {
+			"message" : "There is no contribution with this id",
+		})
+		return
+	}
+
+	if err != nil {
+		c.JSON(http.StatusServiceUnavailable, gin.H {
+			"message" : "Service failure",
+			"dbg": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, contrib)
 }
 
 
 // contribs/{contribId}
 // updates contribution
-func (a *Api) ContribsByIdPost(c *gin.Context) {
+func (a *Api) ContribsUpdate(c *gin.Context) {
 
 }
 

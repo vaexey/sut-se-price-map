@@ -78,3 +78,9 @@ func (cs *contribService) SelectById(id uint) (model.Contrib, error) {
     err := cs.Db.Preload("Product").Preload("Store").Preload("Author").First(&contrib, id).Error
     return contrib, err
 }
+
+func (cs *contribService) Create(contrib model.Contrib) (uint, error) {
+    result := cs.Db.Create(&contrib)
+    return contrib.Id, result.Error
+}
+
