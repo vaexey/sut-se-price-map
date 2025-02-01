@@ -2,13 +2,28 @@ package api
 
 import (
 	"back/db"
+	"back/model"
+	"back/util"
+	"errors"
 	"fmt"
 	"net/http"
+	"slices"
+	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
+
+type contribRequest struct {
+	Product uint `json:"product"`
+	Store uint `json:"store"`
+	Price float32 `json:"price"`
+	Comment *string `json:"comment"`
+	Status string `json:"status"`
+}
+
 
 func ApiFallback() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -19,7 +34,17 @@ func ApiFallback() gin.HandlerFunc {
 	}
 }
 
-func getFilterParam(query func(string) string, prefix string) (db.Filter, error) {
+
+type contribUtil struct {
+	StartDate int64
+	EndDate int64
+	AfterMany uint
+	Limit uint
+	SortBy string
+	Status []string
+}
+
+func (c *contribUtil) getFilterParam(query func(string) string, prefix string) (db.Filter, error) {
 	includeParam := query(fmt.Sprintf("%sInclude", prefix))
 	excludeParam := query(fmt.Sprintf("%sExclude", prefix))
 	var include *[]uint
@@ -58,7 +83,7 @@ func getFilterParam(query func(string) string, prefix string) (db.Filter, error)
 	return db.NewFilter(include, exclude, prefix), nil
 }
 
-func getUintParam(def *uint, f func(string) string, param string) {
+func (c *contribUtil) getUintParam(def *uint, f func(string) string, param string) {
 	str := f(param)
 	if str != "" {
 		num, err := strconv.ParseUint(str, 10, 0)
@@ -67,24 +92,172 @@ func getUintParam(def *uint, f func(string) string, param string) {
 		}
 	}
 }
+func (c *contribUtil) GetPaginationParams(q func(string) string) {
+	c.AfterMany = uint(0)
+	c.Limit = uint(10)
 
-func paginate[T any](arr []T, skip uint, limit uint) []T {
-	arrLen := uint(len(arr))
-	if skip > arrLen {
-		return make([]T, 0)
+	c.getUintParam(&c.AfterMany, q, "afterMany")
+	c.getUintParam(&c.Limit, q, "limit")
+	if c.Limit < 1 {
+		c.Limit = 10
 	}
-	if skip + limit > arrLen {
-		return arr[skip:arrLen]
-	}
-	return arr[skip:skip+limit]
 }
 
-func filter[T any](ss []T, test func(T) bool) (ret []T) {
-    for _, s := range ss {
-        if test(s) {
-            ret = append(ret, s)
-        }
-    }
-    return
+
+func (c *contribUtil) GetFilters(filters *[]db.Filter, q func(string) string) error {
+	idFilter, err := c.getFilterParam(q, "ids")
+	authorsFilter, err := c.getFilterParam(q, "authors")
+	storesFilter, err := c.getFilterParam(q, "stores")
+	productsFilter, err := c.getFilterParam(q, "products")
+	regionsFilter, err := c.getFilterParam(q, "regions")
+	(*filters)[0] = idFilter
+	(*filters)[1] = authorsFilter 
+	(*filters)[2] = storesFilter
+	(*filters)[3] = productsFilter
+	(*filters)[4] = regionsFilter
+	return err
 }
+
+func (c* contribUtil) GetSortStatusParams(q func(string) string) error {
+	sortBy := q("sortBy")
+	if sortBy != "id" && sortBy != "date" && sortBy != "price" && sortBy != "status" {
+		sortBy = ""
+	}
+
+	status := []string{"ACTIVE"}
+	statuses := q("status")
+	if statuses != "" {
+		status = strings.Split(statuses, ",")
+		for _, s := range status {
+			if s != "ACTIVE" && s != "REVOKED" && s != "REMOVED" {
+				return errors.New("Invalid status value")
+			}
+		}
+	}
+	c.SortBy = sortBy
+	c.Status = status
+	return nil
+
+}
+
+func (c* contribUtil) GetTimespanFilters(q func(string) string) error {
+	var endDate int64
+	var startDate int64
+	timespanBefore := q("timespanBefore")
+	timespanAfter := q("timespanAfter")
+	if timespanBefore == "" {
+		endDate = time.Date(3000, time.December, 1, 0, 0, 0, 0, time.UTC).UnixMilli()
+	} else {
+		t, err := time.Parse(util.DATE_PATTERN, timespanBefore)
+		if err != nil {
+			c.StartDate = startDate
+			c.EndDate = endDate
+			return err
+		}
+		endDate = t.UnixMilli()
+	}
+
+	if timespanAfter == "" {
+		startDate = time.Date(1000, time.December, 1, 0, 0, 0, 0, time.UTC).UnixMilli()
+	} else {
+		t, err := time.Parse(util.DATE_PATTERN, timespanAfter)
+		if err != nil {
+
+			c.StartDate = startDate
+			c.EndDate = endDate
+			return err
+		}
+		startDate = t.UnixMilli()
+	}
+
+	c.StartDate = startDate
+	c.EndDate = endDate
+
+	return nil
+}
+
+// TODO: refactor to sort by dynamic field
+func (c* contribUtil) sort(entries *[]model.Contrib, key string) {
+	sort.Slice(*entries, func(i int, j int) bool {
+		var con bool
+		switch key {
+		case "id":
+			con = (*entries)[i].Id < (*entries)[j].Id
+		case "date":
+			t1, _:= time.Parse(util.DATE_PATTERN, (*entries)[i].Date)
+			t2, _:= time.Parse(util.DATE_PATTERN, (*entries)[j].Date)
+			con = t1.UnixMilli() < t2.UnixMilli()
+		case "price":
+			con = (*entries)[i].Price < (*entries)[j].Price
+		case "status":
+			con = (*entries)[i].Status < (*entries)[j].Status
+		default:
+		}
+		return con
+	})
+}
+
+func (c *contribUtil) ReadyResponse(entries *[]model.Contrib) {
+	// apply timespan filters
+	timespanTest := func(con model.Contrib) bool { 
+		t, _ := time.Parse(util.DATE_PATTERN, con.Date)
+		mili := t.UnixMilli()
+		return mili < c.EndDate && mili > c.StartDate
+	}
+
+
+	*entries = util.Filter(*entries, timespanTest)
+
+	// apply status filters
+	statusTest := func(con model.Contrib) bool {
+		return slices.Contains(c.Status, con.Status)
+	}
+
+	*entries = util.Filter(*entries, statusTest)
+
+
+	// sortBy key, supports: id, date, price, status
+	c.sort(entries, c.SortBy)
+
+}
+
+// this groups by product, store
+func (c *contribUtil) Group(entries *[]model.Contrib) []model.ContribGroup {
+	grouped := make(map[string][]model.Contrib)
+	for _, con := range *entries {
+		key := fmt.Sprintf("%d|%d", con.ProductID, con.StoreID)
+		grouped[key] = append(grouped[key], con)
+	}
+	var resultGroup []model.ContribGroup
+	for _, value:= range grouped {
+		sort.Slice(value, func(i int, j int) bool {
+			t1, _:= time.Parse(util.DATE_PATTERN, value[i].Date)
+			t2, _:= time.Parse(util.DATE_PATTERN, value[j].Date)
+			return t1.UnixMilli() < t2.UnixMilli()
+		})
+
+		contribs := make([]uint, len(value))
+		avgPrice := float32(0.0)
+		for i, entry := range value {
+			contribs[i] = entry.Id
+			avgPrice += entry.Price
+		}
+		avgPrice = avgPrice / float32(len(value))
+
+
+		first := value[0]
+		resultGroup = append(resultGroup, model.ContribGroup {
+			Region: first.Store.Region,
+			Store: first.Store,
+			Product: first.Product,
+			FirstAuthor: first.Author,
+			Contribs: contribs,
+			AvgPrice: avgPrice,
+			Rating: 0,
+		})
+	}
+	return resultGroup
+}
+
+
 

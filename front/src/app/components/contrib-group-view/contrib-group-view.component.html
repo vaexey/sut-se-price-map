@@ -1,0 +1,32 @@
+<ion-card style="height: 100%;">
+  <ion-card-content>
+    @if(error)
+    {
+      <div style="display: flex; align-items: center; justify-content: center;">
+        <ion-title class="ion-text-center">{{ error }}</ion-title>
+      </div>
+    }
+    @else if(loading)
+    {
+      @for(item of [0,1]; track item) {
+        <app-contrib-group-view-container></app-contrib-group-view-container>
+      }
+    }
+    @else if(contribGroups.length > 0)
+    {
+      @for(item of contribGroups; track item) {
+        <app-contrib-group-view-container [contribGroup]="item"></app-contrib-group-view-container>
+      }
+
+      <ion-infinite-scroll (ionInfinite)="onScrollMore($event)">
+        <ion-infinite-scroll-content loadingSpinner="bubbles"></ion-infinite-scroll-content>
+      </ion-infinite-scroll>
+    }
+    @else
+    {
+      <div style="display: flex; align-items: center; justify-content: center;">
+        <ion-title class="ion-text-center">No results.</ion-title>
+      </div>
+    }
+  </ion-card-content>
+</ion-card>

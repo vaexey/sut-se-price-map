@@ -37,6 +37,7 @@ func (h *Handler)login(username string, password string) (int, gin.H, *string) {
 	// token object
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": username,
+		"id" : dbUser.Id,
 		"role":     role,
 		"exp":      time.Now().Add(time.Hour * 1).Unix(),
 	})

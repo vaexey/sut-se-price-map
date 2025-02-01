@@ -83,21 +83,15 @@ func (h *Handler) RequireJWT() gin.HandlerFunc {
 func (h *Handler) RequireAdmin() gin.HandlerFunc {
 
 	return func(c *gin.Context) {
-		claims := c.MustGet("claims").(jwt.MapClaims)
-		role := claims["role"].(string)
-
-		if role != "admin" {
+		if !CtxIsAdmin(c) {
 			c.JSON(http.StatusForbidden, gin.H{
 				"message": "Admin access only",
 			})
 			c.Abort()
 			return
 		}
-
 		c.Next()
 	}
 
 }
-
-
 

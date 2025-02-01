@@ -1,31 +1,23 @@
 package api
 
 import (
+	"back/auth"
 	"back/db"
 	"back/model"
+	lutil "back/util"
 	"errors"
 	"fmt"
 	"math"
 	"net/http"
-	"slices"
-	"sort"
 	"strconv"
-	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
 // contribs/{contribId}
-// updates contribution
-func (a *Api) ContribsByIdPost(c *gin.Context) {
-
-}
-
-// contribs/{contribId}
 // returns contribution
-func (a *Api) ContribsByIdGet(c *gin.Context) {
+func (a *Api) ContribsGetById(c *gin.Context) {
 	contribId := c.Param("contribId")
 	id, err := strconv.ParseUint(contribId, 10, 0)
 	if err != nil {
@@ -58,146 +50,108 @@ func (a *Api) ContribsByIdGet(c *gin.Context) {
 // contribs
 // TODO: inclusive regions
 const FILTERS_LEN = 5
-const DATE_PATTERN = time.RFC3339
-func (a *Api) ContribsGet(c *gin.Context) {
-	var entries []model.Contrib
+func (a *Api) ContribsGetAll(c *gin.Context) {
+	util := contribUtil {}
+
 	filters := make([]db.Filter, FILTERS_LEN)
-	afterMany := uint(0)
-	limit := uint(10)
-
-	// timespans
-
-	var endDate int64
-	var startDate int64
-
-	timespanBefore := c.Query("timespanBefore")
-	timespanAfter := c.Query("timespanAfter")
-	if timespanBefore == "" {
-		endDate = time.Date(3000, time.December, 1, 0, 0, 0, 0, time.UTC).UnixMilli()
-	} else {
-		t, err := time.Parse(DATE_PATTERN, timespanBefore)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H {
-				"message": "Invalid date format",
-			})
-			return
-		}
-		endDate = t.UnixMilli()
-	}
-
-	if timespanAfter == "" {
-		startDate = time.Date(1000, time.December, 1, 0, 0, 0, 0, time.UTC).UnixMilli()
-	} else {
-		t, err := time.Parse(DATE_PATTERN, timespanAfter)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H {
-				"message": "Invalid date format",
-			})
-			return
-		}
-		startDate = t.UnixMilli()
-	}
+	var entries []model.Contrib
 
 	// pagination params
+	util.GetPaginationParams(c.Query)
 
-	getUintParam(&afterMany, c.Query, "afterMany")
-	getUintParam(&limit, c.Query, "limit")
-	if limit < 1 {
-		limit = 10
-	}
+	// timespans
+	err := util.GetTimespanFilters(c.Query)
 
 	// sortBy param
+	err = util.GetSortStatusParams(c.Query)
 
-	sortBy := c.Query("sortBy")
-	if sortBy != "id" && sortBy != "date" && sortBy != "price" && sortBy != "status" {
-		sortBy = ""
-	}
-
-	status := []string{"ACTIVE", "REVOKED", "REMOVED"}
-	statuses := c.Query("status")
-	if statuses != "" {
-		status = strings.Split(statuses, ",")
-		for _, s := range status {
-			if s != "ACTIVE" && s != "REVOKED" && s != "REMOVED" {
-				c.JSON(http.StatusBadRequest, gin.H {
-					"message": "Invalid status value",
-				})
-				return
-			}
-		}
-	}
 
 	// filter params
+	err = util.GetFilters(&filters, c.Query)
 
-	idFilter, err := getFilterParam(c.Query, "id")
-	authorsFilter, err := getFilterParam(c.Query, "authors")
-	storesFilter, err := getFilterParam(c.Query, "stores")
-	productsFilter, err := getFilterParam(c.Query, "products")
-	regionsFilter, err := getFilterParam(c.Query, "regions")
-	filters[0] = idFilter
-	filters[1] = authorsFilter 
-	filters[2] = storesFilter
-	filters[3] = productsFilter
-	filters[4] = regionsFilter
 
 	// fetch from db applying filters
-
 	entries, err = a.Db.Contrib.SelectWithFilters(filters)
-	if err != nil {
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		c.JSON(http.StatusBadRequest, gin.H {
 			"message": "Invalid values in paramateres",
+			"details": err.Error(),
 		})
 		return
 	}
 
-	// apply timespan filters
 
-	timespanTest := func(c model.Contrib) bool { 
-		t, _ := time.Parse(DATE_PATTERN, c.Date)
-		mili := t.UnixMilli()
-		return mili < endDate && mili > startDate
-	}
+	util.ReadyResponse(&entries)
 
-	entries = filter(entries, timespanTest)
+	page := []model.Contrib{}
+	page = lutil.Paginate(entries, util.AfterMany, util.Limit)
 
-	// apply status filters
-
-	statusTest := func(c model.Contrib) bool {
-		return slices.Contains(status, c.Status)
-	}
-
-	entries = filter(entries, statusTest)
-
-
-	// apply pagination
-
-	page := paginate(entries, afterMany, limit)
 	total := len(entries)
 	returned := len(page)
-	pages := uint(math.Ceil(float64(total)/float64(limit)))
 
-	// sortBy key, supports: id, date, price, status
+	pages := uint(math.Ceil(float64(total)/float64(util.Limit)))
 
-	// TODO: refactor to sort by dynamic field
-	sort.Slice(page, func(i int, j int) bool {
-		var con bool
-		switch sortBy {
-		case "id":
-			con = page[i].Id < page[j].Id
-		case "date":
-			t1, _:= time.Parse(DATE_PATTERN, page[i].Date)
-			t2, _:= time.Parse(DATE_PATTERN, page[j].Date)
-			fmt.Println(t1)
-			fmt.Println(t2)
-			con = t1.UnixMilli() < t2.UnixMilli()
-		case "price":
-			con = page[i].Price < page[j].Price
-		case "status":
-			con = page[i].Status < page[j].Status
-		default:
-		}
-		return con
+	if page == nil || len(page) < 1 {
+		page = make([]model.Contrib, 0)
+	}
+
+	c.JSON(http.StatusOK, gin.H {
+		"total": total,
+		"returned": returned,
+		"pages": pages,
+		"entries": page,
 	})
+}
+
+// contribs/group
+// returns group of contribution based on filters provided in url params
+// pagination
+func (a *Api) ContribsGetByGroup(c *gin.Context) {
+	util := contribUtil{}
+
+	filters := make([]db.Filter, FILTERS_LEN)
+	entries := []model.Contrib{}
+
+	// pagination params
+	util.GetPaginationParams(c.Query)
+
+	// timespans
+	err := util.GetTimespanFilters(c.Query)
+
+	// sortBy param
+	err = util.GetSortStatusParams(c.Query)
+
+
+	// filter params
+	err = util.GetFilters(&filters, c.Query)
+
+	entries, err = a.Db.Contrib.SelectWithFilters(filters)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		c.JSON(http.StatusBadRequest, gin.H {
+			"message": "Invalid values in paramateres",
+			"details": err.Error(),
+		})
+		return
+	}
+
+
+	util.ReadyResponse(&entries)
+	groups := util.Group(&entries)
+
+	page := []model.ContribGroup{}
+	page = lutil.Paginate(groups, util.AfterMany, util.Limit)
+
+
+
+	total := len(groups)
+	returned := len(page)
+
+	if page == nil || len(page) < 1 {
+		page = make([]model.ContribGroup, 0)
+	}
+
+
+	pages := uint(math.Ceil(float64(total)/float64(util.Limit)))
 
 
 	c.JSON(http.StatusOK, gin.H {
@@ -212,15 +166,74 @@ func (a *Api) ContribsGet(c *gin.Context) {
 // creates new contribution
 // authorized user = author
 // status only changeable by admin
-func (a *Api) ContribsPut(c *gin.Context) {
+func (a *Api) ContribsCreate(c *gin.Context) {
+	var req contribRequest
+	err := c.BindJSON(&req)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H {
+			"message" : err.Error(),
+		})
+		return
+	}
 
+	// check user stuff
+	isAdmin := auth.CtxIsAdmin(c)
+	userId := auth.CtxId(c)
+	if userId == nil {
+		c.JSON(http.StatusOK, gin.H {
+			"message": "Failed to identify user",
+		})
+		return
+	}
+
+	status := "ACTIVE"
+	if req.Status == "REVOKED" || req.Status == "REMOVED" && isAdmin {
+		status = req.Status
+	}
+
+	contrib := model.Contrib {
+		ProductID: req.Product,
+		StoreID: req.Store,
+		AuthorID: *userId,
+		Price: req.Price,
+		Comment: req.Comment,
+		Date: lutil.TimeNow(),
+		Status: status,
+	}
+
+	// insert to db
+	id, err := a.Db.Contrib.Create(contrib)
+	if err != nil {
+		fmt.Fprintf(gin.DefaultErrorWriter, "Failed to insert contrib at /contribs, err: %s\n", err.Error())
+		c.JSON(http.StatusServiceUnavailable, gin.H {
+			"message" : "Service failure",
+		})
+		return
+	}
+
+	contrib, err = a.Db.Contrib.SelectById(id)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		c.JSON(http.StatusBadRequest, gin.H {
+			"message" : "There is no contribution with this id",
+		})
+		return
+	}
+
+	if err != nil {
+		c.JSON(http.StatusServiceUnavailable, gin.H {
+			"message" : "Service failure",
+			"dbg": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, contrib)
 }
 
 
-// contribs/group
-// returns group of contribution based on filters provided in url params
-// pagination
-func (a *Api) ContribsGroup(c *gin.Context) {
+// contribs/{contribId}
+// updates contribution
+func (a *Api) ContribsUpdate(c *gin.Context) {
 
 }
 

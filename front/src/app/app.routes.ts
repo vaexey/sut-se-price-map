@@ -7,28 +7,49 @@ import { ErrorNotFoundComponent } from './pages/error-not-found/error-not-found.
 import { OnlyLoggedService } from './services/only-logged.service';
 import { OnlyAnonymousService } from './services/only-anonymous.service';
 import { SignUpComponent } from './pages/sign-up/sign-up.component';
+import { ErrorUnavailableComponent } from './pages/error-unavailable/error-unavailable.component';
 
 export const routes: Routes = [
     { 
-        path: 'login', 
+        path: 'login',
         component: LoginComponent,
-        canActivate: [OnlyAnonymousService]
+        canActivate: [OnlyAnonymousService],
+        title: "Price Compass - login",
     },
     { 
-        path: 'sign-up', 
+        path: 'sign-up',
         component: SignUpComponent,
-        canActivate: [OnlyAnonymousService]
+        canActivate: [OnlyAnonymousService],
+        title: "Price Compass - sign up",
     },
     { 
-        path: 'profile', 
+        path: 'profile',
         component: ProfileComponent,
-        canActivate: [OnlyLoggedService]
+        canActivate: [OnlyLoggedService],
+        title: "Price Compass - profile",
     },
     { 
-        path: 'search', 
-        component: SearchComponent 
+        path: 'search',
+        component: SearchComponent ,
+        title: "Price Compass - search",
     },
 
-    { path: '', pathMatch: 'full', component: HomeComponent },
-    { path: '**',  pathMatch: 'full', component: ErrorNotFoundComponent },
+    {
+        path: '503',
+        component: ErrorUnavailableComponent,
+        title: "Price Compass - failure",
+    },
+
+    { 
+        path: '',
+        pathMatch: 'full',
+        component: HomeComponent,
+        title: "Price Compass",
+    },
+    { 
+        path: '**',
+        pathMatch: 'full',
+        component: ErrorNotFoundComponent,
+        title: "Price Compass - not found",
+    },
 ];

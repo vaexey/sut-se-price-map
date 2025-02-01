@@ -1,0 +1,135 @@
+<ion-card color="medium">
+  <ion-card-content>
+    <ion-grid>
+      <ion-row>
+
+        <ion-col size="auto">
+          <ion-thumbnail style="min-width: 150px; min-height: 150px;">
+            @if(this.contribGroup)
+            {
+              <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/thumbnail.svg" />
+            } @else {
+              <ion-skeleton-text [animated]="true"></ion-skeleton-text>
+            }
+          </ion-thumbnail>
+        </ion-col>
+
+        <ion-col>
+          <ion-title>
+            @if(this.contribGroup)
+            {
+              {{ this.contribGroup.product.name }}
+            } @else {
+              <ion-skeleton-text [animated]="true" style="width: 130px;"></ion-skeleton-text>
+            }
+          </ion-title>
+          <ion-label color="light">
+            <h3>
+              @if(this.contribGroup)
+              {
+                Region: {{ this.contribGroup.store.region.name }}
+              } @else {
+                <ion-skeleton-text [animated]="true" style="width: 110px;"></ion-skeleton-text>
+              }
+            </h3>
+            <h3>
+              @if(this.contribGroup)
+              {
+                Store: {{ this.contribGroup.store.name }}
+              } @else {
+                <ion-skeleton-text [animated]="true" style="width: 100px;"></ion-skeleton-text>
+              }
+            </h3>
+            <h3>
+              @if(this.contribGroup)
+              {
+                First contributor: {{ this.contribGroup.firstAuthor.displayName }}
+              } @else {
+                <ion-skeleton-text [animated]="true" style="width: 120px;"></ion-skeleton-text>
+              }
+            </h3>
+          </ion-label>
+        </ion-col>
+
+        @if(this.contribGroup)
+        {
+          <ion-col size="auto" style="display: flex;flex-flow: column;">
+            <ion-button>
+              <ion-icon slot="icon-only" name="heart"></ion-icon>
+            </ion-button>
+            <ion-button>
+              <ion-icon slot="icon-only" name="bar-chart-outline"></ion-icon>
+            </ion-button>
+            <ion-button>
+              <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+            </ion-button>
+          </ion-col>
+  
+          <ion-col size="auto">
+            <ion-label>
+              <ion-title>{{ contribGroup.averagePrice }}</ion-title>
+              <h3>Rating: {{ contribGroup.rating }}/5</h3>
+            </ion-label>
+            <ion-button
+              (click)="toggleOpen()"
+              [disabled]="contribGroup.contribs.length < 1"
+            >
+              <ion-icon slot="icon-only" name="chevron-down-outline"></ion-icon>
+            </ion-button>
+          </ion-col>
+        } @else {
+          <ion-col size="auto" style="display: flex;flex-flow: column;">
+          </ion-col>
+  
+          <ion-col size="auto">
+            <ion-label>
+              <ion-title>
+                <ion-skeleton-text [animated]="true" style="width: 100px;"></ion-skeleton-text>
+              </ion-title>
+              <h3>
+                <ion-skeleton-text [animated]="true" style="width: 100px;"></ion-skeleton-text>
+              </h3>
+            </ion-label>
+            <h1>
+              <ion-skeleton-text [animated]="true"></ion-skeleton-text>
+            </h1>
+          </ion-col>
+        }
+
+      </ion-row>
+    </ion-grid>
+  </ion-card-content>
+</ion-card>
+@if(contribGroup && contribGroup.contribs.length > 0)
+{
+  <ion-accordion-group [value]="this.isOpen ? 'open' : undefined">
+    <ion-accordion value="open">
+      <ion-card color="light" slot="content">
+        <ion-card-content>
+          <ion-grid>
+            @if(!fetchingContribs)
+            {
+              @for(item of contribs; track item) {
+                <app-contrib-group-view-item [contrib]="item"></app-contrib-group-view-item>
+              }
+            } @else {
+              @for(item of contribGroup.contribs; track item) {
+                <ion-label>
+                  <h3>
+                    <ion-skeleton-text [animated]="true" style="width: 100%;"></ion-skeleton-text>
+                  </h3>
+                  <h3>
+                    <ion-skeleton-text [animated]="true" style="width: 70%;"></ion-skeleton-text>
+                  </h3>
+                  <h3>
+                    <ion-skeleton-text [animated]="true" style="width: 90%;"></ion-skeleton-text>
+                  </h3>
+                </ion-label>
+              }
+            }
+          </ion-grid>
+        </ion-card-content>
+      </ion-card>
+    </ion-accordion>
+  </ion-accordion-group>
+}

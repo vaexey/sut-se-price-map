@@ -1,0 +1,34 @@
+<app-region-picker
+  [isOpen]="this.isOpen"
+  (didDismissEvent)="onClose($event)"
+></app-region-picker>
+
+@if (!isSearchResults) {
+<ion-input
+  label="Region"
+  label-placement="floating"
+  fill="outline"
+  [readonly]="true"
+  (click)="open()"
+>
+  <ion-label slot="start">{{ this.comboText }}</ion-label>
+  <ion-button fill="clear" slot="end" aria-label="search">
+    <ion-icon
+      slot="icon-only"
+      name="caret-down-outline"
+      aria-hidden="true"
+    ></ion-icon>
+  </ion-button>
+</ion-input>
+} @else {
+<ion-input fill="outline" [readonly]="true" (click)="open()">
+  <ion-label slot="start">{{ this.comboText }}</ion-label>
+  <ion-button fill="clear" slot="end" aria-label="search">
+    <ion-icon
+      slot="icon-only"
+      name="caret-down-outline"
+      aria-hidden="true"
+    ></ion-icon>
+  </ion-button>
+</ion-input>
+}

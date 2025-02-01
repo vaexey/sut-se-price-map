@@ -3,15 +3,18 @@ package db
 import (
 	"back/model"
 	"fmt"
+	"gorm.io/gorm"
 )
 func NewFilter(include *[]uint, exclude *[]uint, prefix string) Filter {
     field := prefix
-    if prefix != "id" {
-	// cut the 's'
-	field = prefix[:len(prefix) - 1]
-	// append _id
-	field = fmt.Sprintf("%s_id", field)
+    // cut the 's'
+    field = prefix[:len(prefix) - 1]
+    // append _id
+    field = fmt.Sprintf("contrib.%s_id", field)
+    if prefix == "ids" {
+	field = "id"
     }
+
     if prefix == "regions" {
 	field = "store.region_id"
     }
@@ -29,11 +32,8 @@ type Filter struct {
     Exclude *[]uint
 }
 
-
-func (cs *contribService) SelectWithFilters(filters []Filter) ([]model.Contrib, error) {
-    var contribs []model.Contrib
+func (cs* contribService) QueryApplyFilters(filters []Filter) *gorm.DB {
     query := cs.Db.
-        Debug().
         Preload("Store.Region").
 	Preload("Store").
 	Preload("Author").
@@ -60,14 +60,28 @@ func (cs *contribService) SelectWithFilters(filters []Filter) ([]model.Contrib, 
     if join {
 	query.Joins("JOIN \"sut_se_price_map\".\"store\" on \"store\".id = contrib.store_id")
     }
-    err := query.
-        Find(&contribs).Error
+    return query
+}
 
+func (cs *contribService) SelectWithFilters(filters []Filter) ([]model.Contrib, error) {
+    var contribs []model.Contrib
+    query := cs.QueryApplyFilters(filters)
+
+    err := query.Find(&contribs).Error
     return contribs, err
 }
+
+
+
 
 func (cs *contribService) SelectById(id uint) (model.Contrib, error) {
     var contrib model.Contrib
     err := cs.Db.Preload("Product").Preload("Store").Preload("Author").First(&contrib, id).Error
     return contrib, err
 }
+
+func (cs *contribService) Create(contrib model.Contrib) (uint, error) {
+    result := cs.Db.Create(&contrib)
+    return contrib.Id, result.Error
+}
+
