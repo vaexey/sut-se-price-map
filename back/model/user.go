@@ -1,12 +1,12 @@
 package model
 
 type User struct {
-	Id          uint	`gorm:"unique;primaryKey;autoIncrement"`
-	Login		string	`gorm:"unique"`
-	DisplayName string
-	Password	string
-	IsAdmin		bool
-	Avatar      *int
+	Id          uint	`gorm:"unique;primaryKey;autoIncrement" json:"id"`
+	Login		string	`gorm:"unique" json:"username"`
+	DisplayName string `json:"displayName"`
+	Password	string `json:"-"`
+	IsAdmin		bool `json:"-"`
+	Avatar      *int `json:"-"`
 }
 
 func (User) TableName() string {

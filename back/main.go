@@ -104,6 +104,12 @@ func main() {
 		v1.GET("/stores", api.Stores)
 		//v1.GET("/reports", api.Reports)
 
+		v1.GET("contribs/:contribId", api.ContribsByIdGet)
+		v1.GET("contribs", api.ContribsGet)
+		v1.POST("contribs/group", api.ContribsGroup)
+		v1.POST("contribs/:contribId", api.ContribsByIdPost)
+		v1.PUT("contribs", api.ContribsPut)
+
 		// Auth-guarded
 		v1.GET("hello", authMiddleware, hello)
 		v1.GET("admin", authMiddleware, adminMiddleware, admin)

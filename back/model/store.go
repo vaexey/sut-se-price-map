@@ -1,8 +1,9 @@
 package model
 
 type Store struct {
-	Id     uint   `gorm:"unique;primaryKey;autoIncrement" json:"id"`
-	Region uint   `json:"region"`
+	Id     uint `gorm:"primaryKey;unique;autoIncrement" json:"id"`
+	RegionID uint `json:"-"`
+	Region Region `json:"region"`
 	Name   string `json:"name"`
 }
 
