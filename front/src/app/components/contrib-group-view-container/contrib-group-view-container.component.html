@@ -67,8 +67,8 @@
   
           <ion-col size="auto">
             <ion-label>
-              <ion-title>$5,00</ion-title>
-              <h3>Rating: 5/5</h3>
+              <ion-title>{{ contribGroup.averagePrice }}</ion-title>
+              <h3>Rating: {{ contribGroup.rating }}/5</h3>
             </ion-label>
             <ion-button
               (click)="toggleOpen()"
@@ -107,23 +107,25 @@
       <ion-card color="light" slot="content">
         <ion-card-content>
           <ion-grid>
-            @if(!fetchContribs)
+            @if(!fetchingContribs)
             {
               @for(item of contribs; track item) {
                 <app-contrib-group-view-item [contrib]="item"></app-contrib-group-view-item>
               }
             } @else {
-              <ion-label>
-                <h3>
-                  <ion-skeleton-text [animated]="true" style="width: 100%;"></ion-skeleton-text>
-                </h3>
-                <h3>
-                  <ion-skeleton-text [animated]="true" style="width: 70%;"></ion-skeleton-text>
-                </h3>
-                <h3>
-                  <ion-skeleton-text [animated]="true" style="width: 90%;"></ion-skeleton-text>
-                </h3>
-              </ion-label>
+              @for(item of contribGroup.contribs; track item) {
+                <ion-label>
+                  <h3>
+                    <ion-skeleton-text [animated]="true" style="width: 100%;"></ion-skeleton-text>
+                  </h3>
+                  <h3>
+                    <ion-skeleton-text [animated]="true" style="width: 70%;"></ion-skeleton-text>
+                  </h3>
+                  <h3>
+                    <ion-skeleton-text [animated]="true" style="width: 90%;"></ion-skeleton-text>
+                  </h3>
+                </ion-label>
+              }
             }
           </ion-grid>
         </ion-card-content>
