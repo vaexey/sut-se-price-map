@@ -105,7 +105,7 @@ func (c *contribUtil) GetPaginationParams(q func(string) string) {
 
 
 func (c *contribUtil) GetFilters(filters *[]db.Filter, q func(string) string) error {
-	idFilter, err := c.getFilterParam(q, "id")
+	idFilter, err := c.getFilterParam(q, "ids")
 	authorsFilter, err := c.getFilterParam(q, "authors")
 	storesFilter, err := c.getFilterParam(q, "stores")
 	productsFilter, err := c.getFilterParam(q, "products")
