@@ -3,6 +3,7 @@ package model
 type Product struct {
 	Id    uint     `gorm:"unique;primaryKey;autoIncrement" json:"id"`
 	Name  string   `json:"name"`
+	PhotoID uint   `json:"-"`
 	Photo Resource `json:"photo"`
 }
 
