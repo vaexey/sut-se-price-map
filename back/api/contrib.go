@@ -106,7 +106,7 @@ func (a *Api) ContribsGetByGroup(c *gin.Context) {
 	util := contribUtil{}
 
 	filters := make([]db.Filter, FILTERS_LEN)
-	var entries []model.Contrib
+	entries := []model.Contrib{}
 
 	// pagination params
 	util.GetPaginationParams(c.Query)
@@ -134,10 +134,17 @@ func (a *Api) ContribsGetByGroup(c *gin.Context) {
 	util.ReadyResponse(&entries)
 	groups := util.Group(&entries)
 
-	page := lutil.Paginate(groups, util.AfterMany, util.Limit)
+	page := []model.ContribGroup{}
+	page = lutil.Paginate(groups, util.AfterMany, util.Limit)
+
+
 
 	total := len(groups)
 	returned := len(page)
+
+	if page == nil || len(page) < 1 {
+		page = make([]model.ContribGroup, 0)
+	}
 
 
 	pages := uint(math.Ceil(float64(total)/float64(util.Limit)))

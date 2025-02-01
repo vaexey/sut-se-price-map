@@ -124,7 +124,7 @@ func (c* contribUtil) GetSortStatusParams(q func(string) string) error {
 		sortBy = ""
 	}
 
-	status := []string{"ACTIVE", "REVOKED", "REMOVED"}
+	status := []string{"ACTIVE"}
 	statuses := q("status")
 	if statuses != "" {
 		status = strings.Split(statuses, ",")
@@ -205,6 +205,7 @@ func (c *contribUtil) ReadyResponse(entries *[]model.Contrib) {
 		return mili < c.EndDate && mili > c.StartDate
 	}
 
+
 	*entries = util.Filter(*entries, timespanTest)
 
 	// apply status filters
@@ -213,7 +214,6 @@ func (c *contribUtil) ReadyResponse(entries *[]model.Contrib) {
 	}
 
 	*entries = util.Filter(*entries, statusTest)
-
 
 
 	// sortBy key, supports: id, date, price, status
