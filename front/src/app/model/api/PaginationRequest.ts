@@ -5,11 +5,11 @@ export interface InExFilter<T>
 {
     // Include only entries mentioning these values
     // If null: include all
-    include?: DbRef<T>
+    include?: DbRef<T>[]
 
     // Exclude all entries mentioning these values
     // If null: exclude none
-    exclude?: DbRef<T>
+    exclude?: DbRef<T>[]
 }
 
 // Group results by T and then filter

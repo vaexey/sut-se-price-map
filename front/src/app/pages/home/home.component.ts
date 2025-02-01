@@ -4,11 +4,14 @@ import { IonButton, IonCol, IonContent, IonGrid, IonIcon, IonInput, IonRow, IonS
 import { addIcons } from 'ionicons';
 import { searchOutline } from 'ionicons/icons';
 import { FormsModule } from '@angular/forms';
+import { RegionPickerComponent } from '../../components/region-picker/region-picker.component';
+import { RegionComboComponent } from '../../components/region-combo/region-combo.component';
 
 @Component({
   selector: 'app-home',
   imports: [
     FormsModule,
+    RegionComboComponent,
     IonContent,
     IonGrid,
     IonRow,
@@ -16,8 +19,6 @@ import { FormsModule } from '@angular/forms';
     IonInput,
     IonIcon,
     IonButton,
-    IonSelect,
-    IonSelectOption,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
