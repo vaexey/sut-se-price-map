@@ -7,13 +7,14 @@ import (
 )
 func NewFilter(include *[]uint, exclude *[]uint, prefix string) Filter {
     field := prefix
-    if prefix != "id" {
-	// cut the 's'
-	field = prefix[:len(prefix) - 1]
-	// append _id
-	field = fmt.Sprintf("%s_id", field)
+    // cut the 's'
+    field = prefix[:len(prefix) - 1]
+    // append _id
+    field = fmt.Sprintf("contrib.%s_id", field)
+    if prefix == "ids" {
+	field = "id"
     }
-    field = fmt.Sprintf("contrib.%s", field)
+
     if prefix == "regions" {
 	field = "store.region_id"
     }
