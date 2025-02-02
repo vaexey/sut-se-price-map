@@ -85,3 +85,8 @@ func (cs *contribService) Create(contrib model.Contrib) (uint, error) {
     return contrib.Id, result.Error
 }
 
+func (cs *contribService) Update(contrib model.Contrib) error {
+    err := cs.Db.Select("comment", "price","status").Updates(contrib).Error
+    return err
+}
+

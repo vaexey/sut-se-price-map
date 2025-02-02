@@ -234,6 +234,68 @@ func (a *Api) ContribsCreate(c *gin.Context) {
 // contribs/{contribId}
 // updates contribution
 func (a *Api) ContribsUpdate(c *gin.Context) {
+	contribId := c.Param("contribId")
+	id, err := strconv.ParseUint(contribId, 10, 0)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H {
+			"message" : "Invalid contribution id",
+		})
+		return
+	}
+
+	var req contribRequest
+	err = c.BindJSON(&req)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H {
+			"message" : err.Error(),
+		})
+		return
+	}
+
+	userId := auth.CtxId(c)
+	if userId == nil {
+		c.JSON(http.StatusOK, gin.H {
+			"message": "Failed to identify user",
+		})
+		return
+	}
+	isAdmin := auth.CtxIsAdmin(c)
+
+
+
+	// select by id, then change the obj values, then update
+	dbContrib, err := a.Db.Contrib.SelectById(uint(id))
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		c.JSON(http.StatusBadRequest, gin.H {
+			"message" : "There is no contribution with this id",
+		})
+		return
+	}
+
+	// check all restricitons
+	status := dbContrib.Status
+
+	if isAdmin {
+		status = req.Status
+	} else if dbContrib.Status == "ACTIVE" && req.Status == "REVOKED" {
+		status = req.Status
+	}
+
+	if !isAdmin && dbContrib.AuthorID != *userId {
+		c.JSON(http.StatusOK, gin.H {
+			"message": "Failed to identify user",
+		})
+		return
+	}
+
+	dbContrib.Status = status
+	dbContrib.Comment = req.Comment
+	dbContrib.Price = req.Price
+
+
+	// TODO: update in db
+	a.Db.Contrib.Update(dbContrib)
+	c.JSON(http.StatusOK, dbContrib)
 
 }
 
