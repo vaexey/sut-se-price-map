@@ -103,7 +103,7 @@ func main() {
 		v1.GET("/products", api.Products)
 		v1.GET("/stores", api.Stores)
 		v1.GET("/reports", api.Reports)
-		v1.PUT("/reports", api.PutReports)
+		v1.PUT("/reports", api.CreateReports)
 
 		// contribs
 

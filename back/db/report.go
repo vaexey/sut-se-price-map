@@ -8,7 +8,7 @@ func (rh *reportService) SelectAll() ([]model.Report, error) {
 	return reports, result.Error
 }
 
-func (rh *reportService) Create(report model.Report) (uint, error) {
+func (rh *reportService) Create(report model.Report) error {
 	result := rh.Db.Create(&report)
-	return report.Id, result.Error
+	return result.Error
 }
