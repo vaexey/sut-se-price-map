@@ -5,3 +5,7 @@ type Resource struct {
 	Url  string `json:"url"`
 	Blob string `json:"blob"`
 }
+
+func (Resource) TableName() string {
+	return "sut_se_price_map.resource"
+}
