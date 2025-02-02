@@ -3,6 +3,7 @@ package db
 import (
 	"back/model"
 	"fmt"
+
 	"gorm.io/gorm"
 )
 func NewFilter(include *[]uint, exclude *[]uint, prefix string) Filter {
@@ -12,17 +13,17 @@ func NewFilter(include *[]uint, exclude *[]uint, prefix string) Filter {
     // append _id
     field = fmt.Sprintf("contrib.%s_id", field)
     if prefix == "ids" {
-	field = "id"
+	    field = "id"
     }
 
     if prefix == "regions" {
-	field = "store.region_id"
+	    field = "store.region_id"
     }
 
     return Filter {
-	Include: include,
-	Exclude: exclude,
-	Field: field,
+	    Include: include,
+	    Exclude: exclude,
+	    Field: field,
     }
 }
 
@@ -35,8 +36,8 @@ type Filter struct {
 func (cs* contribService) QueryApplyFilters(filters []Filter) *gorm.DB {
     query := cs.Db.
         Preload("Store.Region").
-	Preload("Store").
-	Preload("Author").
+	    Preload("Store").
+	    Preload("Author").
         Preload("Product")
 
     join := false
@@ -45,20 +46,20 @@ func (cs* contribService) QueryApplyFilters(filters []Filter) *gorm.DB {
 	if filter.Include != nil && len(*filter.Include) > 0 {
 	    query.Where(fmt.Sprintf("%s in ?", filter.Field), *filter.Include)
 	    if filter.Field == "store.region_id" {
-		join = true
+		    join = true
 	    }
 	}
 
 	if filter.Exclude != nil && len(*filter.Exclude) > 0 {
 	    query.Where(fmt.Sprintf("%s not in ?", filter.Field), *filter.Exclude)
 	    if filter.Field == "store.region_id" {
-		join = true
+		    join = true
 	    }
 	}
 
     }
     if join {
-	query.Joins("JOIN \"sut_se_price_map\".\"store\" on \"store\".id = contrib.store_id")
+	    query.Joins("JOIN \"sut_se_price_map\".\"store\" on \"store\".id = contrib.store_id")
     }
     return query
 }
