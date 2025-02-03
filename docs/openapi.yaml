@@ -74,17 +74,36 @@ paths:
       description: ''
       operationId: ''
       responses:
-        default:
-          description: Default error sample response
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
       tags:
         - users
     post:
       summary: Updates editable fields for current user
-      description: ''
+      description: |
+        Editable fields for user:
+         - displayName
+         - bio
+         - defaultRegion
       operationId: ''
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfile'
       responses:
-        default:
-          description: Default error sample response
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '400':
+          $ref: '#/components/responses/400Error'
       tags:
         - users
   /profiles/{userLogin}:
@@ -146,7 +165,10 @@ paths:
           required: false
           schema:
             type: string
-            enum: [id, date, ...]
+            enum:
+              - id
+              - date
+              - ...
         - name: idsInclude
           in: query
           description: IDs include
@@ -279,13 +301,20 @@ paths:
         - contribs
     put:
       summary: Creates a new contribution.
-      description: |
+      description: >
         Creates a new contribution with specified fields.
-        Product and store field can be set only on creation and cannot be edited.
+
+        Product and store field can be set only on creation and cannot be
+        edited.
+
         Comment can be null, meaning no comment has been added.
+
         Status field on creation must be equal to ACTIVE. If request contains
+
         other value, it will be overwritten by server.
+
         This does not apply to admin users - they can set the status to their
+
         desired value.
       operationId: ''
       requestBody:
@@ -349,14 +378,22 @@ paths:
       summary: >-
         Updates contribution fields. Scope of editable fields depends on
         permissions.
-      description: |
+      description: >
         Updates specified contribution with new fields.
-        Product and store field can be set only on creation and cannot be edited.
+
+        Product and store field can be set only on creation and cannot be
+        edited.
+
         Comment can be null, meaning no comment has been added.
+
         Comment may be removed or added.
+
         Status field can be changed only from ACTIVE to REVOKED.
+
         Any other change is not allowed.
+
         This does not apply to admin users - they can set the status to their
+
         desired value.
       operationId: ''
       parameters:
@@ -426,7 +463,10 @@ paths:
           required: false
           schema:
             type: string
-            enum: [id, date, ...]
+            enum:
+              - id
+              - date
+              - ...
         - name: regionsInclude
           in: query
           description: regions include
@@ -683,6 +723,43 @@ paths:
                   $ref: '#/components/schemas/Report'
       tags:
         - admin
+  /resources/{id}:
+    get:
+      summary: Returns binary data of specified resource.
+      description: |
+        Returns specified resource file contents.
+        Response should contain valid MIME type.
+      operationId: ''
+      parameters:
+        - name: id
+          in: path
+          description: Id of the resource
+          required: true
+          schema:
+            type: integer
+            format: id
+      responses:
+        '200':
+          description: success
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            image/webp:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/400Error'
+        '404':
+          $ref: '#/components/responses/404Error'
+      tags:
+        - special
 components:
   schemas:
     Contrib:
@@ -707,12 +784,14 @@ components:
           type: string
         attachements:
           type: object
-          # TODO: attachement scheme
         status:
           $ref: '#/components/schemas/ContribStatus'
     ContribStatus:
       type: string
-      enum: [ACTIVE, REVOKED, REMOVED]
+      enum:
+        - ACTIVE
+        - REVOKED
+        - REMOVED
     Product:
       type: object
       properties:
@@ -745,7 +824,6 @@ components:
           type: string
         avatar:
           $ref: '#/components/schemas/Resource'
-          # TODO: server-side fields
     Region:
       type: object
       properties:
@@ -790,6 +868,25 @@ components:
         date:
           type: string
           format: date-time
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: user_id
+        login:
+          type: string
+        displayName:
+          type: string
+        bio:
+          type: string
+        contribCount:
+          type: number
+        defaultRegion:
+          type: integer
+          format: region_id
+        isAdmin:
+          type: boolean
     GetContribsGroupResponseEntry:
       type: object
       properties:
@@ -881,3 +978,5 @@ tags:
     description: Everything related to users
   - name: admin
     description: Admin-only accessible requests
+  - name: special
+    description: Special routes that cannot be categorized
