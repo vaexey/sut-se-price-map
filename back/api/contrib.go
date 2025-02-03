@@ -293,8 +293,7 @@ func (a *Api) ContribsUpdate(c *gin.Context) {
 	dbContrib.Price = req.Price
 
 
-	// TODO: update in db
-	a.Db.Contrib.Update(dbContrib)
+	err = a.Db.Contrib.Update(dbContrib)
 	c.JSON(http.StatusOK, dbContrib)
 
 }

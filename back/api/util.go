@@ -264,8 +264,13 @@ func (c *contribUtil) fieldsFromContrib(contribs *[]model.Contrib) (float32, flo
 	prices := make([]float32, len(*contribs))
 
 
-	sum := 0.0
 	size := float64(len(*contribs))
+
+	if size < 1 {
+		return 0.0, 0.0, ids
+	}
+
+	sum := 0.0
 	sd := 0.0
 	// avgPrice & ids
 	for i, entry := range *contribs {
@@ -283,7 +288,12 @@ func (c *contribUtil) fieldsFromContrib(contribs *[]model.Contrib) (float32, flo
 
 	// rating
 
+	if avgPrice <= 0 {
+		return 0.0, 1.0, ids
+	}
+
 	v := sd / avgPrice
+
 	vrot := 1 - v
 	rating := math.Pow(vrot, 2)
 
