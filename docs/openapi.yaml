@@ -37,6 +37,15 @@ paths:
           $ref: '#/components/responses/400Error'
         '401':
           $ref: '#/components/responses/401Error'
+        '403':
+          description: user banned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: You are banned
   /sign-up:
     put:
       summary: Registers an user
@@ -111,9 +120,6 @@ paths:
       summary: Returns profile info for specified user
       description: ''
       operationId: ''
-      responses:
-        default:
-          description: Default error sample response
       parameters:
         - name: userLogin
           in: path
@@ -121,6 +127,17 @@ paths:
           required: true
           schema:
             type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '400':
+          $ref: '#/components/responses/400Error'
+        '404':
+          $ref: '#/components/responses/404Error'
       tags:
         - users
     post:
@@ -139,6 +156,16 @@ paths:
             type: string
       tags:
         - admin
+  # /profiles/ban:
+  #   post:
+  #     summary: Changes ban status of specified user
+  #     description: ''
+  #     operationId: ''
+  #     responses:
+  #       default:
+  #         description: Default error sample response
+  #     tags:
+  #       - admin
   /contribs:
     get:
       summary: Returns all contribs matching criteria. Supports pagination.
@@ -760,6 +787,34 @@ paths:
           $ref: '#/components/responses/404Error'
       tags:
         - special
+  /favorites:
+    get:
+      summary: Returns favorites for current user
+      description: TODO
+      operationId: ''
+      responses:
+        default:
+          description: Default error sample response
+      tags:
+        - favorites
+    put:
+      summary: Appends filters to favorites
+      description: TODO
+      operationId: ''
+      responses:
+        default:
+          description: Default error sample response
+      tags:
+        - favorites
+    post:
+      summary: Updates favorite filters entry
+      description: TODO
+      operationId: ''
+      responses:
+        default:
+          description: Default error sample response
+      tags:
+        - favorites
 components:
   schemas:
     Contrib:
@@ -849,9 +904,6 @@ components:
           format: id
         url:
           type: string
-        blob:
-          type: string
-          format: base64
     Report:
       type: object
       properties:
@@ -882,10 +934,14 @@ components:
           type: string
         contribCount:
           type: number
-        defaultRegion:
-          type: integer
-          format: region_id
+        defaultRegions:
+          type: array
+          items:
+            type: integer
+            format: region_id
         isAdmin:
+          type: boolean
+        isBanned:
           type: boolean
     GetContribsGroupResponseEntry:
       type: object
@@ -976,6 +1032,8 @@ tags:
     description: Everything related to contributions
   - name: users
     description: Everything related to users
+  - name: favorites
+    description: Everything related to favorites
   - name: admin
     description: Admin-only accessible requests
   - name: special
