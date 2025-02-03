@@ -4,13 +4,15 @@ import { ContribGroupViewItemComponent } from "../contrib-group-view-item/contri
 import { GetContribsGroupResponseEntry } from '../../model/api/GetContribsGroupRequest';
 import { Contrib } from '../../model/db/Contrib';
 import { ContribService } from '../../services/contrib.service';
+import { CurrencyPipe } from '@angular/common';
 
 @Component({
   selector: 'app-contrib-group-view-container',
   imports: [
     IonicModule,
-    ContribGroupViewItemComponent
-],
+    ContribGroupViewItemComponent,
+    CurrencyPipe,
+  ],
   templateUrl: './contrib-group-view-container.component.html',
   styleUrls: ['./contrib-group-view-container.component.scss'],
 })

@@ -85,10 +85,6 @@ export class ContribGroupViewComponent  implements OnInit {
     this.availableMore = availableMore ?? false
 
     this.contribGroups.push(...data)
-    // this.contribGroups = [
-    //   ...this.contribGroups,
-    //   ...data
-    // ]
   }
 
   clearData()
@@ -105,8 +101,17 @@ export class ContribGroupViewComponent  implements OnInit {
 
   setLoading()
   {
-    this.loading = true
     this.error = null
+
+    if(this.autoLoad && this.infinite)
+    {
+      if(this.contribGroups.length === 0)
+        this.loading = true
+
+      return
+    }
+
+    this.loading = true
   }
 
   private onFiltersUpdate()
@@ -155,8 +160,6 @@ export class ContribGroupViewComponent  implements OnInit {
 
   onScrollMore(evt: InfiniteScrollCustomEvent)
   {
-    console.log(evt)
-
     if(this.availableMore)
     {
       this.fetch().subscribe(() => {

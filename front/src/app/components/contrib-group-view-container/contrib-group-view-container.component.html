@@ -1,4 +1,4 @@
-<ion-card color="medium">
+<ion-card color="medium" class="container">
   <ion-card-content>
     <ion-grid>
       <ion-row>
@@ -23,7 +23,7 @@
               <ion-skeleton-text [animated]="true" style="width: 130px;"></ion-skeleton-text>
             }
           </ion-title>
-          <ion-label color="light">
+          <ion-label>
             <h3>
               @if(this.contribGroup)
               {
@@ -67,7 +67,7 @@
   
           <ion-col size="auto">
             <ion-label>
-              <ion-title>{{ contribGroup.averagePrice }}</ion-title>
+              <ion-title>{{ contribGroup.averagePrice | currency : "USD" }}</ion-title>
               <h3>Rating: {{ contribGroup.rating }}/5</h3>
             </ion-label>
             <ion-button
@@ -109,7 +109,7 @@
           <ion-grid>
             @if(!fetchingContribs)
             {
-              @for(item of contribs; track item) {
+              @for(item of contribs; track item.id) {
                 <app-contrib-group-view-item [contrib]="item"></app-contrib-group-view-item>
               }
             } @else {
