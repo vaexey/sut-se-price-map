@@ -6,6 +6,7 @@ import (
 	"back/util"
 	"errors"
 	"fmt"
+	"math"
 	"net/http"
 	"slices"
 	"sort"
@@ -236,13 +237,9 @@ func (c *contribUtil) Group(entries *[]model.Contrib) []model.ContribGroup {
 			return t1.UnixMilli() < t2.UnixMilli()
 		})
 
-		contribs := make([]uint, len(value))
-		avgPrice := float32(0.0)
-		for i, entry := range value {
-			contribs[i] = entry.Id
-			avgPrice += entry.Price
-		}
-		avgPrice = avgPrice / float32(len(value))
+		// fields specific to group
+		avgPrice, rating, ids := c.fieldsFromContrib(&value)
+
 
 
 		first := value[0]
@@ -251,13 +248,57 @@ func (c *contribUtil) Group(entries *[]model.Contrib) []model.ContribGroup {
 			Store: first.Store,
 			Product: first.Product,
 			FirstAuthor: first.Author,
-			Contribs: contribs,
+			Contribs: ids,
 			AvgPrice: avgPrice,
-			Rating: 0,
+			Rating: rating,
 		})
 	}
 	return resultGroup
 }
 
 
+// this calculates avgPrice, rating, and returns all ids of group
+func (c *contribUtil) fieldsFromContrib(contribs *[]model.Contrib) (float32, float32, []uint) {
+	ids := make([]uint, len(*contribs))
+	avgPrice := 0.0
+	prices := make([]float32, len(*contribs))
+
+
+	size := float64(len(*contribs))
+
+	if size < 1 {
+		return 0.0, 0.0, ids
+	}
+
+	sum := 0.0
+	sd := 0.0
+	// avgPrice & ids
+	for i, entry := range *contribs {
+		ids[i] = entry.Id
+		prices[i] = entry.Price
+		sum += float64(entry.Price)
+	}
+
+	// sd
+	avgPrice = sum / size
+	for _, entry := range *contribs {
+		sd += math.Pow(float64(entry.Price) - avgPrice, 2)
+	}
+	sd = math.Sqrt(sd / size)
+
+	// rating
+
+	if avgPrice <= 0 {
+		return 0.0, 1.0, ids
+	}
+
+	v := sd / avgPrice
+
+	vrot := 1 - v
+	rating := math.Pow(vrot, 2)
+
+
+
+	return float32(avgPrice), float32(rating), ids
+}
 
