@@ -21,24 +21,24 @@ func (a *Api) ContribsGetById(c *gin.Context) {
 	contribId := c.Param("contribId")
 	id, err := strconv.ParseUint(contribId, 10, 0)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H {
-			"message" : "Invalid contribution id",
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid contribution id",
 		})
 		return
 	}
 
 	contrib, err := a.Db.Contrib.SelectById(uint(id))
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		c.JSON(http.StatusBadRequest, gin.H {
-			"message" : "There is no contribution with this id",
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "There is no contribution with this id",
 		})
 		return
 	}
 
 	if err != nil {
-		c.JSON(http.StatusServiceUnavailable, gin.H {
-			"message" : "Service failure",
-			"dbg": err.Error(),
+		c.JSON(http.StatusServiceUnavailable, gin.H{
+			"message": "Service failure",
+			"dbg":     err.Error(),
 		})
 		return
 	}
@@ -46,12 +46,12 @@ func (a *Api) ContribsGetById(c *gin.Context) {
 	c.JSON(http.StatusOK, contrib)
 }
 
-
 // contribs
 // TODO: inclusive regions
 const FILTERS_LEN = 5
+
 func (a *Api) ContribsGetAll(c *gin.Context) {
-	util := contribUtil {}
+	util := contribUtil{}
 
 	filters := make([]db.Filter, FILTERS_LEN)
 	var entries []model.Contrib
@@ -65,21 +65,18 @@ func (a *Api) ContribsGetAll(c *gin.Context) {
 	// sortBy param
 	err = util.GetSortStatusParams(c.Query)
 
-
 	// filter params
 	err = util.GetFilters(&filters, c.Query)
-
 
 	// fetch from db applying filters
 	entries, err = a.Db.Contrib.SelectWithFilters(filters)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		c.JSON(http.StatusBadRequest, gin.H {
+		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invalid values in paramateres",
 			"details": err.Error(),
 		})
 		return
 	}
-
 
 	util.ReadyResponse(&entries)
 
@@ -89,17 +86,17 @@ func (a *Api) ContribsGetAll(c *gin.Context) {
 	total := len(entries)
 	returned := len(page)
 
-	pages := uint(math.Ceil(float64(total)/float64(util.Limit)))
+	pages := uint(math.Ceil(float64(total) / float64(util.Limit)))
 
 	if page == nil || len(page) < 1 {
 		page = make([]model.Contrib, 0)
 	}
 
-	c.JSON(http.StatusOK, gin.H {
-		"total": total,
+	c.JSON(http.StatusOK, gin.H{
+		"total":    total,
 		"returned": returned,
-		"pages": pages,
-		"entries": page,
+		"pages":    pages,
+		"entries":  page,
 	})
 }
 
@@ -121,27 +118,23 @@ func (a *Api) ContribsGetByGroup(c *gin.Context) {
 	// sortBy param
 	err = util.GetSortStatusParams(c.Query)
 
-
 	// filter params
 	err = util.GetFilters(&filters, c.Query)
 
 	entries, err = a.Db.Contrib.SelectWithFilters(filters)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		c.JSON(http.StatusBadRequest, gin.H {
+		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invalid values in paramateres",
 			"details": err.Error(),
 		})
 		return
 	}
 
-
 	util.ReadyResponse(&entries)
 	groups := util.Group(&entries)
 
 	page := []model.ContribGroup{}
 	page = lutil.Paginate(groups, util.AfterMany, util.Limit)
-
-
 
 	total := len(groups)
 	returned := len(page)
@@ -150,15 +143,13 @@ func (a *Api) ContribsGetByGroup(c *gin.Context) {
 		page = make([]model.ContribGroup, 0)
 	}
 
+	pages := uint(math.Ceil(float64(total) / float64(util.Limit)))
 
-	pages := uint(math.Ceil(float64(total)/float64(util.Limit)))
-
-
-	c.JSON(http.StatusOK, gin.H {
-		"total": total,
+	c.JSON(http.StatusOK, gin.H{
+		"total":    total,
 		"returned": returned,
-		"pages": pages,
-		"entries": page,
+		"pages":    pages,
+		"entries":  page,
 	})
 }
 
@@ -170,8 +161,8 @@ func (a *Api) ContribsCreate(c *gin.Context) {
 	var req contribRequest
 	err := c.BindJSON(&req)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H {
-			"message" : err.Error(),
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
 		})
 		return
 	}
@@ -180,7 +171,7 @@ func (a *Api) ContribsCreate(c *gin.Context) {
 	isAdmin := auth.CtxIsAdmin(c)
 	userId := auth.CtxId(c)
 	if userId == nil {
-		c.JSON(http.StatusOK, gin.H {
+		c.JSON(http.StatusOK, gin.H{
 			"message": "Failed to identify user",
 		})
 		return
@@ -191,38 +182,38 @@ func (a *Api) ContribsCreate(c *gin.Context) {
 		status = req.Status
 	}
 
-	contrib := model.Contrib {
+	contrib := model.Contrib{
 		ProductID: req.Product,
-		StoreID: req.Store,
-		AuthorID: *userId,
-		Price: req.Price,
-		Comment: req.Comment,
-		Date: lutil.TimeNow(),
-		Status: status,
+		StoreID:   req.Store,
+		AuthorID:  *userId,
+		Price:     req.Price,
+		Comment:   req.Comment,
+		Date:      lutil.TimeNow(),
+		Status:    status,
 	}
 
 	// insert to db
 	id, err := a.Db.Contrib.Create(contrib)
 	if err != nil {
 		fmt.Fprintf(gin.DefaultErrorWriter, "Failed to insert contrib at /contribs, err: %s\n", err.Error())
-		c.JSON(http.StatusServiceUnavailable, gin.H {
-			"message" : "Service failure",
+		c.JSON(http.StatusServiceUnavailable, gin.H{
+			"message": "Service failure",
 		})
 		return
 	}
 
 	contrib, err = a.Db.Contrib.SelectById(id)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		c.JSON(http.StatusBadRequest, gin.H {
-			"message" : "There is no contribution with this id",
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "There is no contribution with this id",
 		})
 		return
 	}
 
 	if err != nil {
-		c.JSON(http.StatusServiceUnavailable, gin.H {
-			"message" : "Service failure",
-			"dbg": err.Error(),
+		c.JSON(http.StatusServiceUnavailable, gin.H{
+			"message": "Service failure",
+			"dbg":     err.Error(),
 		})
 		return
 	}
@@ -230,13 +221,8 @@ func (a *Api) ContribsCreate(c *gin.Context) {
 	c.JSON(http.StatusOK, contrib)
 }
 
-
 // contribs/{contribId}
 // updates contribution
 func (a *Api) ContribsUpdate(c *gin.Context) {
 
 }
-
-
-
-

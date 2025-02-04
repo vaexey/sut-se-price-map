@@ -22,7 +22,7 @@ func (a *Api) Regions(c *gin.Context) {
 	// count number of parents
 	for i := 0; i < len(regions); i++ {
 		parentsNumber, err := a.Db.Region.CountParents(regions[i].Id)
-		if	err != nil {
+		if err != nil {
 			c.JSON(http.StatusServiceUnavailable, gin.H{
 				"error": "Failed to count parents",
 			})
@@ -33,7 +33,6 @@ func (a *Api) Regions(c *gin.Context) {
 
 	c.JSON(http.StatusOK, regions)
 }
-
 
 func (a *Api) RegionById(c *gin.Context) {
 	regionIDasStr := c.Param("regionID")
@@ -54,7 +53,7 @@ func (a *Api) RegionById(c *gin.Context) {
 
 	region, err := a.Db.Region.SelectById(uint(regionID))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.JSON(http.StatusNotFound, gin.H{
 			"message": "No matching region for provided id",
 		})
 		return
