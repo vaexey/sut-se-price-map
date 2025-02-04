@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"gorm.io/gorm"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -52,9 +54,14 @@ func (a *Api) RegionById(c *gin.Context) {
 	}
 
 	region, err := a.Db.Region.SelectById(uint(regionID))
-	if err != nil {
+	if err == gorm.ErrRecordNotFound {
 		c.JSON(http.StatusNotFound, gin.H{
 			"message": "No matching region for provided id",
+		})
+		return
+	} else if err != nil {
+		c.JSON(http.StatusServiceUnavailable, gin.H{
+			"message": "Service failure",
 		})
 		return
 	}
