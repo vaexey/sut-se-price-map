@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, shareReplay, tap } from 'rxjs';
-import { API_PATH } from './API';
-import { LoginRequest, LoginResponse } from '../model/api/LoginRequest';
-import { SignUpRequest, SignUpResponse } from '../model/api/SignUpRequest';
+import { API_PATH } from '../API';
+import { LoginRequest, LoginResponse } from '../../model/api/LoginRequest';
+import { SignUpRequest, SignUpResponse } from '../../model/api/SignUpRequest';
 
 @Injectable({
   providedIn: 'root'

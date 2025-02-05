@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { GetContribsRequest, GetContribsResponse } from '../model/api/GetContribsRequest';
+import { GetContribsRequest, GetContribsResponse } from '../../model/api/GetContribsRequest';
 import { Observable } from 'rxjs';
-import { API_PATH } from './API';
+import { API_PATH } from '../API';
 import { GetParamService, SquashableRequest } from './get-param.service';
-import { GetContribsGroupRequest, GetContribsGroupResponse } from '../model/api/GetContribsGroupRequest';
+import { GetContribsGroupRequest, GetContribsGroupResponse } from '../../model/api/GetContribsGroupRequest';
 
 @Injectable({
   providedIn: 'root'

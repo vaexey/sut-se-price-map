@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../../services/auth/auth.service';
 import { MessageBannerComponent } from '../../components/message-banner/message-banner.component';
-import { ErrorService } from '../../services/error.service';
+import { ErrorService } from '../../services/util/error.service';
 
 @Component({
   selector: 'app-sign-up',

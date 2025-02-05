@@ -4,8 +4,8 @@ import { addIcons } from 'ionicons';
 import { addOutline, barChartOutline, chevronDownOutline, heart, pencilOutline } from 'ionicons/icons';
 import { ContribGroupViewContainerComponent } from "../contrib-group-view-container/contrib-group-view-container.component";
 import { GetContribsGroupRequest, GetContribsGroupResponse, GetContribsGroupResponseEntry } from '../../model/api/GetContribsGroupRequest';
-import { ContribService } from '../../services/contrib.service';
-import { ErrorService } from '../../services/error.service';
+import { ContribService } from '../../services/api/contrib.service';
+import { ErrorService } from '../../services/util/error.service';
 import { Observable, ReplaySubject } from 'rxjs';
 
 @Component({

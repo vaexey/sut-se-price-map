@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router';
 import { IonButton, IonButtons, IonHeader, IonIcon, IonToolbar } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { addCircleOutline, compassOutline, heartCircleOutline, personCircleOutline, shieldHalfOutline } from 'ionicons/icons';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-nav-bar',

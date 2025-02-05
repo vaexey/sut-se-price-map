@@ -4,8 +4,8 @@ import { ProfileComponent } from './pages/profile/profile.component';
 import { SearchComponent } from './pages/search/search.component';
 import { LoginComponent } from './pages/login/login.component';
 import { ErrorNotFoundComponent } from './pages/error-not-found/error-not-found.component';
-import { OnlyLoggedService } from './services/only-logged.service';
-import { OnlyAnonymousService } from './services/only-anonymous.service';
+import { OnlyLoggedService } from './services/auth/only-logged.service';
+import { OnlyAnonymousService } from './services/auth/only-anonymous.service';
 import { SignUpComponent } from './pages/sign-up/sign-up.component';
 import { ErrorUnavailableComponent } from './pages/error-unavailable/error-unavailable.component';
 

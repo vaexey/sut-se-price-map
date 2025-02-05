@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../../services/auth/auth.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MessageBannerComponent } from '../../components/message-banner/message-banner.component';
-import { ErrorService } from '../../services/error.service';
+import { ErrorService } from '../../services/util/error.service';
 
 @Component({
   selector: 'app-login',

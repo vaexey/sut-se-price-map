@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ErrorResponse } from '../model/api/ErrorResponse';
+import { ErrorResponse } from '../../model/api/ErrorResponse';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 

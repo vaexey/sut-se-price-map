@@ -3,7 +3,7 @@ import { IonicModule } from '@ionic/angular';
 import { ContribGroupViewItemComponent } from "../contrib-group-view-item/contrib-group-view-item.component";
 import { GetContribsGroupResponseEntry } from '../../model/api/GetContribsGroupRequest';
 import { Contrib } from '../../model/db/Contrib';
-import { ContribService } from '../../services/contrib.service';
+import { ContribService } from '../../services/api/contrib.service';
 import { CurrencyPipe } from '@angular/common';
 
 @Component({
