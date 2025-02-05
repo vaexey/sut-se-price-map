@@ -12,6 +12,16 @@ import { ProductService } from '../../services/api/product.service';
 import { DatetimeChangeEventDetail, IonDatetimeCustomEvent, IonSelectCustomEvent, SelectChangeEventDetail } from '@ionic/core'
 import { GetContribsGroupRequest } from '../../model/api/GetContribsGroupRequest';
 import { DbId } from '../../model/db/dbDefs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { combineLatest } from 'rxjs';
+
+export type SearchQueryParams = {
+  region?: string
+  store?: string
+  product?: string
+  before?: string
+  after?: string
+}
 
 export type SelectEvent = IonSelectCustomEvent<SelectChangeEventDetail<any>>
 export type SelectEventOf<T> = {
@@ -19,7 +29,6 @@ export type SelectEventOf<T> = {
     value?: T
   }
 }
-
 
 @Component({
   selector: 'app-search',
@@ -44,9 +53,16 @@ export class SearchComponent  implements OnInit {
   stores: Store[] = []
   products: Product[] = []
 
+  private mapMap: { [key: string]: DbId } = {
+    S: 17,
+    K: 18,
+  }
+
   constructor(
     private storeService: StoreService,
     private productService: ProductService,
+    private router: Router,
+    private route: ActivatedRoute,
     private renderer: Renderer2
   ) {
     addIcons({
@@ -56,12 +72,27 @@ export class SearchComponent  implements OnInit {
 
   ngOnInit() 
   {
-    this.storeService.getStores().subscribe(stores => {
+    combineLatest([
+      this.storeService.getStores(),
+      this.productService.getProducts(),
+      this.route.queryParams.pipe(),
+    ]).subscribe(([stores, products, params]) => {
       this.stores = stores
-    })
-
-    this.productService.getProducts().subscribe(products => {
       this.products = products
+
+      const filters: SearchQueryParams = params
+      
+      this.filters.regions.include = filters.region?.split(",").map(r => +r)
+      this.filters.stores.include = filters.store?.split(",").map(r => +r)
+      this.filters.products.include = filters.product?.split(",").map(r => +r)
+      this.filters.timespan.before = filters.before
+      this.filters.timespan.after = filters.after
+
+      // TODO:
+      // const newFilters = filters.region || filters.store || filters.product || filters.before || filters.after
+      const newFilters = true
+
+      this.updateFilters(!newFilters)
     })
   }
 
@@ -77,17 +108,49 @@ export class SearchComponent  implements OnInit {
     }
 
     mapElements.forEach(elem => {
-      this.renderer.listen(elem, 'mouseover', (e) => {
+      this.renderer.listen(elem, 'mouseover', _ => {
         map.appendChild(elem)
+      })
+
+      this.renderer.listen(elem, 'click', _ => {
+        const region = /map_pol_(.)/.exec(elem.id)?.at(1)?.toUpperCase()
+
+        if(region)
+        {
+          this.handleRegionChange([
+            this.mapMap[region]
+          ])
+        }
       })
     })
   }
 
-  updateFilters()
+  updateFilters(noReload?: boolean)
   {
-    this.filters = {
-      ...this.filters
+    if(!noReload)
+    {
+      this.filters = {
+        ...this.filters
+      }
     }
+
+    // TODO: restore filters
+
+    const params: SearchQueryParams = {
+      region: this.filters.regions.include?.join(","),
+      store: this.filters.stores.include?.join(","),
+      product: this.filters.products.include?.join(","),
+      before: this.filters.timespan.before,
+      after: this.filters.timespan.after,
+    }
+
+    this.router.navigate(
+      [],
+      {
+        relativeTo: this.route,
+        queryParams: params,
+      }
+    )
   }
 
   handleRegionChange(regions: DbId[])
@@ -104,6 +167,9 @@ export class SearchComponent  implements OnInit {
       stores = []
 
     this.filters.stores.include = stores.map(s => s?.id).filter(n => typeof n === 'number')
+    if(this.filters.stores.include.length === 0)
+      this.filters.stores.include = undefined
+
     this.updateFilters()
   }
 
@@ -115,18 +181,29 @@ export class SearchComponent  implements OnInit {
       products = []
 
     this.filters.products.include = products.map(p => p?.id).filter(n => typeof n === 'number')
+    if(this.filters.products.include.length === 0)
+      this.filters.products.include = undefined
+
     this.updateFilters()
   }
 
   handleTimespanBeforeChange(event: IonDatetimeCustomEvent<DatetimeChangeEventDetail>)
   {
-    this.filters.timespan.before = event.detail.value as string | undefined
+    const date = event.detail.value as string | undefined
+    if(!date)
+      return
+
+    this.filters.timespan.before = date + "Z"
     this.updateFilters()
   }
 
   handleTimespanAfterChange(event: IonDatetimeCustomEvent<DatetimeChangeEventDetail>)
   {
-    this.filters.timespan.after = event.detail.value as string | undefined
+    const date = event.detail.value as string | undefined
+    if(!date)
+      return
+
+    this.filters.timespan.after = date + "Z"
     this.updateFilters()
   }
 

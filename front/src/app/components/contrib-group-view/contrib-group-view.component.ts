@@ -89,7 +89,7 @@ export class ContribGroupViewComponent  implements OnInit {
 
   clearData()
   {
-    if(this.autoLoad && this.infinite)
+    if(this.infinite)
     {
       this.page = 0
     }
@@ -103,7 +103,7 @@ export class ContribGroupViewComponent  implements OnInit {
   {
     this.error = null
 
-    if(this.autoLoad && this.infinite)
+    if(this.infinite)
     {
       if(this.contribGroups.length === 0)
         this.loading = true
@@ -126,7 +126,7 @@ export class ContribGroupViewComponent  implements OnInit {
 
     const filters = this.filters ?? {}
 
-    if(this.autoLoad && this.infinite)
+    if(this.infinite)
     {
       filters.limit = this.limit
       filters.afterMany = (this.page) * this.limit
@@ -136,7 +136,7 @@ export class ContribGroupViewComponent  implements OnInit {
 
     this.contribService.getContribGroups(filters).subscribe({
       next: res => {
-        if(this.autoLoad && this.infinite)
+        if(this.infinite)
         {
           this.page++
           this.appendData(res.entries, res.pages > this.page)
