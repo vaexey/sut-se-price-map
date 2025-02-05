@@ -9,12 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type StoreResponse struct {
-	ID     uint           `json:"id"`
-	Name   string         `json:"name"`
-	Region RegionResponse `json:"region"`
-}
-
 func (a *Api) Stores(c *gin.Context) {
 	var stores []model.Store
 	var err error
@@ -33,33 +27,29 @@ func (a *Api) Stores(c *gin.Context) {
 		return
 	}
 
-	var storeResponses []StoreResponse
-	for i := range stores {
-		region, err := a.Db.Region.SelectById(stores[i].RegionID)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "Failed to fetch region",
-			})
-			return
-		}
-
-		regionResponse, err := a.TransformRegion(region)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "Failed to transform region",
-			})
-			return
-		}
-
-		storeResponse := StoreResponse{
-			ID:     stores[i].Id,
-			Name:   stores[i].Name,
-			Region: regionResponse,
-		}
-		storeResponses = append(storeResponses, storeResponse)
+	// Preload the associated Region for each Store and its nested Parent regions
+	err = a.Db.Db.Preload("Region.Parent.Parent.Parent").Find(&stores).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to fetch regions",
+		})
+		return
 	}
 
-	c.JSON(http.StatusOK, storeResponses)
+	// Calculate parentCount for each region and its parents
+	for i := range stores {
+		if stores[i].RegionID != 0 {
+			err := a.Db.Region.CalculateParentCounts(&stores[i].Region)
+			if err != nil {
+				c.JSON(http.StatusServiceUnavailable, gin.H{
+					"message": "Failed to calculate parent counts",
+				})
+				return
+			}
+		}
+	}
+
+	c.JSON(http.StatusOK, stores)
 }
 
 func parseRegionParams(params string) []uint {
