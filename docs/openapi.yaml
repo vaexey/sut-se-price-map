@@ -49,7 +49,8 @@ paths:
   /sign-up:
     put:
       summary: Registers an user
-      description: ''
+      description: |
+        Registers user and returns login token if successful
       operationId: ''
       tags:
         - users
@@ -142,8 +143,17 @@ paths:
         - users
     post:
       summary: Updates fields for specified user. Admin only.
-      description: ''
+      description: |
+        Should be able to update all fields except:
+          - id
+          - login
+          - contribCount
       operationId: ''
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfile'
       responses:
         default:
           description: Default error sample response
