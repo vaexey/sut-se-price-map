@@ -973,6 +973,12 @@ components:
           type: integer
           format: float
         rating:
+          description: |
+            Trust factor of returned contrib group.
+            A decimal value in range [0..1].
+            Should be calculated based on coefficient of variation `cv`
+            of prices in group.
+            Rating equation: `clamp([0..1], (1-cv) ^ 2)`
           type: integer
           format: float
     ErrorResponse:
