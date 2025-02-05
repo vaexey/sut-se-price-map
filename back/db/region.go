@@ -37,7 +37,7 @@ func (rh *regionService) CountParents(id uint) (int, error) {
 func (rh *regionService) SelectChildren(parentId uint) ([]uint, error) {
 	var regions []model.Region
 
-	result := rh.Db.Where("parent = ?", parentId).Find(&regions)
+	result := rh.Db.Where("parent_id = ?", parentId).Find(&regions)
 	if result.Error != nil {
 		return nil, result.Error
 	}
