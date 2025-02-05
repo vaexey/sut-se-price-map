@@ -1,10 +1,10 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { RegionPickerComponent, RegionPickerDismissEvent } from '../region-picker/region-picker.component';
 import { FormsModule } from '@angular/forms';
-import { IonSelect, IonSelectOption } from '@ionic/angular/standalone';
 import { IonicModule } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { caretDownOutline } from 'ionicons/icons';
+import { DbId } from '../../model/db/dbDefs';
 
 @Component({
   selector: 'app-region-combo',
@@ -17,7 +17,10 @@ import { caretDownOutline } from 'ionicons/icons';
   styleUrls: ['./region-combo.component.scss'],
 })
 export class RegionComboComponent  implements OnInit {
-  @Input() isSearchResults: boolean = false; 
+
+  @Input() isSearchResults: boolean = false;
+
+  @Output() didSelectEvent = new EventEmitter<DbId[]>
 
   comboText = "Everywhere"
   isOpen = false
@@ -42,6 +45,8 @@ export class RegionComboComponent  implements OnInit {
     if(evt.selected)
     {
       this.comboText = evt.label
+
+      this.didSelectEvent.emit(evt.regions)
     }
   }
 }
