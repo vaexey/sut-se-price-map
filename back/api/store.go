@@ -9,6 +9,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type StoreResponse struct {
+	ID     uint           `json:"id"`
+	Name   string         `json:"name"`
+	Region RegionResponse `json:"region"`
+}
+
 func (a *Api) Stores(c *gin.Context) {
 	var stores []model.Store
 	var err error
@@ -27,6 +33,7 @@ func (a *Api) Stores(c *gin.Context) {
 		return
 	}
 
+	var storeResponses []StoreResponse
 	for i := range stores {
 		region, err := a.Db.Region.SelectById(stores[i].RegionID)
 		if err != nil {
@@ -36,19 +43,23 @@ func (a *Api) Stores(c *gin.Context) {
 			return
 		}
 
-		parentCount, err := a.Db.Region.CountParents(region.Id)
+		regionResponse, err := a.TransformRegion(region)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "Failed to count parents",
+				"message": "Failed to transform region",
 			})
 			return
 		}
 
-		region.ParentCount = uint(parentCount)
-		stores[i].Region = region
+		storeResponse := StoreResponse{
+			ID:     stores[i].Id,
+			Name:   stores[i].Name,
+			Region: regionResponse,
+		}
+		storeResponses = append(storeResponses, storeResponse)
 	}
 
-	c.JSON(http.StatusOK, stores)
+	c.JSON(http.StatusOK, storeResponses)
 }
 
 func parseRegionParams(params string) []uint {

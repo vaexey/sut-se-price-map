@@ -1,6 +1,8 @@
 package db
 
-import "back/model"
+import (
+	"back/model"
+)
 
 func (rh *regionService) SelectAll() ([]model.Region, error) {
 	var regions []model.Region
@@ -9,7 +11,7 @@ func (rh *regionService) SelectAll() ([]model.Region, error) {
 }
 
 func (rh *regionService) SelectById(id uint) (model.Region, error) {
-	region := model.Region {
+	region := model.Region{
 		Id: id,
 	}
 	result := rh.Db.First(&region)
@@ -17,21 +19,23 @@ func (rh *regionService) SelectById(id uint) (model.Region, error) {
 }
 
 func (rh *regionService) CountParents(id uint) (int, error) {
-	count := 0
-	currentId := id
-	for {
-		var region model.Region
-		result:= rh.Db.First(&region, currentId)
-		if	result.Error != nil {
-			return count, result.Error 
-		}
-		if region.Parent == 0 {
-			break;
-		}
-		count++
-		currentId = region.Parent
+	var region model.Region
+	result := rh.Db.First(&region, id)
+	if result.Error != nil {
+		return 0, result.Error
 	}
-	return count, nil
+
+	if region.ParentID == nil {
+		return 0, nil
+	}
+
+	// Recursively count the number of parents
+	parentCount, err := rh.CountParents(*region.ParentID)
+	if err != nil {
+		return 0, err
+	}
+
+	return parentCount + 1, nil
 }
 
 func (rh *regionService) SelectChildren(parentId uint) ([]uint, error) {

@@ -10,6 +10,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type RegionResponse struct {
+	ID          uint   `json:"id"`
+	Name        string `json:"name"`
+	Parent      string `json:"parent"`
+	ParentCount uint   `json:"parentCount"`
+}
+
 func (a *Api) Regions(c *gin.Context) {
 	var regions []model.Region
 	var err error
@@ -21,19 +28,19 @@ func (a *Api) Regions(c *gin.Context) {
 		return
 	}
 
-	// count number of parents
-	for i := 0; i < len(regions); i++ {
-		parentsNumber, err := a.Db.Region.CountParents(regions[i].Id)
+	var regionResponses []RegionResponse
+	for _, region := range regions {
+		regionResponse, err := a.TransformRegion(region)
 		if err != nil {
 			c.JSON(http.StatusServiceUnavailable, gin.H{
-				"error": "Failed to count parents",
+				"error": "Failed to transform region",
 			})
 			return
 		}
-		regions[i].ParentCount = uint(parentsNumber)
+		regionResponses = append(regionResponses, regionResponse)
 	}
 
-	c.JSON(http.StatusOK, regions)
+	c.JSON(http.StatusOK, regionResponses)
 }
 
 func (a *Api) RegionById(c *gin.Context) {
@@ -66,15 +73,37 @@ func (a *Api) RegionById(c *gin.Context) {
 		return
 	}
 
-	// count number of parents
-	parentsNumber, err := a.Db.Region.CountParents(region.Id)
+	//log.Printf("parentcount %d", parentsNumber)
+	regionResponse, err := a.TransformRegion(region)
 	if err != nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{
-			"error": "Failed to count parents",
+			"error": "Failed to transform region",
 		})
 		return
 	}
-	region.ParentCount = uint(parentsNumber)
 
-	c.JSON(http.StatusOK, region)
+	c.JSON(http.StatusOK, regionResponse)
+}
+
+func (a *Api) TransformRegion(region model.Region) (RegionResponse, error) {
+	parentsNumber, err := a.Db.Region.CountParents(region.Id)
+	if err != nil {
+		return RegionResponse{}, err
+	}
+
+	var parentName string
+	if region.ParentID != nil {
+		parentRegion, err := a.Db.Region.SelectById(*region.ParentID)
+		if err != nil {
+			return RegionResponse{}, err
+		}
+		parentName = parentRegion.Name
+	}
+
+	return RegionResponse{
+		ID:          region.Id,
+		Name:        region.Name,
+		Parent:      parentName,
+		ParentCount: uint(parentsNumber),
+	}, nil
 }
