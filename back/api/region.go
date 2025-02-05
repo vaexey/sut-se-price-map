@@ -2,6 +2,7 @@ package api
 
 import (
 	"back/model"
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -9,13 +10,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
-
-type RegionResponse struct {
-	ID          uint   `json:"id"`
-	Name        string `json:"name"`
-	Parent      string `json:"parent"`
-	ParentCount uint   `json:"parentCount"`
-}
 
 func (a *Api) Regions(c *gin.Context) {
 	var regions []model.Region
@@ -28,19 +22,7 @@ func (a *Api) Regions(c *gin.Context) {
 		return
 	}
 
-	var regionResponses []RegionResponse
-	for _, region := range regions {
-		regionResponse, err := a.TransformRegion(region)
-		if err != nil {
-			c.JSON(http.StatusServiceUnavailable, gin.H{
-				"error": "Failed to transform region",
-			})
-			return
-		}
-		regionResponses = append(regionResponses, regionResponse)
-	}
-
-	c.JSON(http.StatusOK, regionResponses)
+	c.JSON(http.StatusOK, regions)
 }
 
 func (a *Api) RegionById(c *gin.Context) {
@@ -61,7 +43,7 @@ func (a *Api) RegionById(c *gin.Context) {
 	}
 
 	region, err := a.Db.Region.SelectById(uint(regionID))
-	if err == gorm.ErrRecordNotFound {
+	if errors.Is(err, gorm.ErrRecordNotFound) {
 		c.JSON(http.StatusNotFound, gin.H{
 			"message": "No matching region for provided id",
 		})
@@ -73,37 +55,5 @@ func (a *Api) RegionById(c *gin.Context) {
 		return
 	}
 
-	//log.Printf("parentcount %d", parentsNumber)
-	regionResponse, err := a.TransformRegion(region)
-	if err != nil {
-		c.JSON(http.StatusServiceUnavailable, gin.H{
-			"error": "Failed to transform region",
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, regionResponse)
-}
-
-func (a *Api) TransformRegion(region model.Region) (RegionResponse, error) {
-	parentsNumber, err := a.Db.Region.CountParents(region.Id)
-	if err != nil {
-		return RegionResponse{}, err
-	}
-
-	var parentName string
-	if region.ParentID != nil {
-		parentRegion, err := a.Db.Region.SelectById(*region.ParentID)
-		if err != nil {
-			return RegionResponse{}, err
-		}
-		parentName = parentRegion.Name
-	}
-
-	return RegionResponse{
-		ID:          region.Id,
-		Name:        region.Name,
-		Parent:      parentName,
-		ParentCount: uint(parentsNumber),
-	}, nil
+	c.JSON(http.StatusOK, region)
 }

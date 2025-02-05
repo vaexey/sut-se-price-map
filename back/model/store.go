@@ -3,8 +3,8 @@ package model
 type Store struct {
 	Id       uint   `gorm:"primaryKey;unique;autoIncrement" json:"id"`
 	RegionID uint   `json:"-"`
-	Region   Region `json:"region"`
 	Name     string `json:"name"`
+	Region   Region `json:"region"`
 }
 
 func (Store) TableName() string {
