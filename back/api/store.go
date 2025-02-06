@@ -30,7 +30,7 @@ func (a *Api) Stores(c *gin.Context) {
 	// Preload the associated Region for each Store and its nested Parent regions
 	err = a.Db.Db.Preload("Region.Parent.Parent.Parent").Find(&stores).Error
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.JSON(http.StatusServiceUnavailable, gin.H{
 			"message": "Failed to fetch regions",
 		})
 		return

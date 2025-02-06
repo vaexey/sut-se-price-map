@@ -5,7 +5,7 @@ type Region struct {
 	Name        string  `json:"name"`
 	ParentID    *uint   `json:"-"`
 	ParentCount uint    `json:"parentCount"`
-	Parent      *Region `gorm:"foreignKey:ParentID" json:"parent"`
+	Parent      *Region `json:"parent"`
 }
 
 func (Region) TableName() string {
