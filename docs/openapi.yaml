@@ -37,10 +37,20 @@ paths:
           $ref: '#/components/responses/400Error'
         '401':
           $ref: '#/components/responses/401Error'
+        '403':
+          description: user banned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: You are banned
   /sign-up:
     put:
       summary: Registers an user
-      description: ''
+      description: |
+        Registers user and returns login token if successful
       operationId: ''
       tags:
         - users
@@ -74,17 +84,36 @@ paths:
       description: ''
       operationId: ''
       responses:
-        default:
-          description: Default error sample response
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
       tags:
         - users
     post:
       summary: Updates editable fields for current user
-      description: ''
+      description: |
+        Editable fields for user:
+         - displayName
+         - bio
+         - defaultRegion
       operationId: ''
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfile'
       responses:
-        default:
-          description: Default error sample response
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '400':
+          $ref: '#/components/responses/400Error'
       tags:
         - users
   /profiles/{userLogin}:
@@ -92,9 +121,6 @@ paths:
       summary: Returns profile info for specified user
       description: ''
       operationId: ''
-      responses:
-        default:
-          description: Default error sample response
       parameters:
         - name: userLogin
           in: path
@@ -102,12 +128,32 @@ paths:
           required: true
           schema:
             type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '400':
+          $ref: '#/components/responses/400Error'
+        '404':
+          $ref: '#/components/responses/404Error'
       tags:
         - users
     post:
       summary: Updates fields for specified user. Admin only.
-      description: ''
+      description: |
+        Should be able to update all fields except:
+          - id
+          - login
+          - contribCount
       operationId: ''
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfile'
       responses:
         default:
           description: Default error sample response
@@ -120,6 +166,16 @@ paths:
             type: string
       tags:
         - admin
+  # /profiles/ban:
+  #   post:
+  #     summary: Changes ban status of specified user
+  #     description: ''
+  #     operationId: ''
+  #     responses:
+  #       default:
+  #         description: Default error sample response
+  #     tags:
+  #       - admin
   /contribs:
     get:
       summary: Returns all contribs matching criteria. Supports pagination.
@@ -146,7 +202,10 @@ paths:
           required: false
           schema:
             type: string
-            enum: [id, date, ...]
+            enum:
+              - id
+              - date
+              - ...
         - name: idsInclude
           in: query
           description: IDs include
@@ -279,13 +338,20 @@ paths:
         - contribs
     put:
       summary: Creates a new contribution.
-      description: |
+      description: >
         Creates a new contribution with specified fields.
-        Product and store field can be set only on creation and cannot be edited.
+
+        Product and store field can be set only on creation and cannot be
+        edited.
+
         Comment can be null, meaning no comment has been added.
+
         Status field on creation must be equal to ACTIVE. If request contains
+
         other value, it will be overwritten by server.
+
         This does not apply to admin users - they can set the status to their
+
         desired value.
       operationId: ''
       requestBody:
@@ -349,14 +415,22 @@ paths:
       summary: >-
         Updates contribution fields. Scope of editable fields depends on
         permissions.
-      description: |
+      description: >
         Updates specified contribution with new fields.
-        Product and store field can be set only on creation and cannot be edited.
+
+        Product and store field can be set only on creation and cannot be
+        edited.
+
         Comment can be null, meaning no comment has been added.
+
         Comment may be removed or added.
+
         Status field can be changed only from ACTIVE to REVOKED.
+
         Any other change is not allowed.
+
         This does not apply to admin users - they can set the status to their
+
         desired value.
       operationId: ''
       parameters:
@@ -426,7 +500,10 @@ paths:
           required: false
           schema:
             type: string
-            enum: [id, date, ...]
+            enum:
+              - id
+              - date
+              - ...
         - name: regionsInclude
           in: query
           description: regions include
@@ -683,6 +760,71 @@ paths:
                   $ref: '#/components/schemas/Report'
       tags:
         - admin
+  /resources/{id}:
+    get:
+      summary: Returns binary data of specified resource.
+      description: |
+        Returns specified resource file contents.
+        Response should contain valid MIME type.
+      operationId: ''
+      parameters:
+        - name: id
+          in: path
+          description: Id of the resource
+          required: true
+          schema:
+            type: integer
+            format: id
+      responses:
+        '200':
+          description: success
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            image/webp:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/400Error'
+        '404':
+          $ref: '#/components/responses/404Error'
+      tags:
+        - special
+  /favorites:
+    get:
+      summary: Returns favorites for current user
+      description: TODO
+      operationId: ''
+      responses:
+        default:
+          description: Default error sample response
+      tags:
+        - favorites
+    put:
+      summary: Appends filters to favorites
+      description: TODO
+      operationId: ''
+      responses:
+        default:
+          description: Default error sample response
+      tags:
+        - favorites
+    post:
+      summary: Updates favorite filters entry
+      description: TODO
+      operationId: ''
+      responses:
+        default:
+          description: Default error sample response
+      tags:
+        - favorites
 components:
   schemas:
     Contrib:
@@ -707,12 +849,14 @@ components:
           type: string
         attachements:
           type: object
-          # TODO: attachement scheme
         status:
           $ref: '#/components/schemas/ContribStatus'
     ContribStatus:
       type: string
-      enum: [ACTIVE, REVOKED, REMOVED]
+      enum:
+        - ACTIVE
+        - REVOKED
+        - REMOVED
     Product:
       type: object
       properties:
@@ -745,7 +889,6 @@ components:
           type: string
         avatar:
           $ref: '#/components/schemas/Resource'
-          # TODO: server-side fields
     Region:
       type: object
       properties:
@@ -771,9 +914,6 @@ components:
           format: id
         url:
           type: string
-        blob:
-          type: string
-          format: base64
     Report:
       type: object
       properties:
@@ -790,6 +930,29 @@ components:
         date:
           type: string
           format: date-time
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: user_id
+        login:
+          type: string
+        displayName:
+          type: string
+        bio:
+          type: string
+        contribCount:
+          type: number
+        defaultRegions:
+          type: array
+          items:
+            type: integer
+            format: region_id
+        isAdmin:
+          type: boolean
+        isBanned:
+          type: boolean
     GetContribsGroupResponseEntry:
       type: object
       properties:
@@ -810,6 +973,12 @@ components:
           type: integer
           format: float
         rating:
+          description: |
+            Trust factor of returned contrib group.
+            A decimal value in range [0..1].
+            Should be calculated based on coefficient of variation `cv`
+            of prices in group.
+            Rating equation: `clamp([0..1], (1-cv) ^ 2)`
           type: integer
           format: float
     ErrorResponse:
@@ -879,5 +1048,9 @@ tags:
     description: Everything related to contributions
   - name: users
     description: Everything related to users
+  - name: favorites
+    description: Everything related to favorites
   - name: admin
     description: Admin-only accessible requests
+  - name: special
+    description: Special routes that cannot be categorized
