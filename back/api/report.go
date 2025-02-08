@@ -18,6 +18,12 @@ func (a *Api) Reports(c *gin.Context) {
 		return
 	}
 
+	if len(reports) == 0 {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "Do not found any reports",
+		})
+	}
+
 	c.JSON(http.StatusOK, reports)
 }
 

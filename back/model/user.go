@@ -6,8 +6,10 @@ type User struct {
 	DisplayName string   `json:"displayName"`
 	Password    string   `json:"-"`
 	IsAdmin     bool     `json:"-"`
+	IsBanned    bool     `json:"-"`
 	AvatarId    *int     `json:"-"`
-	Avatar      Resource `gorm:"foreignKey:AvatarId" json:"avatar"`
+	Avatar      Resource `json:"avatar"`
+	Bio         string   `json:"-"`
 }
 
 func (User) TableName() string {
