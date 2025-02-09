@@ -7,7 +7,7 @@ type User struct {
 	Password    string   `json:"-"`
 	IsAdmin     bool     `json:"-"`
 	IsBanned    bool     `json:"-"`
-	AvatarId    *int     `json:"-"`
+	AvatarID    *int     `json:"-"`
 	Avatar      Resource `json:"avatar"`
 	Bio         string   `json:"-"`
 }
