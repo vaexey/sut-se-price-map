@@ -26,6 +26,6 @@ func (a *Api) Products(c *gin.Context) {
 		})
 		return
 	}
-
+	
 	c.JSON(http.StatusOK, products)
 }

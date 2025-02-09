@@ -1,10 +1,11 @@
 package model
 
 type Region struct {
-	Id          uint   `gorm:"unique;primaryKey;autoIncrement"`
-	Parent      uint   `json:"parent"`
-	Name        string `json:"name"`
-	ParentCount uint   `json:"parentCount"`
+	Id          uint    `gorm:"unique;primaryKey;autoIncrement" json:"id"`
+	Name        string  `json:"name"`
+	ParentID    *uint   `json:"-"`
+	ParentCount uint    `json:"parentCount"`
+	Parent      *Region `json:"parent"`
 }
 
 func (Region) TableName() string {
