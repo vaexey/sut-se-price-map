@@ -93,7 +93,7 @@ func (cs *contribService) Update(contrib model.Contrib) error {
 
 func (cs * contribService) GetNumberOfContribs(authorId uint) (int, error) {
     var contribs []model.Contrib
-    err := cs.Db.Preload("Product").Preload("Store").Preload("Author").Where("author_id = ?", authorId).Find(&contribs).Error
+    err := cs.Db.Where("author_id = ?", authorId).Find(&contribs).Error
     return len(contribs), err
 }
 

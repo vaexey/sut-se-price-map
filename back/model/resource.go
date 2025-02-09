@@ -4,7 +4,7 @@ type Resource struct {
 	Id   uint `gorm:"unique;primaryKey;autoIncrement" json:"id"`
 	Name string
 	Url  string `json:"url"`
-	Blob string `gorm:"-" json:"blob"`
+	Blob string `json:"blob"`
 }
 
 func (Resource) TableName() string {

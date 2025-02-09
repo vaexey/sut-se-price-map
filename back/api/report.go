@@ -19,17 +19,18 @@ func (a *Api) Reports(c *gin.Context) {
 	var reports []model.Report
 	var err error
 	reports, err = a.Db.Report.SelectAll(timespanBefore, timespanAfter)
-	if err != nil {
-		c.JSON(http.StatusServiceUnavailable, gin.H{
-			"message": "Service failure",
-		})
-		return
-	}
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "There are no reports",
 		})
+	}
+
+	if err != nil {
+		c.JSON(http.StatusServiceUnavailable, gin.H{
+			"message": "Service failure",
+		})
+		return
 	}
 
 	c.JSON(http.StatusOK, reports)
