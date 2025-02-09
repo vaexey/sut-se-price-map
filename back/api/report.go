@@ -24,6 +24,7 @@ func (a *Api) Reports(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "There are no reports",
 		})
+		return
 	}
 
 	if err != nil {
