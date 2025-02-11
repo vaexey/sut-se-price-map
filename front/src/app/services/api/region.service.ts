@@ -45,6 +45,25 @@ export class RegionService {
 
   private findChildrenOf(region: Region, regions: Region[]): RegionTree
   {
+    try {
+      return this.findChildrenOfLimit(region, regions, 100)
+    } catch (error) {
+      console.error("Could not derive region tree from regions response.")
+
+      return {
+        id: region.id,
+        name: region.name,
+        parentCount: region.parentCount,
+        children: []
+      }
+    }
+  }
+
+  private findChildrenOfLimit(region: Region, regions: Region[], limit: number): RegionTree
+  {
+    if(limit <= 0)
+      throw Error("Limit reached")
+
     let children = regions.filter(r => (r as any)['Parent'] == region.id)
 
     return {
@@ -52,7 +71,7 @@ export class RegionService {
       name: region.name,
       parentCount: region.parentCount,
 
-      children: children.map(c => this.findChildrenOf(c, regions))
+      children: children.map(c => this.findChildrenOfLimit(c, regions, limit - 1))
     }
   }
   

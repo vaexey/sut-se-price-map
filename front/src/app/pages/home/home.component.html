@@ -12,7 +12,37 @@
       <ion-col size="3"></ion-col>
 
       <ion-col style="display: flex; flex-flow: row">
-        <ion-input
+
+        <!-- <div class="sc-ion-input-md-h sc-ion-input-md-s md label-floating input-fill-outline input-label-placement-stacked">
+          <label class="input-wrapper sc-ion-input-md" for="ion-input-0">
+            <div class="input-outline-container sc-ion-input-md">
+              <div class="input-outline-start sc-ion-input-md"></div>
+              <div class="input-outline-notch sc-ion-input-md">
+                <div class="notch-spacer sc-ion-input-md" aria-hidden="true">Find your product</div>
+              </div>
+              <div class="input-outline-end sc-ion-input-md"></div>
+            </div>
+            <div class="label-text-wrapper sc-ion-input-md">
+              <div class="label-text sc-ion-input-md">Find your product</div>
+            </div>
+            <div class="native-wrapper sc-ion-input-md sc-ion-input-md-s">
+              <input class="native-input sc-ion-input-md" id="ion-input-1" autocapitalize="off" autocomplete="off" autocorrect="off" name="ion-input-1" placeholder="milk" spellcheck="false" type="text">
+              <ng-select
+                [items]="[]"
+                bindLabel="name"
+                placeholder="Select city"
+                labelForId="city"
+                class="native-input sc-ion-input-md"
+              >
+              </ng-select>
+
+              <ion-button fill="clear" slot="end" ng-reflect-fill="clear" class="sc-ion-input-md md button button-clear button-has-icon-only ion-activatable ion-focusable">
+                <ion-icon slot="icon-only" name="search-outline" aria-hidden="true" ng-reflect-name="search-outline" class="sc-ion-input-md md" role="img"></ion-icon>
+              </ion-button>
+            </div>
+          </label>
+        </div> -->
+        <!-- <ion-input
           label="Find your product"
           label-placement="stacked"
           fill="outline"
@@ -25,12 +55,56 @@
               aria-hidden="true"
             ></ion-icon>
           </ion-button>
-        </ion-input>
+        </ion-input> -->
 
-        <app-region-combo [isSearchResults]="false"></app-region-combo>
+        <ion-select
+          label="Find your product"
+          label-placement="stacked"
+          fill="outline"
+          placeholder="milk"
+          interface="alert"
+          [multiple]="true"
+          [(ngModel)]="this.selectedProducts"
+        >
+          <ion-button 
+            fill="clear" 
+            slot="end" 
+            aria-label="search"
+            (click)="search()"
+          >
+            <ion-icon
+              slot="icon-only"
+              name="search-outline"
+              aria-hidden="true"
+            ></ion-icon>
+          </ion-button>
+
+          <ion-select-option [value]="null"
+            >All products</ion-select-option
+          >
+          @for(product of products; track product.id) {
+            <ion-select-option [value]="product.id">
+              {{ product.name }}
+            </ion-select-option>
+          }
+        </ion-select>
+
+        <app-region-combo [isSearchResults]="false" (didSelectEvent)="onRegionsUpdate($event)"></app-region-combo>
+
       </ion-col>
 
       <ion-col size="3"></ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col size="5"></ion-col>
+      <ion-col>
+        <app-region-map 
+          class="ion-margin"
+          (onRegionSelect)="search([$event])"
+        ></app-region-map>
+      </ion-col>
+      <ion-col size="5"></ion-col>
     </ion-row>
   </ion-grid>
 </ion-content>
