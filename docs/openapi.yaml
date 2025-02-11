@@ -33,6 +33,8 @@ paths:
                 properties:
                   token:
                     type: string
+                  isAdmin:
+                    type: boolean
         '400':
           $ref: '#/components/responses/400Error'
         '401':
@@ -76,6 +78,8 @@ paths:
                 properties:
                   token:
                     type: string
+                  isAdmin:
+                    type: boolean
         '400':
           $ref: '#/components/responses/400Error'
   /profile:
