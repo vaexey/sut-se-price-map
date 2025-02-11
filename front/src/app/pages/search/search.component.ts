@@ -2,7 +2,6 @@ import { Component, OnInit, Renderer2 } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { filterCircleOutline } from 'ionicons/icons';
-import { InlineSVGModule } from 'ng-inline-svg-2';
 import { RegionComboComponent } from "../../components/region-combo/region-combo.component";
 import { ContribGroupViewComponent } from "../../components/contrib-group-view/contrib-group-view.component";
 import { Product } from '../../model/db/Product';
@@ -14,6 +13,7 @@ import { GetContribsGroupRequest } from '../../model/api/GetContribsGroupRequest
 import { DbId } from '../../model/db/dbDefs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest } from 'rxjs';
+import { RegionMapComponent } from "../../components/region-map/region-map.component";
 
 export type SearchQueryParams = {
   region?: string
@@ -34,9 +34,9 @@ export type SelectEventOf<T> = {
   selector: 'app-search',
   imports: [
     IonicModule,
-    InlineSVGModule,
     RegionComboComponent,
-    ContribGroupViewComponent
+    ContribGroupViewComponent,
+    RegionMapComponent
 ],
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss'],
@@ -53,17 +53,11 @@ export class SearchComponent  implements OnInit {
   stores: Store[] = []
   products: Product[] = []
 
-  private mapMap: { [key: string]: DbId } = {
-    S: 17,
-    K: 18,
-  }
-
   constructor(
     private storeService: StoreService,
     private productService: ProductService,
     private router: Router,
-    private route: ActivatedRoute,
-    private renderer: Renderer2
+    private route: ActivatedRoute
   ) {
     addIcons({
       filterCircleOutline
@@ -93,35 +87,6 @@ export class SearchComponent  implements OnInit {
       const newFilters = true
 
       this.updateFilters(!newFilters)
-    })
-  }
-
-  onMapLoad()
-  {
-    const map = document.querySelector(".map svg")
-    const mapElements = [...document.querySelectorAll("path")]
-
-    if(!map)
-    {
-      console.error("Could not load map SVG")
-      return
-    }
-
-    mapElements.forEach(elem => {
-      this.renderer.listen(elem, 'mouseover', _ => {
-        map.appendChild(elem)
-      })
-
-      this.renderer.listen(elem, 'click', _ => {
-        const region = /map_pol_(.)/.exec(elem.id)?.at(1)?.toUpperCase()
-
-        if(region)
-        {
-          this.handleRegionChange([
-            this.mapMap[region]
-          ])
-        }
-      })
     })
   }
 
