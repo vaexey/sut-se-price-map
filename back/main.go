@@ -106,7 +106,6 @@ func main() {
 		v1.PUT("/reports", api.CreateReports)
 
 		// contribs
-
 		v1.GET("contribs/:contribId", api.ContribsGetById)
 		v1.GET("contribs", api.ContribsGetAll)
 		v1.GET("contribs/group", api.ContribsGetByGroup)
@@ -114,9 +113,13 @@ func main() {
 		v1.POST("contribs/:contribId", authMiddleware, api.ContribsUpdate)
 		v1.PUT("contribs", authMiddleware, api.ContribsCreate)
 
+		// profile
+		v1.GET("profiles/:userLogin", api.ProfileByUserLogin)
+
 		// Auth-guarded
 		v1.GET("hello", authMiddleware, hello)
 		v1.GET("admin", authMiddleware, adminMiddleware, admin)
+		//v1.GET("profile", authMiddleware, api.CurrentUserProfile)
 	}
 
 	router.Use(lapi.ApiFallback())

@@ -14,6 +14,8 @@ type User struct {
 	AvatarID       *int     `json:"-"`
 	Avatar         Resource `json:"avatar"`
 	Bio            string   `json:"-"`
+
+	// Gorm tag is necessary without it there is a 404 error
 	DefaultRegions pq.Int32Array `gorm:"type:integer[]" json:"-"`
 }
 
