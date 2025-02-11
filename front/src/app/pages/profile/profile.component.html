@@ -44,7 +44,13 @@
           </ion-card-header>
 
           <ion-card-content>
-            
+            <app-contrib-list-view
+              [filters]="{
+                users: {
+                  include: [profile.id]
+                }
+              }"
+            ></app-contrib-list-view>
           </ion-card-content>
         </ion-card>
       </ion-col>
