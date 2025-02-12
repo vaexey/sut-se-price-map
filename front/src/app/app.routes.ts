@@ -8,6 +8,7 @@ import { OnlyLoggedService } from './services/auth/only-logged.service';
 import { OnlyAnonymousService } from './services/auth/only-anonymous.service';
 import { SignUpComponent } from './pages/sign-up/sign-up.component';
 import { ErrorUnavailableComponent } from './pages/error-unavailable/error-unavailable.component';
+import { ContribsComponent } from './pages/contribs/contribs.component';
 
 export const routes: Routes = [
     { 
@@ -30,8 +31,13 @@ export const routes: Routes = [
     },
     { 
         path: 'search',
-        component: SearchComponent ,
+        component: SearchComponent,
         title: "Price Compass - search",
+    },
+    {
+        path: 'contribs',
+        component: ContribsComponent,
+        title: "Price Compass - recent",
     },
 
     {
