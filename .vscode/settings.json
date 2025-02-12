@@ -8,5 +8,8 @@
         "*.service.ts": "$(capture).service.spec.ts",
         "go.mod": "go.sum, .gitignore, Makefile"
     },
-    "makefile.configureOnOpen": false
+    "makefile.configureOnOpen": false,
+    "yaml.schemas": {
+        "https://spec.openapis.org/oas/3.0/schema/2021-09-28": "docs/openapi.yaml"
+    }
 }
