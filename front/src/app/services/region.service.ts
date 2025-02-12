@@ -34,8 +34,7 @@ export class RegionService {
 
   regionsToRegionTree(regions: Region[]): RegionTree
   {
-    // let root = regions.find(r => r.parentCount == 0)
-    let root = regions[16]
+    let root = regions.find(r => r.parentCount == 0)
 
     if(!root)
       throw "Could not parse region tree"
@@ -45,7 +44,7 @@ export class RegionService {
 
   private findChildrenOf(region: Region, regions: Region[]): RegionTree
   {
-    let children = regions.filter(r => (r as any)['Parent'] == region.id)
+    let children = regions.filter(r => r.parent?.id == region.id)
 
     return {
       id: region.id,
