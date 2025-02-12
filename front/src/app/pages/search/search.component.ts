@@ -160,7 +160,6 @@ export class SearchComponent  implements OnInit {
 
   handleSortByChange(event: SelectEvent)
   {
-    console.log(event)
     let option = (event as SelectEventOf<SortOption>).target.value ?? this.sortOptions[0]
 
     this.filters.sortBy = option.key

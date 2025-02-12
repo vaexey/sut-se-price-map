@@ -3,7 +3,7 @@ import {  InfiniteScrollCustomEvent, IonicModule } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { addOutline, barChartOutline, chevronDownOutline, heart, pencilOutline } from 'ionicons/icons';
 import { ContribGroupViewContainerComponent } from "../contrib-group-view-container/contrib-group-view-container.component";
-import { GetContribsGroupRequest, GetContribsGroupResponse, GetContribsGroupResponseEntry } from '../../model/api/GetContribsGroupRequest';
+import { GetContribsGroupRequest, GetContribsGroupResponseEntry } from '../../model/api/GetContribsGroupRequest';
 import { ContribService } from '../../services/api/contrib.service';
 import { ErrorService } from '../../services/util/error.service';
 import { Observable, ReplaySubject } from 'rxjs';
@@ -12,7 +12,7 @@ import { Observable, ReplaySubject } from 'rxjs';
   selector: 'app-contrib-group-view',
   imports: [
     IonicModule,
-    ContribGroupViewContainerComponent
+    ContribGroupViewContainerComponent,
 ],
   templateUrl: './contrib-group-view.component.html',
   styleUrls: ['./contrib-group-view.component.scss'],

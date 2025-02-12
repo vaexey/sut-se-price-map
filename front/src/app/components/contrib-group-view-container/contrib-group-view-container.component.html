@@ -60,7 +60,7 @@
             <ion-button>
               <ion-icon slot="icon-only" name="bar-chart-outline"></ion-icon>
             </ion-button>
-            <ion-button>
+            <ion-button (click)="addNewContrib()">
               <ion-icon slot="icon-only" name="add-outline"></ion-icon>
             </ion-button>
           </ion-col>
@@ -109,6 +109,11 @@
           <ion-grid>
             @if(!fetchingContribs)
             {
+              <app-contrib-edit-modal
+                [isOpen]="editModal"
+                (didDismissEvent)="onEditModal($event)"
+              ></app-contrib-edit-modal>
+        
               @for(item of contribs; track item.id) {
                 <app-contrib-group-view-item [contrib]="item"></app-contrib-group-view-item>
               }

@@ -5,6 +5,7 @@ import { GetContribsGroupResponseEntry } from '../../model/api/GetContribsGroupR
 import { Contrib } from '../../model/db/Contrib';
 import { ContribService } from '../../services/api/contrib.service';
 import { CurrencyPipe } from '@angular/common';
+import { ContribEditModalComponent } from "../contrib-edit-modal/contrib-edit-modal.component";
 
 @Component({
   selector: 'app-contrib-group-view-container',
@@ -12,7 +13,8 @@ import { CurrencyPipe } from '@angular/common';
     IonicModule,
     ContribGroupViewItemComponent,
     CurrencyPipe,
-  ],
+    ContribEditModalComponent
+],
   templateUrl: './contrib-group-view-container.component.html',
   styleUrls: ['./contrib-group-view-container.component.scss'],
 })
@@ -26,6 +28,8 @@ export class ContribGroupViewContainerComponent  implements OnInit {
   contribs: Contrib[] = []
 
   fetchingContribs = false
+
+  editModal = false
 
   constructor(
     private contribService: ContribService
@@ -63,6 +67,14 @@ export class ContribGroupViewContainerComponent  implements OnInit {
         console.error(err)
       }
     })
+  }
+
+  addNewContrib() {
+    this.editModal = true
+  }
+
+  onEditModal(event: any) {
+    this.editModal = false
   }
 
 }
