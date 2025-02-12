@@ -19,6 +19,26 @@
           </ion-card-header>
 
           <ion-card-content>
+
+            <ion-label color="dark">
+              <h2>Sort by</h2>
+            </ion-label>
+            <ion-select
+              label=""
+              label-placement="default"
+              fill="outline"
+              interface="alert"
+              class="ion-margin-top ion-margin-bottom"
+              [value]="sortOptions[0]"
+              (ionChange)="handleSortByChange($event)"
+            >
+              @for(option of sortOptions; track option) {
+                <ion-select-option [value]="option">
+                  {{ option.label }}
+                </ion-select-option>
+              }
+            </ion-select>
+
             <ion-label color="dark">
               <h2>Region</h2>
             </ion-label>

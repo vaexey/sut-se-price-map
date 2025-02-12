@@ -14,13 +14,26 @@ import { DbId } from '../../model/db/dbDefs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest } from 'rxjs';
 import { RegionMapComponent } from "../../components/region-map/region-map.component";
+import { PaginationSortOrder } from '../../model/api/PaginationRequest';
+
+export type FilledGetContribsGroupRequest = 
+  GetContribsGroupRequest & 
+  { regions: {}, stores: {}, products: {}, timespan: {}, sortBy: string, order: PaginationSortOrder }
 
 export type SearchQueryParams = {
   region?: string
   store?: string
   product?: string
   before?: string
-  after?: string
+  after?: string,
+  sortBy?: string,
+  order?: string
+}
+
+export type SortOption = {
+  label: string,
+  key: string,
+  order: PaginationSortOrder,
 }
 
 export type SelectEvent = IonSelectCustomEvent<SelectChangeEventDetail<any>>
@@ -43,15 +56,38 @@ export type SelectEventOf<T> = {
 })
 export class SearchComponent  implements OnInit {
 
-  filters: GetContribsGroupRequest & { regions: {}, stores: {}, products: {}, timespan: {} } = {
+  private defaultFilters: FilledGetContribsGroupRequest = {
     regions: {},
     stores: {},
     products: {},
     timespan: {},
+    sortBy: "date",
+    order: "desc",
   }
+
+  filters: FilledGetContribsGroupRequest = {...this.defaultFilters} 
 
   stores: Store[] = []
   products: Product[] = []
+
+  sortOptions: SortOption[] = [
+    {
+      key: "date",
+      label: "Date"
+    },
+  ]
+  .map(({key, label}) => [
+    {
+      key,
+      label: `${label} - ascending`,
+      order: "asc" as PaginationSortOrder,
+    },
+    {
+      key,
+      label: `${label} - descending`,
+      order: "desc" as PaginationSortOrder,
+    },
+  ]).flat()
 
   constructor(
     private storeService: StoreService,
@@ -81,6 +117,8 @@ export class SearchComponent  implements OnInit {
       this.filters.products.include = filters.product?.split(",").map(r => +r)
       this.filters.timespan.before = filters.before
       this.filters.timespan.after = filters.after
+      this.filters.sortBy = filters.sortBy ?? this.defaultFilters.sortBy
+      this.filters.order = filters.order as PaginationSortOrder ?? this.defaultFilters.order
 
       // TODO:
       // const newFilters = filters.region || filters.store || filters.product || filters.before || filters.after
@@ -107,6 +145,8 @@ export class SearchComponent  implements OnInit {
       product: this.filters.products.include?.join(","),
       before: this.filters.timespan.before,
       after: this.filters.timespan.after,
+      sortBy: this.filters.sortBy,
+      order: this.filters.order,
     }
 
     this.router.navigate(
@@ -116,6 +156,16 @@ export class SearchComponent  implements OnInit {
         queryParams: params,
       }
     )
+  }
+
+  handleSortByChange(event: SelectEvent)
+  {
+    console.log(event)
+    let option = (event as SelectEventOf<SortOption>).target.value ?? this.sortOptions[0]
+
+    this.filters.sortBy = option.key
+    this.filters.order = option.order
+    this.updateFilters()
   }
 
   handleRegionChange(regions: DbId[])
