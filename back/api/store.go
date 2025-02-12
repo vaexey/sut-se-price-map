@@ -17,7 +17,6 @@ func (a *Api) Stores(c *gin.Context) {
 	regionsExclude := c.Query("regionsExclude")
 
 	includeRegions := parseRegionParams(regionsInclude)
-
 	excludeRegions := parseRegionParams(regionsExclude)
 
 	stores, err = a.Db.Store.SelectAllWithFilters(includeRegions, excludeRegions)
@@ -26,6 +25,28 @@ func (a *Api) Stores(c *gin.Context) {
 			"message": "Service failure",
 		})
 		return
+	}
+
+	// Preload the associated Region for each Store and its nested Parent regions
+	err = a.Db.Db.Preload("Region.Parent.Parent.Parent").Find(&stores).Error
+	if err != nil {
+		c.JSON(http.StatusServiceUnavailable, gin.H{
+			"message": "Failed to fetch regions",
+		})
+		return
+	}
+
+	// Calculate parentCount for each region and its parents
+	for i := range stores {
+		if stores[i].RegionID != 0 {
+			err := a.Db.Region.CalculateParentCounts(&stores[i].Region)
+			if err != nil {
+				c.JSON(http.StatusServiceUnavailable, gin.H{
+					"message": "Failed to calculate parent counts",
+				})
+				return
+			}
+		}
 	}
 
 	c.JSON(http.StatusOK, stores)
