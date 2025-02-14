@@ -110,6 +110,12 @@
             @if(!fetchingContribs)
             {
               <app-contrib-edit-modal
+                [defaultValues]="{
+                  product: contribGroup.product.id,
+                  store: contribGroup.store.id,
+                  price: contribGroup.averagePrice,
+                  comment: ''
+                }"
                 [isOpen]="editModal"
                 (didDismissEvent)="onEditModal($event)"
               ></app-contrib-edit-modal>

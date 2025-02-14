@@ -5,6 +5,9 @@ import { Observable } from 'rxjs';
 import { API_PATH } from '../API';
 import { GetParamService, SquashableRequest } from './get-param.service';
 import { GetContribsGroupRequest, GetContribsGroupResponse } from '../../model/api/GetContribsGroupRequest';
+import { Contrib } from '../../model/db/Contrib';
+import { PostContribRequest, PutContribRequest } from '../../model/api/ContribRequest';
+import { DbId } from '../../model/db/dbDefs';
 
 @Injectable({
   providedIn: 'root'
@@ -33,6 +36,22 @@ export class ContribService {
       {
         params: this.getParam.squashRequest(request as SquashableRequest)
       }
+    )
+  }
+
+  updateContrib(id: DbId, req: PostContribRequest): Observable<Contrib>
+  {
+    return this.http.post<Contrib>(
+      `${API_PATH}/contribs/${id}`,
+      req
+    )
+  }
+
+  addContrib(req: PutContribRequest): Observable<Contrib>
+  {
+    return this.http.put<Contrib>(
+      `${API_PATH}/contribs`,
+      req
     )
   }
 }

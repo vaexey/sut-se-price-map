@@ -5,7 +5,8 @@ import { GetContribsGroupResponseEntry } from '../../model/api/GetContribsGroupR
 import { Contrib } from '../../model/db/Contrib';
 import { ContribService } from '../../services/api/contrib.service';
 import { CurrencyPipe } from '@angular/common';
-import { ContribEditModalComponent } from "../contrib-edit-modal/contrib-edit-modal.component";
+import { ContribEditModalComponent, ContribEditModalEvent } from "../contrib-edit-modal/contrib-edit-modal.component";
+import { ErrorService } from '../../services/util/error.service';
 
 @Component({
   selector: 'app-contrib-group-view-container',
@@ -32,7 +33,8 @@ export class ContribGroupViewContainerComponent  implements OnInit {
   editModal = false
 
   constructor(
-    private contribService: ContribService
+    private contribService: ContribService,
+    private errors: ErrorService,
   ) { }
 
   ngOnInit() {}
@@ -62,9 +64,9 @@ export class ContribGroupViewContainerComponent  implements OnInit {
         this.contribs = res.entries
         this.fetchingContribs = false
       },
-      error: err => {
+      error: e => {
         // TODO: err handling
-        console.error(err)
+        this.errors.routeError(e)
       }
     })
   }
@@ -73,8 +75,29 @@ export class ContribGroupViewContainerComponent  implements OnInit {
     this.editModal = true
   }
 
-  onEditModal(event: any) {
+  onEditModal(event: ContribEditModalEvent) {
+    console.log(event)
     this.editModal = false
+
+    if(event.submitted)
+    {
+      const fields = event.fields
+
+      this.contribService.addContrib({
+        ...fields,
+        product: fields.product ?? 0,
+        store: fields.store ?? 0,
+        status: event.revoked ? "REVOKED" : "ACTIVE",
+      }).subscribe({
+        next: newContrib => {
+          this.contribGroup?.contribs?.push(newContrib.id)
+          this.fetchContribs()
+        },
+        error: e => {
+          this.errors.routeError(e)
+        }
+      })
+    }
   }
 
 }

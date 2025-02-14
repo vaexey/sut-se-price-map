@@ -44,7 +44,7 @@ export class NavBarComponent {
 
   admin(): boolean
   {
-    return this.user() && true
+    return this.auth.isAdmin()
   }
 
 }

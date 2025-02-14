@@ -6,8 +6,10 @@
 
     <ion-header>
       <ion-toolbar>
-        @if (editing) {
+        @if (canEdit) {
           <ion-title>Edit contribution</ion-title>
+        } @else if (editing) {
+          <ion-title>Contribution details</ion-title>
         } @else {
           <ion-title>Add contribution</ion-title>
         }
@@ -23,6 +25,16 @@
             <ion-col>
               <ion-list>
 
+                @if(editing) {
+                  <ion-item>
+                    <ion-input
+                      label="Author"
+                      [disabled]="true"
+                      [value]="contrib?.author?.displayName"
+                    ></ion-input>
+                  </ion-item>
+                }
+
                 <ion-item>
                   <ion-select
                     formControlName="product"
@@ -35,7 +47,7 @@
                     }
                   </ion-select>
 
-                  @if(editing) {
+                  @if(canEdit) {
                     <ion-note slot="end">Cannot be changed</ion-note>
                   }
                 </ion-item>
@@ -52,7 +64,7 @@
                     }
                   </ion-select>
 
-                  @if(editing) {
+                  @if(canEdit) {
                     <ion-note slot="end">Cannot be changed</ion-note>
                   }
                 </ion-item>
@@ -86,9 +98,12 @@
                     }[contrib?.status ?? 'ACTIVE']">
                       Status: {{ contrib?.status }}
                     </ion-label>
-                    <ion-note slot="end">
-                      You can only revoke your contribution once.
-                    </ion-note>
+
+                    @if(canEdit) {
+                      <ion-note slot="end">
+                        You can only revoke your contribution once.
+                      </ion-note>
+                    }
                   </ion-item>
                 }
               </ion-list>
@@ -103,9 +118,33 @@
     <ion-footer>
       <ion-toolbar>
         <ion-buttons slot="end">
-          <ion-button color="danger" (click)="revoke()" strong="false">Revoke</ion-button>
-          <ion-button (click)="dismiss()" strong="false">Cancel</ion-button>
-          <ion-button (click)="save()" strong="true">Save</ion-button>
+          @if(editing)
+          {
+            <ion-button 
+              color="danger" 
+              (click)="revoke()" 
+              strong="false"
+              [disabled]="!canRevoke">
+              Revoke
+            </ion-button>
+          }
+
+          <ion-button (click)="dismiss()" strong="false">
+            @if(canEdit || !editing)
+            {
+              Cancel
+            } @else {
+              Close
+            }
+          </ion-button>
+
+          @if(canEdit || !editing) {
+            <ion-button 
+              (click)="save()" 
+              strong="true">
+              Save
+            </ion-button>
+          }
         </ion-buttons>
       </ion-toolbar>
     </ion-footer>

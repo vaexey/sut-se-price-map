@@ -4,6 +4,8 @@ import { Observable, shareReplay, tap } from 'rxjs';
 import { API_PATH } from '../API';
 import { LoginRequest, LoginResponse } from '../../model/api/LoginRequest';
 import { SignUpRequest, SignUpResponse } from '../../model/api/SignUpRequest';
+import { SessionStorageService } from '../util/session-storage.service';
+import { DbId } from '../../model/db/dbDefs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +13,8 @@ import { SignUpRequest, SignUpResponse } from '../../model/api/SignUpRequest';
 export class AuthService {
 
   constructor(
-    private http: HttpClient
+    private http: HttpClient,
+    private session: SessionStorageService,
   ) { }
 
   login(username: string, password: string): Observable<LoginResponse>
@@ -41,33 +44,45 @@ export class AuthService {
 
   private onAuthRequestComplete(response: LoginResponse | SignUpResponse)
   {
-    this.setToken(response.token)
+    this.session.edit(s => {
+      s.token = response.token,
+      s.isAdmin = response.isAdmin
+    })
   }
 
-  logout()
+  getUserId(): DbId | null
   {
-    this.setToken(null)
-  }
+    if(!this.isLogged())
+      return null
 
-  isLogged(): boolean
-  {
-    return this.getToken() != null
+    const id = parseInt(this.session.get().userId + "")
+
+    if(isNaN(id))
+      return null
+
+    return id
   }
 
   getToken(): string | null
   {
-    return localStorage.getItem("jtoken")
+    return this.session.get().token ?? null
   }
 
-  setToken(token: string | null)
+  logout()
   {
-    if(token)
-    {
-      localStorage.setItem("jtoken", token)
-    }
-    else
-    {
-      localStorage.removeItem("jtoken")
-    }
+    this.session.edit(s => {
+      s.token = undefined
+      s.isAdmin = undefined
+    })
+  }
+
+  isLogged(): boolean
+  {
+    return !!this.session.get().token
+  }
+
+  isAdmin(): boolean
+  {
+    return this.isLogged() && !!this.session.get().isAdmin
   }
 }
