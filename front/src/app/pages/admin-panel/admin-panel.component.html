@@ -1,0 +1,46 @@
+<ion-content class="ion-padding">
+  <ion-grid>
+    <ion-row>
+      <ion-col></ion-col>
+      <ion-col style="text-align: center">
+        <ion-title>Admin panel</ion-title>
+      </ion-col>
+      <ion-col></ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col size="2"></ion-col>
+
+      <ion-col size="8">
+        <ion-card style="height: 100%">
+          <ion-card-header>
+            <ion-card-title>Reports</ion-card-title>
+            <ion-card-subtitle>
+              Reports that have been submitted by the community
+            </ion-card-subtitle>
+          </ion-card-header>
+
+          <ion-card-content>
+            <ion-list>
+
+              @for (report of reports; track report.id) {
+                <ion-item>
+                  <ion-label>
+                    {{ report.author.displayName }}
+                    reported
+                    {{ report.reported }}
+                    with message:
+                    <pre>{{ report.message }}</pre>
+                  </ion-label>
+                </ion-item>
+              }
+
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <ion-col size="2"></ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

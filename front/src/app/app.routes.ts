@@ -9,6 +9,8 @@ import { OnlyAnonymousService } from './services/auth/only-anonymous.service';
 import { SignUpComponent } from './pages/sign-up/sign-up.component';
 import { ErrorUnavailableComponent } from './pages/error-unavailable/error-unavailable.component';
 import { ContribsComponent } from './pages/contribs/contribs.component';
+import { AdminPanelComponent } from './pages/admin-panel/admin-panel.component';
+import { OnlyAdminService } from './services/auth/only-admin.service';
 
 export const routes: Routes = [
     { 
@@ -28,6 +30,12 @@ export const routes: Routes = [
         component: ProfileComponent,
         canActivate: [OnlyLoggedService],
         title: "Price Compass - profile",
+    },
+    {
+        path: 'admin',
+        component: AdminPanelComponent,
+        canActivate: [OnlyAdminService],
+        title: "Price Compass - admin panel",
     },
     { 
         path: 'search',

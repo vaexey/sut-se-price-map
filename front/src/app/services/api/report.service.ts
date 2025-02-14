@@ -25,12 +25,12 @@ export class ReportService {
     )
   }
 
-  getReports(req: GetReportsRequest): Observable<Report[]>
+  getReports(req?: GetReportsRequest): Observable<Report[]>
   {
     return this.http.get<Report[]>(
       `${API_PATH}/reports`,
       {
-        params: this.getParam.squashRequest(req as SquashableRequest)
+        params: this.getParam.squashRequest(req as SquashableRequest ?? {})
       }
     )
   }
