@@ -6,6 +6,12 @@
     (didDismissEvent)="onEditModal($event)"
   ></app-contrib-edit-modal>
 
+  <app-contrib-report-modal
+    [contrib]="contrib"
+    [isOpen]="reportModal"
+    (didDismissEvent)="onReportModal($event)"
+  ></app-contrib-report-modal>
+
   <ion-row>
 
     @if(showGroupDetails) {
@@ -56,8 +62,10 @@
     </ion-col>
 
     <ion-col size="auto">
-      <ion-button>Report</ion-button>
-      <ion-button (click)="edit()">
+      <ion-button (click)="report()" [disabled]="contrib.author.id == thisUserId()">
+        Report
+      </ion-button>
+      <ion-button (click)="edit()" [disabled]="contrib.author.id != thisUserId()">
         <ion-icon slot="icon-only" name="pencil-outline"></ion-icon>
       </ion-button>
     </ion-col>

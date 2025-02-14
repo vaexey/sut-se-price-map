@@ -1,0 +1,80 @@
+<ion-modal
+  [isOpen]="this.isOpen"
+  (willDismiss)="onDismissed()"
+>
+  <ng-template>
+
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Report contribution</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+
+      <ion-grid>
+        <form [formGroup]="reportForm">
+        
+          <ion-row>
+            <ion-col>
+              <ion-list>
+                <ion-item>
+                  <ion-input
+                    label="Author"
+                    [disabled]="true"
+                    [value]="contrib?.author?.displayName"
+                  ></ion-input>
+                </ion-item>
+
+                <ion-item>
+                  <ion-input
+                    label="Comment"
+                    [disabled]="true"
+                    [value]="contrib?.comment"
+                  ></ion-input>
+                </ion-item>
+              </ion-list>
+
+              <ion-item>
+                <ion-input
+                  formControlName="message"
+                  label="Report message"
+                  counter="true"
+                  maxlength="200"
+                ></ion-input>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+
+        </form>
+      </ion-grid>
+
+    </ion-content>
+
+    <ion-footer>
+      <ion-toolbar>
+        <ion-buttons slot="end">
+          @if(canRemove)
+          {
+            <ion-button 
+              color="danger" 
+              (click)="remove()" 
+              strong="true">
+              Remove contribution
+            </ion-button>
+          }
+
+          <ion-button (click)="dismiss()" strong="false">
+            Cancel
+          </ion-button>
+          <ion-button 
+            (click)="save()" 
+            strong="true">
+            Report
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-footer>
+
+  </ng-template>
+</ion-modal>

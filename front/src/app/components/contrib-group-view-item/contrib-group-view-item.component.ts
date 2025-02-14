@@ -6,6 +6,9 @@ import { ContribEditModalComponent, ContribEditModalEvent } from '../contrib-edi
 import { ContribService } from '../../services/api/contrib.service';
 import { ErrorService } from '../../services/util/error.service';
 import { ResourcePipe } from "../../services/util/resource.pipe";
+import { AuthService } from '../../services/auth/auth.service';
+import { ContribReportModalComponent, ContribReportModalEvent } from "../contrib-report-modal/contrib-report-modal.component";
+import { ReportService } from '../../services/api/report.service';
 
 @Component({
   selector: 'app-contrib-group-view-item',
@@ -14,7 +17,8 @@ import { ResourcePipe } from "../../services/util/resource.pipe";
     ContribEditModalComponent,
     CurrencyPipe,
     DatePipe,
-    ResourcePipe
+    ResourcePipe,
+    ContribReportModalComponent
 ],
   templateUrl: './contrib-group-view-item.component.html',
   styleUrls: ['./contrib-group-view-item.component.scss'],
@@ -31,9 +35,12 @@ export class ContribGroupViewItemComponent  implements OnInit {
   contrib?: Contrib
 
   editModal = false
+  reportModal = false
 
   constructor(
     private contribService: ContribService,
+    private reportService: ReportService,
+    private auth: AuthService,
     private errors: ErrorService,
   ) { }
 
@@ -41,11 +48,17 @@ export class ContribGroupViewItemComponent  implements OnInit {
 
   edit()
   {
-    this.showEditModal()
+    this.editModal = true
   }
 
-  showEditModal() {
-    this.editModal = true
+  report()
+  {
+    this.reportModal = true
+  }
+
+  thisUserId()
+  {
+    return this.auth.getUserId()
   }
 
   onEditModal(event: ContribEditModalEvent) {
@@ -73,6 +86,46 @@ export class ContribGroupViewItemComponent  implements OnInit {
           this.errors.routeError(e)
         }
       })
+    }
+  }
+
+  onReportModal(event: ContribReportModalEvent) {
+    this.reportModal = false
+
+    if(event.submitted)
+    {
+      this.reportService.addReport({
+        message: event.message,
+        reported: this.contrib?.id ?? 0
+      }).subscribe({
+        error: e => {
+          this.errors.routeError(e)
+        }
+      })
+
+      return
+    }
+    
+    if(event.removed)
+    {
+      if(!this.contrib)
+      {
+        console.error("Tried to remove nonexistent contrib")
+        return
+      }
+
+      this.contrib.status = "REMOVED"
+
+      this.contribService.updateContrib(
+        this.contrib.id,
+        this.contrib
+      ).subscribe({
+        error: e => {
+          this.errors.routeError(e)
+        }
+      })
+
+      return
     }
   }
 
