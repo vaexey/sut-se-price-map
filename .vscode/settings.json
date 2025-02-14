@@ -6,6 +6,7 @@
         "angular.json": "proxy.conf.json, tsconfig.json, ionic.config.json",
         "*.component.ts": "$(capture).component.html, $(capture).component.spec.ts, $(capture).component.css, $(capture).component.scss, $(capture).component.sass, $(capture).component.less",
         "*.service.ts": "$(capture).service.spec.ts",
+        "*.pipe.ts": "$(capture).pipe.spec.ts",
         "go.mod": "go.sum, .gitignore, Makefile"
     },
     "makefile.configureOnOpen": false,

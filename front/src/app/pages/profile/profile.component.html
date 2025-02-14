@@ -14,21 +14,33 @@
           <ion-card-content>
 
               <ion-thumbnail>
-                <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/thumbnail.svg" />
+                <img 
+                  alt="Profile picture" 
+                  [src]="profile.avatar | resource"
+                />
               </ion-thumbnail>
 
-              <ion-card-title [contentEditable]="editable">
+              <ion-card-title data-field="displayName" [contentEditable]="editable" (input)="input($event)">
                 {{ profile.displayName }}
               </ion-card-title>
 
-              <ion-card-subtitle [contentEditable]="editable">
+              <ion-card-subtitle data-field="bio" [contentEditable]="editable" (input)="input($event)">
                 {{ profile.bio }}
               </ion-card-subtitle>
 
               <ion-label color="dark">
                 <h2>Regions: {{ profile.defaultRegions }}</h2>
-                <h2>Contributions: <p [contentEditable]="editable">{{ profile.contribCount }}</p></h2>
+                <h2>Contributions: <p>{{ profile.contribCount }}</p></h2>
               </ion-label>
+
+              <ion-button (click)="edit()">
+                @if(editable)
+                {
+                  Save
+                } @else {
+                  Edit
+                }
+              </ion-button>
 
           </ion-card-content>
         </ion-card>
@@ -45,11 +57,8 @@
 
           <ion-card-content>
             <app-contrib-list-view
-              [filters]="{
-                users: {
-                  include: [profile.id]
-                }
-              }"
+              [autoLoad]="false"
+              [filters]="contribFilter"
             ></app-contrib-list-view>
           </ion-card-content>
         </ion-card>

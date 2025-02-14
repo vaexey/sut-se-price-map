@@ -7,7 +7,10 @@
           <ion-thumbnail style="min-width: 150px; min-height: 150px;">
             @if(this.contribGroup)
             {
-              <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/thumbnail.svg" />
+              <img 
+                alt="Product photo" 
+                [src]="contribGroup.product.photo | resource"
+              />
             } @else {
               <ion-skeleton-text [animated]="true"></ion-skeleton-text>
             }
@@ -121,7 +124,10 @@
               ></app-contrib-edit-modal>
         
               @for(item of contribs; track item.id) {
-                <app-contrib-group-view-item [contrib]="item"></app-contrib-group-view-item>
+                <app-contrib-group-view-item 
+                  [contrib]="item"
+                  [showGroupDetails]="false"
+                ></app-contrib-group-view-item>
               }
             } @else {
               @for(item of contribGroup.contribs; track item) {

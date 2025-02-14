@@ -24,7 +24,10 @@
   @else if(contribs.length > 0)
   {
     @for(item of contribs; track item.id) {
-      <app-contrib-group-view-item [contrib]="item"></app-contrib-group-view-item>
+      <app-contrib-group-view-item 
+        [contrib]="item"
+        [showUserAvatar]="false"
+      ></app-contrib-group-view-item>
     }
 
     <ion-infinite-scroll (ionInfinite)="onScrollMore($event)">

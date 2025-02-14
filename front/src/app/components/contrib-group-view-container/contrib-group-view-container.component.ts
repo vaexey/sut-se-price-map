@@ -7,6 +7,7 @@ import { ContribService } from '../../services/api/contrib.service';
 import { CurrencyPipe } from '@angular/common';
 import { ContribEditModalComponent, ContribEditModalEvent } from "../contrib-edit-modal/contrib-edit-modal.component";
 import { ErrorService } from '../../services/util/error.service';
+import { ResourcePipe } from "../../services/util/resource.pipe";
 
 @Component({
   selector: 'app-contrib-group-view-container',
@@ -14,7 +15,8 @@ import { ErrorService } from '../../services/util/error.service';
     IonicModule,
     ContribGroupViewItemComponent,
     CurrencyPipe,
-    ContribEditModalComponent
+    ContribEditModalComponent,
+    ResourcePipe
 ],
   templateUrl: './contrib-group-view-container.component.html',
   styleUrls: ['./contrib-group-view-container.component.scss'],
@@ -87,7 +89,7 @@ export class ContribGroupViewContainerComponent  implements OnInit {
         ...fields,
         product: fields.product ?? 0,
         store: fields.store ?? 0,
-        status: event.revoked ? "REVOKED" : "ACTIVE",
+        status: "ACTIVE",
       }).subscribe({
         next: newContrib => {
           this.contribGroup?.contribs?.push(newContrib.id)

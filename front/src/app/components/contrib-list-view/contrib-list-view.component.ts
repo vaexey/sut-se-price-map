@@ -24,6 +24,8 @@ export class ContribListViewComponent  implements OnInit {
   
   @Input() set filters(value) {
     this._filters = value
+
+    this.onFiltersUpdate()
   }
   get filters() {
     return this._filters
