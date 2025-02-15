@@ -117,9 +117,9 @@ func main() {
 		v1.GET("profiles/:userLogin", api.ProfileByUserLogin)
 
 		// Auth-guarded
+		v1.GET("profile", authMiddleware, api.CurrentUserProfile)
 		v1.GET("hello", authMiddleware, hello)
 		v1.GET("admin", authMiddleware, adminMiddleware, admin)
-		//v1.GET("profile", authMiddleware, api.CurrentUserProfile)
 	}
 
 	router.Use(lapi.ApiFallback())

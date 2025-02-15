@@ -1,6 +1,7 @@
 package api
 
 import (
+	"back/auth"
 	"back/model"
 	"errors"
 	"net/http"
@@ -38,56 +39,36 @@ func (a *Api) ProfileByUserLogin(c *gin.Context) {
 	}
 
 	contribCount, err := a.Db.Contrib.GetNumberOfContribs(user.Id)
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"code": 404,
-			"message": "Requested resource not found",
-	  	})
-		return
-	}
-
-	if user.DefaultRegions == nil {
-		user.DefaultRegions = pq.Int32Array{}
-	}
+	handleUserErrors(c, &user, err)
 
 	c.JSON(http.StatusOK, jsonProfile(user, contribCount))
 }
 
-// func (a *Api) CurrentUserProfile(c *gin.Context) {
-// 	id := auth.CtxId(c)
+func (a *Api) CurrentUserProfile(c *gin.Context) {
+	id := auth.CtxId(c)
 
-// 	user, err := a.Db.User.SelectById(*id)
+	user, err := a.Db.User.SelectById(*id)
 
-// 	if errors.Is(err, gorm.ErrRecordNotFound) {
-// 		c.JSON(http.StatusBadRequest, gin.H{
-// 			"message": "This profile do not exist",
-// 		})
-// 		return
-// 	}
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "This profile do not exist",
+		})
+		return
+	}
 
-// 	if err != nil {
-// 		c.JSON(http.StatusNotFound, gin.H{
-//   			"code": 404,
-//   			"message": "Requested profile not found",
-// 		})
-// 		return
-// 	}
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+  			"code": 404,
+  			"message": "Requested profile not found",
+		})
+		return
+	}
 
-// 	contribCount, err := a.Db.Contrib.GetNumberOfContribs(user.Id)
-// 	if err != nil {
-// 		c.JSON(http.StatusNotFound, gin.H{
-// 			"code": 404,
-// 			"message": "Requested resource not found",
-// 	  	})
-// 		return
-// 	}
+	contribCount, err := a.Db.Contrib.GetNumberOfContribs(user.Id)
+	handleUserErrors(c, &user, err)
 
-// 	if user.DefaultRegions == nil {
-// 		user.DefaultRegions = pq.Int32Array{}
-// 	}
-
-// 	c.JSON(http.StatusOK, jsonProfile(user, contribCount))
-// }
+	c.JSON(http.StatusOK, jsonProfile(user, contribCount))
+}
 
 func jsonProfile(user model.User, contribCount int) gin.H {
 	return gin.H{
@@ -99,5 +80,19 @@ func jsonProfile(user model.User, contribCount int) gin.H {
 		"defaultRegions": user.DefaultRegions,
 		"isAdmin": user.IsAdmin,
 		"isBanned": user.IsBanned,
+	}
+}
+
+func handleUserErrors(c *gin.Context, user *model.User, err error) {
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"code": 404,
+			"message": "Requested resource not found",
+	  	})
+		return
+	}
+
+	if user.DefaultRegions == nil {
+		user.DefaultRegions = pq.Int32Array{}
 	}
 }
