@@ -68,7 +68,6 @@ export class ContribGroupViewItemComponent  implements OnInit {
   }
 
   onEditModal(event: ContribEditModalEvent) {
-    console.log(event)
     this.editModal = false
 
     if(event.submitted)
