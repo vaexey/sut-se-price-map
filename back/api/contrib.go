@@ -52,6 +52,7 @@ const FILTERS_LEN = 5
 
 func (a *Api) ContribsGetAll(c *gin.Context) {
 	util := contribUtil{}
+	util.SelectChildren = a.Db.Region.SelectChildren
 
 	filters := make([]db.Filter, FILTERS_LEN)
 	var entries []model.Contrib
@@ -105,6 +106,7 @@ func (a *Api) ContribsGetAll(c *gin.Context) {
 // pagination
 func (a *Api) ContribsGetByGroup(c *gin.Context) {
 	util := contribUtil{}
+	util.SelectChildren = a.Db.Region.SelectChildren
 
 	filters := make([]db.Filter, FILTERS_LEN)
 	entries := []model.Contrib{}
