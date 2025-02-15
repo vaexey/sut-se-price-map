@@ -44,7 +44,6 @@ func (h *Handler) Register(c *gin.Context) {
 		Login : req.Username,
 		Password : hash,
 		IsAdmin: false,
-		Avatar: nil,
 	}
 
 	// check if username with same username exists in db

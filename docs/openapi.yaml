@@ -33,6 +33,9 @@ paths:
                 properties:
                   token:
                     type: string
+                  id:
+                    type: integer
+                    format: user_id
                   isAdmin:
                     type: boolean
         '400':
@@ -78,6 +81,9 @@ paths:
                 properties:
                   token:
                     type: string
+                  id:
+                    type: integer
+                    format: user_id
                   isAdmin:
                     type: boolean
         '400':
@@ -210,6 +216,15 @@ paths:
               - id
               - date
               - ...
+        - name: order
+          in: query
+          description: order of sorting; only used in combination with `sortBy` param
+          required: false
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
         - name: idsInclude
           in: query
           description: IDs include
@@ -508,6 +523,15 @@ paths:
               - id
               - date
               - ...
+        - name: order
+          in: query
+          description: order of sorting; only used in combination with `sortBy` param
+          required: false
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
         - name: regionsInclude
           in: query
           description: regions include
@@ -916,8 +940,6 @@ components:
         id:
           type: integer
           format: id
-        url:
-          type: string
     Report:
       type: object
       properties:
@@ -944,6 +966,8 @@ components:
           type: string
         displayName:
           type: string
+        avatar:
+          $ref: '#/components/schemas/Resource'
         bio:
           type: string
         contribCount:

@@ -37,6 +37,7 @@ func ApiFallback() gin.HandlerFunc {
 
 
 type contribUtil struct {
+	SelectChildren func(uint) ([]uint, error)
 	StartDate int64
 	EndDate int64
 	AfterMany uint
@@ -111,6 +112,32 @@ func (c *contribUtil) GetFilters(filters *[]db.Filter, q func(string) string) er
 	storesFilter, err := c.getFilterParam(q, "stores")
 	productsFilter, err := c.getFilterParam(q, "products")
 	regionsFilter, err := c.getFilterParam(q, "regions")
+	// recursive regions
+	rIncl := regionsFilter.Include
+	var allIncl []uint
+	if rIncl != nil {
+		for i := range *rIncl {
+			children, err := c.SelectChildren((*rIncl)[i])
+			if err != nil {
+				return err
+			}
+			allIncl = append(allIncl, children...)
+		}
+	}
+	rExcl := regionsFilter.Exclude
+	var allExcl[]uint
+	if rExcl != nil {
+		for i := range *rExcl {
+			children, err := c.SelectChildren((*rExcl)[i])
+			if err != nil {
+				return err
+			}
+			allExcl = append(allExcl, children...)
+		}
+	}
+	regionsFilter.Include = &allIncl
+	regionsFilter.Exclude = &allExcl
+
 	(*filters)[0] = idFilter
 	(*filters)[1] = authorsFilter 
 	(*filters)[2] = storesFilter
@@ -122,7 +149,8 @@ func (c *contribUtil) GetFilters(filters *[]db.Filter, q func(string) string) er
 func (c* contribUtil) GetSortStatusParams(q func(string) string) error {
 	sortBy := q("sortBy")
 	if sortBy != "id" && sortBy != "date" && sortBy != "price" && sortBy != "status" {
-		sortBy = ""
+		// sotyBy defaults to date
+		sortBy = "date"
 	}
 
 	status := []string{"ACTIVE"}
