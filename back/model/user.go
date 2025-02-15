@@ -6,7 +6,8 @@ type User struct {
 	DisplayName string `json:"displayName"`
 	Password	string `json:"-"`
 	IsAdmin		bool `json:"-"`
-	Avatar      *int `json:"-"`
+	AvatarID    uint `json:"-" gorm:"default:NULL"`
+	Avatar		Resource `json:"avatar"`
 }
 
 func (User) TableName() string {

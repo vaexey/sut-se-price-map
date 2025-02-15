@@ -122,7 +122,8 @@ func (c *contribUtil) GetFilters(filters *[]db.Filter, q func(string) string) er
 func (c* contribUtil) GetSortStatusParams(q func(string) string) error {
 	sortBy := q("sortBy")
 	if sortBy != "id" && sortBy != "date" && sortBy != "price" && sortBy != "status" {
-		sortBy = ""
+		// sotyBy defaults to date
+		sortBy = "date"
 	}
 
 	status := []string{"ACTIVE"}
