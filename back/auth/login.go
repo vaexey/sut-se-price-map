@@ -47,7 +47,7 @@ func (h *Handler)login(username string, password string) (int, gin.H, *string) {
 	if err != nil {
 		return http.StatusServiceUnavailable, gin.H { "message" : "Service failure"}, nil
 	}
-	return http.StatusOK, gin.H { "message" : "success" }, &tokenString
+	return http.StatusOK, gin.H { "message" : "success" , "id": dbUser.Id, "role": role}, &tokenString
 }
 
 func (h *Handler) Login(c *gin.Context) {
@@ -64,9 +64,15 @@ func (h *Handler) Login(c *gin.Context) {
 		c.JSON(code, json)
 		return
 	}
+	isAdmin := false
+	if json["role"] == "admin" {
+		isAdmin = true
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"token" : *tokenString,
+		"id": json["id"],
+		"isAdmin" : isAdmin, 
 	})
 }
 
