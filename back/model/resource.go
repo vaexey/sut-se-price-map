@@ -2,9 +2,9 @@ package model
 
 type Resource struct {
 	Id   uint   `gorm:"unique;primaryKey;autoIncrement" json:"id"`
-	Url  string `json:"url"`
-	Blob string `json:"blob" gorm:"column:source"`
-	Name string `json:"name"`
+	Url  string `json:"-"`
+	Blob string `json:"-" gorm:"column:source"`
+	Name string `json:"-"`
 }
 
 func (Resource) TableName() string {
