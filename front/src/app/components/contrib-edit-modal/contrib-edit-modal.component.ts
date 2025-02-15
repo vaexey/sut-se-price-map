@@ -86,7 +86,7 @@ export class ContribEditModalComponent  implements OnInit {
   public get canEdit() {
     return this.editing &&
       (
-        this.contrib?.author.id == this.auth.getUserId() ||
+        (this.contrib?.author.id == this.auth.getUserId() && this.contrib?.status == "ACTIVE") ||
         this.auth.isAdmin()
       )
   }
@@ -166,6 +166,7 @@ export class ContribEditModalComponent  implements OnInit {
     if(!this.canRevoke)
       return this.dismiss()
 
+    this.didCancel = false
     this.revokedFlag = true
     this.dismiss()
   }
