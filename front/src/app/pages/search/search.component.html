@@ -19,25 +19,77 @@
           </ion-card-header>
 
           <ion-card-content>
+
+            <ion-label color="dark">
+              <h2>Sort by</h2>
+            </ion-label>
+            <ion-select
+              label=""
+              label-placement="default"
+              fill="outline"
+              interface="alert"
+              class="ion-margin-top ion-margin-bottom"
+              [value]="sortOptions[0]"
+              (ionChange)="handleSortByChange($event)"
+            >
+              @for(option of sortOptions; track option) {
+                <ion-select-option [value]="option">
+                  {{ option.label }}
+                </ion-select-option>
+              }
+            </ion-select>
+
             <ion-label color="dark">
               <h2>Region</h2>
             </ion-label>
-            <app-region-combo [isSearchResults]="true"></app-region-combo>
+            <app-region-combo 
+              [isSearchResults]="true"
+              (didSelectEvent)="this.handleRegionChange($event)"
+            ></app-region-combo>
 
+            <!-- TODO: add compareWith attribute to objectvalue selects -->
             <ion-label color="dark">
               <h2>Store</h2>
             </ion-label>
             <ion-select
-              label="Store"
+              label=""
               label-placement="default"
               fill="outline"
-              interface="modal"
+              interface="alert"
               class="ion-margin-top ion-margin-bottom"
+              [multiple]="true"
+              (ionChange)="handleStoreChange($event)"
             >
-              <ion-select-option value="everywhere"
+              <ion-select-option [value]="null"
                 >All stores</ion-select-option
               >
-              <ion-select-option>Biedronka</ion-select-option>
+              @for(store of stores; track store.id) {
+                <ion-select-option [value]="store">
+                  {{ store.name }}
+                </ion-select-option>
+              }
+            </ion-select>
+
+            <ion-label color="dark">
+              <h2>Product</h2>
+            </ion-label>
+            <ion-select
+              label=""
+              label-placement="default"
+              fill="outline"
+              interface="alert"
+              class="ion-margin-top ion-margin-bottom"
+              [multiple]="true"
+              (ionChange)="handleProductChange($event)"
+            >
+              <ion-select-option [value]="null"
+                >All products</ion-select-option
+              >
+              @for(product of products; track product.id) {
+                <ion-select-option [value]="product">
+                  {{ product.name }}
+                </ion-select-option>
+              }
             </ion-select>
 
             <ion-label color="dark">
@@ -46,13 +98,19 @@
 
             <ion-modal [keepContentsMounted]="true">
               <ng-template>
-                <ion-datetime id="timespanBefore"></ion-datetime>
+                <ion-datetime 
+                  id="timespanBefore"
+                  (ionChange)="handleTimespanBeforeChange($event)"
+                ></ion-datetime>
               </ng-template>
             </ion-modal>
 
             <ion-modal [keepContentsMounted]="true">
               <ng-template>
-                <ion-datetime id="timespanAfter"></ion-datetime>
+                <ion-datetime
+                  id="timespanAfter"
+                  (ionChange)="handleTimespanAfterChange($event)"
+                ></ion-datetime>
               </ng-template>
             </ion-modal>
 
@@ -72,7 +130,10 @@
       </ion-col>
 
       <ion-col size="7">
-        <app-contrib-group-view></app-contrib-group-view>
+        <app-contrib-group-view
+          [autoLoad]="false"
+          [filters]="filters"
+        ></app-contrib-group-view>
       </ion-col>
 
       <ion-col size="3">
@@ -83,11 +144,9 @@
           </ion-card-header>
 
           <ion-card-content>
-            <div
-              class="map"
-              [inlineSVG]="'/map_POL.svg'"
-              (onSVGInserted)="this.onMapLoad()"
-            ></div>
+            <app-region-map
+              (onRegionSelect)="this.handleRegionChange([$event])"
+            ></app-region-map>
           </ion-card-content>
         </ion-card>
       </ion-col>

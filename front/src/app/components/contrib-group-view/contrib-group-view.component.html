@@ -14,7 +14,7 @@
     }
     @else if(contribGroups.length > 0)
     {
-      @for(item of contribGroups; track item) {
+      @for(item of contribGroups; track item.contribs[0]) {
         <app-contrib-group-view-container [contribGroup]="item"></app-contrib-group-view-container>
       }
 

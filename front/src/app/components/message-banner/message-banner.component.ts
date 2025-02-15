@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+import { IonCol, IonGrid, IonItem, IonLabel, IonRow } from '@ionic/angular/standalone';
 
 export type MessageBannerType = 
   "info" |
@@ -9,7 +9,11 @@ export type MessageBannerType =
 @Component({
   selector: 'app-message-banner',
   imports: [
-    IonicModule, // TODO: Split
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonItem,
+    IonLabel
   ],
   templateUrl: './message-banner.component.html',
   styleUrls: ['./message-banner.component.scss'],

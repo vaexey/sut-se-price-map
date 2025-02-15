@@ -1,10 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+import { IonCol, IonContent, IonGrid, IonLabel, IonRow, IonTitle } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-error-not-found',
   imports: [
-    IonicModule // TODO: split
+    IonContent,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonTitle,
+    IonLabel
   ],
   templateUrl: './error-not-found.component.html',
   styleUrls: ['./error-not-found.component.scss'],

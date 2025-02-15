@@ -24,6 +24,8 @@ export interface TimespanFilter
     before?: DbDate
 }
 
+export type PaginationSortOrder = "asc" | "desc"
+
 export interface PaginationRequest
 {
     // Limit maximum returned entries
@@ -36,6 +38,9 @@ export interface PaginationRequest
 
     // Property name to sort by
     sortBy?: string
+    
+    // Order of sorting if applied
+    order?: PaginationSortOrder
 }
 
 export interface PaginationResponse<T>

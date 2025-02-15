@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { HelloWorldService } from './hello-world.service';
+import { OnlyAdminService } from './only-admin.service';
 
-describe('HelloWorldService', () => {
-  let service: HelloWorldService;
+describe('OnlyAdminService', () => {
+  let service: OnlyAdminService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(HelloWorldService);
+    service = TestBed.inject(OnlyAdminService);
   });
 
   it('should be created', () => {

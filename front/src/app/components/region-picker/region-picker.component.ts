@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
-import { RegionService } from '../../services/region.service';
+import { RegionService } from '../../services/api/region.service';
 import { RegionTree } from '../../model/local/RegionTree';
 import { RegionPickerNodeComponent, RegionPickerNodeEvent } from "../region-picker-node/region-picker-node.component";
 import { DbId } from '../../model/db/dbDefs';
 import { Region } from '../../model/db/Region';
-import { ErrorService } from '../../services/error.service';
+import { ErrorService } from '../../services/util/error.service';
+import { IonButton, IonButtons, IonContent, IonFooter, IonHeader, IonModal, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 
 export type RegionPickerDismissEvent = {
   selected: boolean,
@@ -23,9 +23,16 @@ export type RegionPickerModel = {
 
 @Component({
   selector: 'app-region-picker',
-  imports: [
-    IonicModule,
-    RegionPickerNodeComponent
+  imports: [    
+    RegionPickerNodeComponent,
+    IonModal,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonFooter,
+    IonButton,
+    IonButtons
 ],
   templateUrl: './region-picker.component.html',
   styleUrls: ['./region-picker.component.scss'],

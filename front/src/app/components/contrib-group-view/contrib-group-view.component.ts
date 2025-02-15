@@ -1,18 +1,23 @@
 import { Component, Input, OnInit } from '@angular/core';
-import {  InfiniteScrollCustomEvent, IonicModule } from '@ionic/angular';
+import {  InfiniteScrollCustomEvent } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { addOutline, barChartOutline, chevronDownOutline, heart, pencilOutline } from 'ionicons/icons';
 import { ContribGroupViewContainerComponent } from "../contrib-group-view-container/contrib-group-view-container.component";
-import { GetContribsGroupRequest, GetContribsGroupResponse, GetContribsGroupResponseEntry } from '../../model/api/GetContribsGroupRequest';
-import { ContribService } from '../../services/contrib.service';
-import { ErrorService } from '../../services/error.service';
+import { GetContribsGroupRequest, GetContribsGroupResponseEntry } from '../../model/api/GetContribsGroupRequest';
+import { ContribService } from '../../services/api/contrib.service';
+import { ErrorService } from '../../services/util/error.service';
 import { Observable, ReplaySubject } from 'rxjs';
+import { IonCard, IonCardContent, IonInfiniteScroll, IonInfiniteScrollContent, IonTitle } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-contrib-group-view',
   imports: [
-    IonicModule,
-    ContribGroupViewContainerComponent
+    ContribGroupViewContainerComponent,
+    IonCard,
+    IonCardContent,
+    IonTitle,
+    IonInfiniteScroll,
+    IonInfiniteScrollContent
 ],
   templateUrl: './contrib-group-view.component.html',
   styleUrls: ['./contrib-group-view.component.scss'],
@@ -85,15 +90,11 @@ export class ContribGroupViewComponent  implements OnInit {
     this.availableMore = availableMore ?? false
 
     this.contribGroups.push(...data)
-    // this.contribGroups = [
-    //   ...this.contribGroups,
-    //   ...data
-    // ]
   }
 
   clearData()
   {
-    if(this.autoLoad && this.infinite)
+    if(this.infinite)
     {
       this.page = 0
     }
@@ -105,8 +106,17 @@ export class ContribGroupViewComponent  implements OnInit {
 
   setLoading()
   {
-    this.loading = true
     this.error = null
+
+    if(this.infinite)
+    {
+      if(this.contribGroups.length === 0)
+        this.loading = true
+
+      return
+    }
+
+    this.loading = true
   }
 
   private onFiltersUpdate()
@@ -121,7 +131,7 @@ export class ContribGroupViewComponent  implements OnInit {
 
     const filters = this.filters ?? {}
 
-    if(this.autoLoad && this.infinite)
+    if(this.infinite)
     {
       filters.limit = this.limit
       filters.afterMany = (this.page) * this.limit
@@ -131,7 +141,7 @@ export class ContribGroupViewComponent  implements OnInit {
 
     this.contribService.getContribGroups(filters).subscribe({
       next: res => {
-        if(this.autoLoad && this.infinite)
+        if(this.infinite)
         {
           this.page++
           this.appendData(res.entries, res.pages > this.page)
@@ -155,8 +165,6 @@ export class ContribGroupViewComponent  implements OnInit {
 
   onScrollMore(evt: InfiniteScrollCustomEvent)
   {
-    console.log(evt)
-
     if(this.availableMore)
     {
       this.fetch().subscribe(() => {

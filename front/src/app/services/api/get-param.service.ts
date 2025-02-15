@@ -53,7 +53,7 @@ export class GetParamService {
         return
       }
 
-      if(Array.isArray(v))
+      if(Array.isArray(v) && v.length > 0)
       {
         squashed.push({
           key: k,

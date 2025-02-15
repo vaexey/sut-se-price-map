@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { Region } from '../model/db/Region';
-import { API_PATH } from './API';
-import { DbId } from '../model/db/dbDefs';
-import { RegionTree } from '../model/local/RegionTree';
+import { Region } from '../../model/db/Region';
+import { API_PATH } from '../API';
+import { DbId } from '../../model/db/dbDefs';
+import { RegionTree } from '../../model/local/RegionTree';
 
 @Injectable({
   providedIn: 'root'
@@ -44,6 +44,25 @@ export class RegionService {
 
   private findChildrenOf(region: Region, regions: Region[]): RegionTree
   {
+    try {
+      return this.findChildrenOfLimit(region, regions, 100)
+    } catch (error) {
+      console.error("Could not derive region tree from regions response.")
+
+      return {
+        id: region.id,
+        name: region.name,
+        parentCount: region.parentCount,
+        children: []
+      }
+    }
+  }
+
+  private findChildrenOfLimit(region: Region, regions: Region[], limit: number): RegionTree
+  {
+    if(limit <= 0)
+      throw Error("Limit reached")
+
     let children = regions.filter(r => r.parent?.id == region.id)
 
     return {
@@ -51,7 +70,7 @@ export class RegionService {
       name: region.name,
       parentCount: region.parentCount,
 
-      children: children.map(c => this.findChildrenOf(c, regions))
+      children: children.map(c => this.findChildrenOfLimit(c, regions, limit - 1))
     }
   }
   

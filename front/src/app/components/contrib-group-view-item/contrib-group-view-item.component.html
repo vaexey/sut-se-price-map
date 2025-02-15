@@ -1,25 +1,71 @@
 @if(this.contrib)
 {
+  <app-contrib-edit-modal
+    [contrib]="contrib"
+    [isOpen]="editModal"
+    (didDismissEvent)="onEditModal($event)"
+  ></app-contrib-edit-modal>
+
+  <app-contrib-report-modal
+    [contrib]="contrib"
+    [isOpen]="reportModal"
+    (didDismissEvent)="onReportModal($event)"
+  ></app-contrib-report-modal>
+
   <ion-row>
-    <ion-col size="auto">
-      <ion-thumbnail style="height: 20px;">
-        <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/thumbnail.svg" />
-      </ion-thumbnail>
-    </ion-col>
+
+    @if(showGroupDetails) {
+      <ion-col size="auto">
+        <ion-thumbnail style="height: 20px;">
+          <img 
+            alt="Product photo" 
+            [src]="contrib.product.photo | resource"
+          />
+        </ion-thumbnail>
+      </ion-col>
+
+      <ion-col>
+        <ion-label>
+          {{ contrib.product.name }}
+          in
+          {{ contrib.store.name }}
+        </ion-label>
+      </ion-col>
+    }
+
+    @if(showUserAvatar) {
+      <ion-col size="auto">
+        <ion-thumbnail style="height: 20px;">
+          <img 
+            alt="User profile picture" 
+            [src]="contrib.author.avatar | resource"
+          />
+        </ion-thumbnail>
+      </ion-col>
+    }
+
     <ion-col size="auto">
       <ion-label>
         {{ contrib.author.displayName }}
       </ion-label>
+      <ion-label>
+        {{ contrib.comment }}
+      </ion-label>
     </ion-col>
+
     <ion-col>
-      <ion-label>{{ contrib.date }}</ion-label>
+      <ion-label>{{ contrib.date | date }}</ion-label>
     </ion-col>
+
     <ion-col size="auto">
-      <ion-title>{{ contrib.price }}</ion-title>
+      <ion-title>{{ contrib.price | currency : "USD" }}</ion-title>
     </ion-col>
+
     <ion-col size="auto">
-      <ion-button>Report</ion-button>
-      <ion-button>
+      <ion-button (click)="report()" [disabled]="contrib.author.id == thisUserId()">
+        Report
+      </ion-button>
+      <ion-button (click)="edit()" [disabled]="contrib.author.id != thisUserId()">
         <ion-icon slot="icon-only" name="pencil-outline"></ion-icon>
       </ion-button>
     </ion-col>
