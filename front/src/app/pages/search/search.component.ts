@@ -1,5 +1,4 @@
 import { Component, OnInit, Renderer2 } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { filterCircleOutline } from 'ionicons/icons';
 import { RegionComboComponent } from "../../components/region-combo/region-combo.component";
@@ -15,6 +14,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest } from 'rxjs';
 import { RegionMapComponent } from "../../components/region-map/region-map.component";
 import { PaginationSortOrder } from '../../model/api/PaginationRequest';
+import { IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonDatetime, IonDatetimeButton, IonGrid, IonLabel, IonModal, IonRow, IonSelect, IonSelectOption, IonTitle } from '@ionic/angular/standalone';
 
 export type FilledGetContribsGroupRequest = 
   GetContribsGroupRequest & 
@@ -46,10 +46,25 @@ export type SelectEventOf<T> = {
 @Component({
   selector: 'app-search',
   imports: [
-    IonicModule,
     RegionComboComponent,
     ContribGroupViewComponent,
-    RegionMapComponent
+    RegionMapComponent,    
+    IonContent,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonTitle,
+    IonCard,
+    IonCardHeader,
+    IonCardTitle,
+    IonCardSubtitle,
+    IonCardContent,
+    IonLabel,
+    IonSelect,
+    IonSelectOption,
+    IonModal,
+    IonDatetime,
+    IonDatetimeButton,    
 ],
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss'],

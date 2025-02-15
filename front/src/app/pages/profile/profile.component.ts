@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
 import { GetProfileResponse } from '../../model/api/ProfileRequest';
 import { ContribListViewComponent } from "../../components/contrib-list-view/contrib-list-view.component";
 import { ProfileService } from '../../services/api/profile.service';
 import { ErrorService } from '../../services/util/error.service';
 import { GetContribsRequest } from '../../model/api/GetContribsRequest';
 import { ResourcePipe } from "../../services/util/resource.pipe";
+import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonGrid, IonLabel, IonRow, IonThumbnail, IonTitle } from '@ionic/angular/standalone';
 
 /**
  * THIS WHOLE COMPONENT NEEDS A REWORK ASAP
@@ -14,9 +14,21 @@ import { ResourcePipe } from "../../services/util/resource.pipe";
 @Component({
   selector: 'app-profile',
   imports: [
-    IonicModule, // TODO: split
     ContribListViewComponent,
-    ResourcePipe
+    ResourcePipe,
+    IonContent,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonTitle,
+    IonCard,
+    IonCardContent,
+    IonThumbnail,
+    IonCardTitle,
+    IonCardSubtitle,
+    IonLabel,
+    IonButton,
+    IonCardHeader
   ],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'

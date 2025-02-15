@@ -1,12 +1,24 @@
 import { Component, OnInit } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
 import { ReportService } from '../../services/api/report.service';
 import { Report } from '../../model/db/Report';
+import { IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonGrid, IonItem, IonLabel, IonList, IonRow, IonTitle } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-admin-panel',
   imports: [
-    IonicModule, // TODO: split
+    IonContent,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonTitle,
+    IonCard,
+    IonCardHeader,
+    IonCardTitle,
+    IonCardSubtitle,
+    IonCardContent,
+    IonList,
+    IonItem,
+    IonLabel
   ],
   templateUrl: './admin-panel.component.html',
   styleUrls: ['./admin-panel.component.scss'],

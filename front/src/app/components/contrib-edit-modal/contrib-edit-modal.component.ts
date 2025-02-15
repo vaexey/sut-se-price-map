@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
 import { Contrib } from '../../model/db/Contrib';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ProductService } from '../../services/api/product.service';
@@ -10,6 +9,7 @@ import { Product } from '../../model/db/Product';
 import { Store } from '../../model/db/Store';
 import { DbId } from '../../model/db/dbDefs';
 import { AuthService } from '../../services/auth/auth.service';
+import { IonButton, IonButtons, IonCol, IonContent, IonFooter, IonGrid, IonHeader, IonInput, IonItem, IonLabel, IonList, IonModal, IonNote, IonRow, IonSelectOption, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 
 export type ContribEditModalEvent = {
   submitted: boolean,
@@ -29,7 +29,23 @@ export type ContribEditModalFields = {
   imports: [
     FormsModule,
     ReactiveFormsModule,
-    IonicModule, // TODO: split
+    IonModal,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonGrid,
+    IonRow,
+    IonList,
+    IonCol,
+    IonItem,
+    IonInput,
+    IonSelectOption,
+    IonNote,
+    IonLabel,
+    IonFooter,
+    IonButtons,
+    IonButton
   ],
   templateUrl: './contrib-edit-modal.component.html',
   styleUrls: ['./contrib-edit-modal.component.scss'],

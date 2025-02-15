@@ -1,11 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
+import { IonCol, IonContent, IonGrid, IonLabel, IonRow, IonTitle } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-error-unavailable',
   imports: [
-    IonicModule // TODO: split
+    IonContent,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonTitle,
+    IonLabel
   ],
   templateUrl: './error-unavailable.component.html',
   styleUrls: ['./error-unavailable.component.scss'],

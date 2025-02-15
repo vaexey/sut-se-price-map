@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
 import { Contrib } from '../../model/db/Contrib';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { ContribEditModalComponent, ContribEditModalEvent } from '../contrib-edit-modal/contrib-edit-modal.component';
@@ -9,16 +8,23 @@ import { ResourcePipe } from "../../services/util/resource.pipe";
 import { AuthService } from '../../services/auth/auth.service';
 import { ContribReportModalComponent, ContribReportModalEvent } from "../contrib-report-modal/contrib-report-modal.component";
 import { ReportService } from '../../services/api/report.service';
+import { IonButton, IonCol, IonIcon, IonLabel, IonRow, IonThumbnail, IonTitle } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-contrib-group-view-item',
   imports: [
-    IonicModule, // TODO: split
     ContribEditModalComponent,
     CurrencyPipe,
     DatePipe,
     ResourcePipe,
-    ContribReportModalComponent
+    ContribReportModalComponent,
+    IonRow,
+    IonCol,
+    IonThumbnail,
+    IonLabel,
+    IonTitle,
+    IonButton,
+    IonIcon
 ],
   templateUrl: './contrib-group-view-item.component.html',
   styleUrls: ['./contrib-group-view-item.component.scss'],

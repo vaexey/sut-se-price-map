@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
 import { ContribGroupViewItemComponent } from "../contrib-group-view-item/contrib-group-view-item.component";
 import { GetContribsGroupResponseEntry } from '../../model/api/GetContribsGroupRequest';
 import { Contrib } from '../../model/db/Contrib';
@@ -8,15 +7,28 @@ import { CurrencyPipe } from '@angular/common';
 import { ContribEditModalComponent, ContribEditModalEvent } from "../contrib-edit-modal/contrib-edit-modal.component";
 import { ErrorService } from '../../services/util/error.service';
 import { ResourcePipe } from "../../services/util/resource.pipe";
+import { IonAccordion, IonAccordionGroup, IonButton, IonCard, IonCardContent, IonCol, IonGrid, IonIcon, IonLabel, IonRow, IonSkeletonText, IonThumbnail, IonTitle } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-contrib-group-view-container',
   imports: [
-    IonicModule,
     ContribGroupViewItemComponent,
     CurrencyPipe,
     ContribEditModalComponent,
-    ResourcePipe
+    ResourcePipe,
+    IonCard,
+    IonCardContent,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonThumbnail,
+    IonSkeletonText,
+    IonTitle,
+    IonLabel,
+    IonButton,
+    IonIcon,
+    IonAccordionGroup,
+    IonAccordion
 ],
   templateUrl: './contrib-group-view-container.component.html',
   styleUrls: ['./contrib-group-view-container.component.scss'],

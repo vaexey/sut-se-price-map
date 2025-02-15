@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
 import { AuthService } from '../../services/auth/auth.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MessageBannerComponent } from '../../components/message-banner/message-banner.component';
 import { ErrorService } from '../../services/util/error.service';
+import { IonButton, IonCol, IonContent, IonGrid, IonInputPasswordToggle, IonRow } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-login',
@@ -12,7 +12,12 @@ import { ErrorService } from '../../services/util/error.service';
     ReactiveFormsModule,
     RouterLink,
     MessageBannerComponent,
-    IonicModule // TODO: split
+    IonContent,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonInputPasswordToggle,
+    IonButton
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],

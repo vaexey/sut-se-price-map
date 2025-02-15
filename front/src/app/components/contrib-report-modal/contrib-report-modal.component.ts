@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
 import { Contrib } from '../../model/db/Contrib';
 import { AuthService } from '../../services/auth/auth.service';
+import { IonButton, IonButtons, IonCol, IonContent, IonFooter, IonGrid, IonHeader, IonInput, IonItem, IonList, IonModal, IonRow, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 
 export type ContribReportModalEvent = {
   submitted: boolean,
@@ -15,7 +15,20 @@ export type ContribReportModalEvent = {
   imports: [
     FormsModule,
     ReactiveFormsModule,
-    IonicModule, // TODO: split
+    IonModal,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonList,
+    IonItem,
+    IonInput,
+    IonFooter,
+    IonButtons,
+    IonButton
   ],
   templateUrl: './contrib-report-modal.component.html',
   styleUrls: ['./contrib-report-modal.component.scss'],
