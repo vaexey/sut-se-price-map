@@ -1,1 +1,68 @@
-<p>profile works!</p>
+<ion-content class="ion-padding">
+  <ion-grid>
+    <ion-row>
+      <ion-col></ion-col>
+      <ion-col style="text-align: center">
+        <ion-title>Your profile</ion-title>
+      </ion-col>
+      <ion-col></ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col size="3">
+        <ion-card style="height: 100%">
+          <ion-card-content>
+
+              <ion-thumbnail>
+                <img 
+                  alt="Profile picture" 
+                  [src]="profile.avatar | resource"
+                />
+              </ion-thumbnail>
+
+              <ion-card-title data-field="displayName" [contentEditable]="editable" (input)="input($event)">
+                {{ profile.displayName }}
+              </ion-card-title>
+
+              <ion-card-subtitle data-field="bio" [contentEditable]="editable" (input)="input($event)">
+                {{ profile.bio }}
+              </ion-card-subtitle>
+
+              <ion-label color="dark">
+                <h2>Regions: {{ profile.defaultRegions }}</h2>
+                <h2>Contributions: <p>{{ profile.contribCount }}</p></h2>
+              </ion-label>
+
+              <ion-button (click)="edit()">
+                @if(editable)
+                {
+                  Save
+                } @else {
+                  Edit
+                }
+              </ion-button>
+
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <ion-col size="9">
+        <ion-card style="height: 100%">
+          <ion-card-header>
+            <ion-card-title>Contributions</ion-card-title>
+            <ion-card-subtitle>
+              All your contributions to the community.
+            </ion-card-subtitle>
+          </ion-card-header>
+
+          <ion-card-content>
+            <app-contrib-list-view
+              [autoLoad]="false"
+              [filters]="contribFilter"
+            ></app-contrib-list-view>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

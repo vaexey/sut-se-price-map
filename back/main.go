@@ -15,24 +15,6 @@ import (
 	"gorm.io/gorm"
 )
 
-func hello(c *gin.Context) {
-	message := c.Query("msg")
-	c.JSON(http.StatusOK,
-		gin.H{
-			"message": "hello",
-			"error":   nil,
-			"msg":     message,
-		},
-	)
-}
-
-func admin(c *gin.Context) {
-	c.JSON(http.StatusOK,
-		gin.H{
-			"message": "hello admin",
-		})
-}
-
 var staticIndexFile []byte
 
 func serveStaticIndex(c *gin.Context) {
@@ -89,7 +71,7 @@ func main() {
 	}
 
 	authMiddleware := authHandler.RequireJWT()
-	adminMiddleware := authHandler.RequireAdmin()
+	// adminMiddleware := authHandler.RequireAdmin()
 
 	v1 := router.Group(config.API_PATH)
 	{
@@ -110,6 +92,10 @@ func main() {
 		v1.GET("contribs", api.ContribsGetAll)
 		v1.GET("contribs/group", api.ContribsGetByGroup)
 
+
+		v1.GET("resources/:id", api.ResourceById)
+
+		// Auth guarded
 		v1.POST("contribs/:contribId", authMiddleware, api.ContribsUpdate)
 		v1.PUT("contribs", authMiddleware, api.ContribsCreate)
 
@@ -118,8 +104,8 @@ func main() {
 
 		// Auth-guarded
 		v1.GET("profile", authMiddleware, api.CurrentUserProfile)
-		v1.GET("hello", authMiddleware, hello)
-		v1.GET("admin", authMiddleware, adminMiddleware, admin)
+		//v1.GET("hello", authMiddleware, hello)
+		//v1.GET("admin", authMiddleware, adminMiddleware, admin)
 	}
 
 	router.Use(lapi.ApiFallback())

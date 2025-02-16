@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output, Pipe, PipeTransform } from '@angular/core';
 import { RegionTree } from '../../model/local/RegionTree';
-import { IonicModule } from '@ionic/angular';
 import { RegionPickerModel } from '../region-picker/region-picker.component';
 import { DbId } from '../../model/db/dbDefs';
+import { IonAccordion, IonAccordionGroup, IonCheckbox, IonItem } from '@ionic/angular/standalone';
 
 export type RegionPickerNodeModel = {
   model: RegionPickerModel,
@@ -27,7 +27,10 @@ export class RegionCheckboxPipe implements PipeTransform {
   selector: 'app-region-picker-node',
   imports: [
     RegionCheckboxPipe,
-    IonicModule, // TODO: split
+    IonAccordionGroup,
+    IonAccordion,
+    IonItem,
+    IonCheckbox,    
   ],
   templateUrl: './region-picker-node.component.html',
   styleUrls: ['./region-picker-node.component.scss'],

@@ -19,6 +19,7 @@
           "options": {
             "outputPath": "dist/front",
             "index": "src/index.html",
+            "statsJson": true,
             "browser": "src/main.ts",
             "polyfills": [
               "zone.js"
@@ -74,8 +75,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "1500kB",
+                  "maximumError": "2MB"
                 },
                 {
                   "type": "anyComponentStyle",

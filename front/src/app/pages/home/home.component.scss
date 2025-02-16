@@ -1,0 +1,11 @@
+ion-content {
+    --background: linear-gradient(
+        60deg, 
+        var(--ion-background-color), 
+        color-mix(
+            in hsl, 
+            var(--ion-color-tertiary-shade),
+            var(--ion-background-color) 70%
+        )
+    );
+}

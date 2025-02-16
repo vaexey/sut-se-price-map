@@ -1,4 +1,4 @@
-<ion-card color="medium">
+<ion-card color="medium" class="container">
   <ion-card-content>
     <ion-grid>
       <ion-row>
@@ -7,7 +7,10 @@
           <ion-thumbnail style="min-width: 150px; min-height: 150px;">
             @if(this.contribGroup)
             {
-              <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/thumbnail.svg" />
+              <img 
+                alt="Product photo" 
+                [src]="contribGroup.product.photo | resource"
+              />
             } @else {
               <ion-skeleton-text [animated]="true"></ion-skeleton-text>
             }
@@ -23,7 +26,7 @@
               <ion-skeleton-text [animated]="true" style="width: 130px;"></ion-skeleton-text>
             }
           </ion-title>
-          <ion-label color="light">
+          <ion-label>
             <h3>
               @if(this.contribGroup)
               {
@@ -53,23 +56,26 @@
 
         @if(this.contribGroup)
         {
-          <ion-col size="auto" style="display: flex;flex-flow: column;">
+          <!-- <ion-col size="auto" style="display: flex;flex-flow: column;">
             <ion-button>
               <ion-icon slot="icon-only" name="heart"></ion-icon>
             </ion-button>
             <ion-button>
               <ion-icon slot="icon-only" name="bar-chart-outline"></ion-icon>
             </ion-button>
-            <ion-button>
+            <ion-button (click)="addNewContrib()">
               <ion-icon slot="icon-only" name="add-outline"></ion-icon>
             </ion-button>
-          </ion-col>
+          </ion-col> -->
   
           <ion-col size="auto">
             <ion-label>
-              <ion-title>{{ contribGroup.averagePrice }}</ion-title>
-              <h3>Rating: {{ contribGroup.rating }}/5</h3>
+              <ion-title>{{ contribGroup.averagePrice | currency : "USD" }}</ion-title>
+              <h3>Rating: {{ (contribGroup.rating*100).toFixed(2) }}%</h3>
             </ion-label>
+            <ion-button (click)="addNewContrib()">
+              <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+            </ion-button>
             <ion-button
               (click)="toggleOpen()"
               [disabled]="contribGroup.contribs.length < 1"
@@ -109,8 +115,22 @@
           <ion-grid>
             @if(!fetchingContribs)
             {
-              @for(item of contribs; track item) {
-                <app-contrib-group-view-item [contrib]="item"></app-contrib-group-view-item>
+              <app-contrib-edit-modal
+                [defaultValues]="{
+                  product: contribGroup.product.id,
+                  store: contribGroup.store.id,
+                  price: contribGroup.averagePrice,
+                  comment: ''
+                }"
+                [isOpen]="editModal"
+                (didDismissEvent)="onEditModal($event)"
+              ></app-contrib-edit-modal>
+        
+              @for(item of contribs; track item.id) {
+                <app-contrib-group-view-item 
+                  [contrib]="item"
+                  [showGroupDetails]="false"
+                ></app-contrib-group-view-item>
               }
             } @else {
               @for(item of contribGroup.contribs; track item) {

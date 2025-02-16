@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { ErrorResponse } from '../model/api/ErrorResponse';
+import { ErrorResponse } from '../../model/api/ErrorResponse';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,8 @@ import { Router } from '@angular/router';
 export class ErrorService {
 
   constructor(
-    private router: Router
+    private auth: AuthService,
+    private router: Router,
   ) { }
 
   get(errorResponse: any): string
@@ -64,7 +66,15 @@ export class ErrorService {
     const e = this.getBody(errorResponse)
     const cause = e?.message ?? defaultMessage
 
-    this.router.navigate(["/503"], {
+    let route = ["/503"]
+
+    if(e?.code == 401)
+    {
+      this.auth.logout()
+      route = ["/login"]
+    }
+
+    this.router.navigate(route, {
       queryParams: {
         cause
       }

@@ -1,0 +1,44 @@
+<ion-grid>
+  @if(error)
+  {
+    <div style="display: flex; align-items: center; justify-content: center;">
+      <ion-title class="ion-text-center">{{ error }}</ion-title>
+    </div>
+  }
+  @else if(loading)
+  {
+    @for(item of [1, 2, 3]; track item) {
+      <ion-label>
+        <h3>
+          <ion-skeleton-text [animated]="true" style="width: 100%;"></ion-skeleton-text>
+        </h3>
+        <h3>
+          <ion-skeleton-text [animated]="true" style="width: 70%;"></ion-skeleton-text>
+        </h3>
+        <h3>
+          <ion-skeleton-text [animated]="true" style="width: 90%;"></ion-skeleton-text>
+        </h3>
+      </ion-label>
+    }
+  }
+  @else if(contribs.length > 0)
+  {
+    @for(item of contribs; track item.id) {
+      <app-contrib-group-view-item 
+        [contrib]="item"
+        [showUserAvatar]="false"
+      ></app-contrib-group-view-item>
+    }
+
+    <ion-infinite-scroll (ionInfinite)="onScrollMore($event)">
+      <ion-infinite-scroll-content loadingSpinner="bubbles"></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  }
+  @else
+  {
+    <div style="display: flex; align-items: center; justify-content: center;">
+      <ion-title class="ion-text-center">No results.</ion-title>
+    </div>
+  }
+    
+</ion-grid>

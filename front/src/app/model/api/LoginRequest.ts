@@ -1,3 +1,5 @@
+import { DbId } from "../db/dbDefs"
+
 export interface LoginRequest
 {
     username: string
@@ -6,5 +8,7 @@ export interface LoginRequest
 
 export interface LoginResponse
 {
-    token: string
+    token: string,
+    id: DbId,
+    isAdmin: boolean,
 }

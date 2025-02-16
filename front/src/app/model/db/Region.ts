@@ -1,9 +1,9 @@
-import { DbId, DbRef } from "./dbDefs"
+import { DbId, DbInsert } from "./dbDefs"
 
 export interface Region
 {
     id: DbId
-    parent: DbRef<Region>
+    parent?: DbInsert<Region>
 
     name: string
 

@@ -76,9 +76,15 @@ func (h *Handler) Register(c *gin.Context) {
 		c.JSON(code, json)
 		return
 	}
+	isAdmin := false
+	if json["role"] == "admin" {
+		isAdmin = true
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"token" : *tokenString,
+		"id": json["id"],
+		"isAdmin" : isAdmin, 
 	})
 }
 

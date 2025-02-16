@@ -35,9 +35,12 @@ type Filter struct {
 
 func (cs* contribService) QueryApplyFilters(filters []Filter) *gorm.DB {
     query := cs.Db.
-        Preload("Store.Region").
-	    Preload("Store").
-	    Preload("Author").
+	Preload("Store.Region.Parent.Parent.Parent").
+        // Preload("Store.Region").
+	Preload("Store").
+	Preload("Author.Avatar").
+	Preload("Author").
+        Preload("Product.Photo").
         Preload("Product")
 
     join := false
