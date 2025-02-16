@@ -65,7 +65,7 @@
       <ion-button (click)="report()" [disabled]="contrib.author.id == thisUserId()">
         Report
       </ion-button>
-      <ion-button (click)="edit()" [disabled]="contrib.author.id != thisUserId()">
+      <ion-button (click)="edit()" [disabled]="contrib.author.id != thisUserId() && !admin()">
         <ion-icon slot="icon-only" name="pencil-outline"></ion-icon>
       </ion-button>
     </ion-col>

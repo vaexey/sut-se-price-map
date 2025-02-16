@@ -62,13 +62,17 @@ export class ContribGroupViewItemComponent  implements OnInit {
     this.reportModal = true
   }
 
+  admin()
+  {
+    return this.auth.isAdmin()
+  }
+
   thisUserId()
   {
     return this.auth.getUserId()
   }
 
   onEditModal(event: ContribEditModalEvent) {
-    console.log(event)
     this.editModal = false
 
     if(event.submitted)

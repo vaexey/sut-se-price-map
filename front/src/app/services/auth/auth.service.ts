@@ -47,6 +47,7 @@ export class AuthService {
     this.session.edit(s => {
       s.token = response.token,
       s.isAdmin = response.isAdmin
+      s.userId = response.id
     })
   }
 
