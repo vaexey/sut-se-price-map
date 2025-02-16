@@ -43,6 +43,7 @@ type contribUtil struct {
 	AfterMany uint
 	Limit uint
 	SortBy string
+	Order string
 	Status []string
 }
 
@@ -112,29 +113,32 @@ func (c *contribUtil) GetFilters(filters *[]db.Filter, q func(string) string) er
 	storesFilter, err := c.getFilterParam(q, "stores")
 	productsFilter, err := c.getFilterParam(q, "products")
 	regionsFilter, err := c.getFilterParam(q, "regions")
+
 	// recursive regions
-	rIncl := regionsFilter.Include
 	var allIncl []uint
-	if rIncl != nil {
-		for i := range *rIncl {
-			children, err := c.SelectChildren((*rIncl)[i])
+	if regionsFilter.Include != nil {
+		allIncl = append(allIncl, *regionsFilter.Include...)
+		for i := range *regionsFilter.Include {
+			children, err := c.SelectChildren((*regionsFilter.Include)[i])
 			if err != nil {
 				return err
 			}
 			allIncl = append(allIncl, children...)
 		}
 	}
-	rExcl := regionsFilter.Exclude
 	var allExcl[]uint
-	if rExcl != nil {
-		for i := range *rExcl {
-			children, err := c.SelectChildren((*rExcl)[i])
+	if regionsFilter.Exclude != nil {
+		allExcl = append(allExcl, *regionsFilter.Exclude...)
+		for i := range *regionsFilter.Exclude {
+			children, err := c.SelectChildren((*regionsFilter.Exclude)[i])
 			if err != nil {
 				return err
 			}
 			allExcl = append(allExcl, children...)
 		}
 	}
+
+
 	regionsFilter.Include = &allIncl
 	regionsFilter.Exclude = &allExcl
 
@@ -163,8 +167,14 @@ func (c* contribUtil) GetSortStatusParams(q func(string) string) error {
 			}
 		}
 	}
+	order := q("order")
+	if order != "desc" {
+		order = "asc"
+	}
+
 	c.SortBy = sortBy
 	c.Status = status
+	c.Order = order
 	return nil
 
 }
@@ -224,6 +234,9 @@ func (c* contribUtil) sort(entries *[]model.Contrib, key string) {
 		}
 		return con
 	})
+	if c.Order == "desc" {
+		slices.Reverse(*entries)
+	}
 }
 
 func (c *contribUtil) ReadyResponse(entries *[]model.Contrib) {
@@ -247,18 +260,24 @@ func (c *contribUtil) ReadyResponse(entries *[]model.Contrib) {
 
 	// sortBy key, supports: id, date, price, status
 	c.sort(entries, c.SortBy)
-
 }
 
 // this groups by product, store
 func (c *contribUtil) Group(entries *[]model.Contrib) []model.ContribGroup {
+	var keys []string
 	grouped := make(map[string][]model.Contrib)
+
 	for _, con := range *entries {
 		key := fmt.Sprintf("%d|%d", con.ProductID, con.StoreID)
+		if _, exists := grouped[key]; !exists {
+			keys = append(keys, key) 
+		}
 		grouped[key] = append(grouped[key], con)
 	}
+
 	var resultGroup []model.ContribGroup
-	for _, value:= range grouped {
+	for _, key := range keys {
+		value := grouped[key]
 		sort.Slice(value, func(i int, j int) bool {
 			t1, _:= time.Parse(util.DATE_PATTERN, value[i].Date)
 			t2, _:= time.Parse(util.DATE_PATTERN, value[j].Date)
