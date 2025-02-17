@@ -235,7 +235,9 @@ func (a *Api) ContribsUpdate(c *gin.Context) {
 		return
 	}
 
-	var req contribRequest
+	// var req contribRequest
+	var req model.Contrib
+
 	err = c.BindJSON(&req)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H {
