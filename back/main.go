@@ -66,8 +66,8 @@ func main() {
 	database := ldb.NewDatabase(db)
 	api := lapi.NewApi(&database)
 
-	authHandler := auth.Handler {
-		Db : &database,
+	authHandler := auth.Handler{
+		Db: &database,
 	}
 
 	authMiddleware := authHandler.RequireJWT()
@@ -84,20 +84,28 @@ func main() {
 		v1.GET("regions/:regionID", api.RegionById)
 		v1.GET("/products", api.Products)
 		v1.GET("/stores", api.Stores)
-		//v1.GET("/reports", api.Reports)
+		v1.GET("/reports", api.Reports)
+		v1.PUT("/reports", api.CreateReports)
 
 		// contribs
-
 		v1.GET("contribs/:contribId", api.ContribsGetById)
 		v1.GET("contribs", api.ContribsGetAll)
 		v1.GET("contribs/group", api.ContribsGetByGroup)
-
 
 		v1.GET("resources/:id", api.ResourceById)
 
 		// Auth guarded
 		v1.POST("contribs/:contribId", authMiddleware, api.ContribsUpdate)
 		v1.PUT("contribs", authMiddleware, api.ContribsCreate)
+
+		// profile
+		v1.GET("profiles/:userLogin", api.ProfileByUserLogin)
+
+		// Auth-guarded
+		v1.GET("profile", authMiddleware, api.CurrentUserProfile)
+		v1.POST("profile", authMiddleware, api.UpdateProfile)
+		//v1.GET("hello", authMiddleware, hello)
+		//v1.GET("admin", authMiddleware, adminMiddleware, admin)
 	}
 
 	router.Use(lapi.ApiFallback())

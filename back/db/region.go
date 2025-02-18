@@ -7,6 +7,7 @@ import (
 func (rh *regionService) SelectAll() ([]model.Region, error) {
 	var regions []model.Region
 	result := rh.Db.Preload("Parent.Parent.Parent").Find(&regions)
+
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -72,6 +73,7 @@ func (rh *regionService) CalculateParentCounts(region *model.Region) error {
 
 	return nil
 }
+
 func (rh *regionService) SelectChildren(parentId uint) ([]uint, error) {
 	var regions []model.Region
 
@@ -95,3 +97,5 @@ func (rh *regionService) SelectChildren(parentId uint) ([]uint, error) {
 
 	return childrenIDs, nil
 }
+
+

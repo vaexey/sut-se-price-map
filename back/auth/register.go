@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -44,6 +45,7 @@ func (h *Handler) Register(c *gin.Context) {
 		Login : req.Username,
 		Password : hash,
 		IsAdmin: false,
+		AvatarID: nil,
 	}
 
 	// check if username with same username exists in db

@@ -25,6 +25,9 @@ func NewDatabase(Db *gorm.DB) Database {
 		Resource: resourceService{
 			Db: Db,
 		},
+		Report: reportService{
+			Db: Db,
+		},
 	}
 }
 
@@ -38,6 +41,7 @@ type Database struct {
 	Product productService
 	Store   storeService
 	Contrib contribService
+	Report reportService
 	Resource resourceService
 }
 
@@ -63,5 +67,9 @@ type storeService struct {
 }
 
 type resourceService struct {
+	Db *gorm.DB
+}
+
+type reportService struct {
 	Db *gorm.DB
 }

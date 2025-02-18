@@ -1,23 +1,22 @@
 package model
 
-
 type Contrib struct {
-	Id          uint	`gorm:"unique;primaryKey;autoIncrement" json:"id"`
+	Id uint `gorm:"unique;primaryKey;autoIncrement" json:"id"`
 	// grouped by
-	ProductID uint `json:"-"`
-	Product Product `json:"product"`
+	ProductID uint    `json:"-"`
+	Product   Product `json:"product"`
 
-	StoreID uint `json:"-"`
+	StoreID uint  `json:"-"`
 	Store   Store `json:"store"`
 
 	AuthorID uint `json:"-"`
-	Author User `json:"author"`
+	Author   User `json:"author"`
 
-	Price  float32 `json:"price"`
-	Date   string `json:"date"`
+	Price float32 `json:"price"`
+	Date  string  `json:"date"`
 
 	// optional detail view
-	Comment     *string `json:"comment"`
+	Comment *string `json:"comment"`
 	//Attachments []uint `gorm:"column:attachments"`
 
 	// view status
