@@ -70,13 +70,65 @@ func (a *Api) CurrentUserProfile(c *gin.Context) {
 	c.JSON(http.StatusOK, jsonProfile(user, contribCount))
 }
 
+func (a *Api) UpdateProfile(c *gin.Context) {
+	var requestBody struct {
+		DisplayName    string        `json:"displayName"`
+		Bio            string        `json:"bio"`
+		DefaultRegions pq.Int32Array `json:"defaultRegions"`
+	}
+
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    400,
+			"message": "Invalid request",
+		})
+		return
+	}
+
+	// Retrieve the current user's information
+	userId := auth.CtxId(c)
+	if userId == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"code":    401,
+			"message": "Unauthorized",
+		})
+		return
+	}
+
+	user, err := a.Db.User.SelectById(*userId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"code":    500,
+			"message": "Failed to retrieve user information",
+		})
+		return
+	}
+
+	// Update the editable fields
+	user.DisplayName = requestBody.DisplayName
+	user.Bio = requestBody.Bio
+	user.DefaultRegions = requestBody.DefaultRegions
+
+	if err := a.Db.User.Update(&user).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"code":    500,
+			"message": "Failed to update profile",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, jsonProfile(user, 0))
+}
+
 func jsonProfile(user model.User, contribCount int) gin.H {
 	return gin.H{
-		"id":             user.Id,
-		"login":          user.Login,
-		"displayName":    user.DisplayName,
+		"id":          user.Id,
+		"login":       user.Login,
+		"displayName": user.DisplayName,
+		"avatar": gin.H{
+			"id": user.AvatarID,
+		},
 		"bio":            user.Bio,
-		"avatar":         user.AvatarID,
 		"contribCount":   contribCount,
 		"defaultRegions": user.DefaultRegions,
 		"isAdmin":        user.IsAdmin,

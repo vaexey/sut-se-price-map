@@ -1,6 +1,6 @@
 package db
-import model "back/model"
 
+import model "back/model"
 
 func (uh *userService) SelectAll() ([]model.User, error) {
 	var user []model.User
@@ -9,8 +9,8 @@ func (uh *userService) SelectAll() ([]model.User, error) {
 }
 
 func (uh *userService) SelectById(id uint) (model.User, error) {
-	user := model.User {
-		Id : id,
+	user := model.User{
+		Id: id,
 	}
 	result := uh.Db.Preload("Avatar").Find(&user)
 	return user, result.Error
@@ -25,4 +25,9 @@ func (uh *userService) SelectByUsername(username string) (model.User, error) {
 func (uh *userService) CreateUser(user model.User) (uint, error) {
 	result := uh.Db.Create(&user)
 	return user.Id, result.Error
+}
+
+func (uh *userService) Update(user *model.User) error {
+	err := uh.Db.Select("display_name", "bio", "default_regions").Updates(user).Error
+	return err
 }

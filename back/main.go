@@ -66,8 +66,8 @@ func main() {
 	database := ldb.NewDatabase(db)
 	api := lapi.NewApi(&database)
 
-	authHandler := auth.Handler {
-		Db : &database,
+	authHandler := auth.Handler{
+		Db: &database,
 	}
 
 	authMiddleware := authHandler.RequireJWT()
@@ -92,7 +92,6 @@ func main() {
 		v1.GET("contribs", api.ContribsGetAll)
 		v1.GET("contribs/group", api.ContribsGetByGroup)
 
-
 		v1.GET("resources/:id", api.ResourceById)
 
 		// Auth guarded
@@ -104,6 +103,7 @@ func main() {
 
 		// Auth-guarded
 		v1.GET("profile", authMiddleware, api.CurrentUserProfile)
+		v1.POST("profile", authMiddleware, api.UpdateProfile)
 		//v1.GET("hello", authMiddleware, hello)
 		//v1.GET("admin", authMiddleware, adminMiddleware, admin)
 	}

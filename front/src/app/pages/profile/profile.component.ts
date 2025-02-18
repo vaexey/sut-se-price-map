@@ -103,7 +103,8 @@ export class ProfileComponent implements OnInit {
         this.editedProfile = profile
       },
       error: e => {
-        this.errors.routeError(e)
+        console.error(e)
+        //this.errors.routeError(e)
       }
     })
   }
