@@ -14,13 +14,13 @@ import (
 func (a *Api) ProfileByUserLogin(c *gin.Context) {
 	userLogin := c.Param("userLogin")
 	if userLogin == "" {
-		c.JSON(http.StatusBadRequest, gin.H {
-			"code": 400,
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    400,
 			"message": "Invalid request",
 		})
 		return
 	}
-	
+
 	user, err := a.Db.User.SelectByUsername(userLogin)
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -32,8 +32,8 @@ func (a *Api) ProfileByUserLogin(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
-  			"code": 404,
-  			"message": "Requested profile not found",
+			"code":    404,
+			"message": "Requested profile not found",
 		})
 		return
 	}
@@ -58,8 +58,8 @@ func (a *Api) CurrentUserProfile(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
-  			"code": 404,
-  			"message": "Requested profile not found",
+			"code":    404,
+			"message": "Requested profile not found",
 		})
 		return
 	}
@@ -72,23 +72,24 @@ func (a *Api) CurrentUserProfile(c *gin.Context) {
 
 func jsonProfile(user model.User, contribCount int) gin.H {
 	return gin.H{
-		"id": user.Id,
-		"login": user.Login,
-		"displayName": user.DisplayName,
-		"bio": user.Bio,
-		"contribCount": contribCount,
+		"id":             user.Id,
+		"login":          user.Login,
+		"displayName":    user.DisplayName,
+		"bio":            user.Bio,
+		"avatar":         user.AvatarID,
+		"contribCount":   contribCount,
 		"defaultRegions": user.DefaultRegions,
-		"isAdmin": user.IsAdmin,
-		"isBanned": user.IsBanned,
+		"isAdmin":        user.IsAdmin,
+		"isBanned":       user.IsBanned,
 	}
 }
 
 func handleUserErrors(c *gin.Context, user *model.User, err error) {
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
-			"code": 404,
+			"code":    404,
 			"message": "Requested resource not found",
-	  	})
+		})
 		return
 	}
 
